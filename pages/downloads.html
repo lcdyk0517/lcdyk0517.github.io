@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>开源系统下载 - R36S中文Wiki</title>
+    <link rel="stylesheet" href="../css/base.css">
+    <link rel="stylesheet" href="../css/layout.css">
+    <link rel="stylesheet" href="../css/components.css">
+    <link rel="stylesheet" href="../css/animations.css">
+    <link rel="stylesheet" href="../css/responsive.css">
+    <link rel="stylesheet" href="../css/downloads.css">
+    <link rel="stylesheet" href="../css/foot.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="../js/footer-loader.js"></script>
+</head>
+
+<body class="downloads-page">
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <i class="fas fa-microchip"></i>
+                    <span>类R36S中文Wiki</span>
+                </div>
+                <nav>
+                    <ul>
+                        <li><a href="../index.html" class="nav-link"><i class="fas fa-home"></i> 首页</a></li>
+                        <li><a href="devices.html" class="nav-link"><i class="fas fa-fingerprint"></i> 设备识别</a></li>
+                        <li><a href="guides.html" class="nav-link"><i class="fas fa-book"></i> 快速指南</a></li>
+                        <li><a href="downloads.html" class="nav-link active"><i class="fas fa-download"></i> 开源系统</a>
+                        </li>
+                        <li><a href="faq.html" class="nav-link"><i class="fas fa-question-circle"></i> 常见问题</a></li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <!-- 动画标题区域 -->
+        <div class="animated-download-header">
+            <div class="download-hero">
+                <h1 class="download-title">
+                    <span class="title-char">开</span>
+                    <span class="title-char">源</span>
+                    <span class="title-char">系</span>
+                    <span class="title-char">统</span>
+                    <span class="title-char">下</span>
+                    <span class="title-char">载</span>
+                </h1>
+                <p class="download-subtitle">探索丰富的R36S开源系统生态</p>
+
+                <!-- 浮动下载图标 -->
+                <div class="floating-download-icons">
+                    <div class="floating-icon" style="--delay: 0s">
+                        <i class="fab fa-linux"></i>
+                    </div>
+                    <div class="floating-icon" style="--delay: 0.3s">
+                        <i class="fab fa-android"></i>
+                    </div>
+                    <div class="floating-icon" style="--delay: 0.6s">
+                        <i class="fas fa-code-branch"></i>
+                    </div>
+                    <div class="floating-icon" style="--delay: 0.9s">
+                        <i class="fab fa-github"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 搜索区域 -->
+        <div class="search-container animated-search">
+            <div class="search-box">
+                <i class="fas fa-search"></i>
+                <input type="text" id="search-downloads" placeholder="搜索固件或工具...">
+                <div class="search-pulse"></div>
+            </div>
+        </div>
+
+        <!-- 分类标签 -->
+        <div class="download-categories">
+            <button class="category-btn active" data-category="all">
+                <i class="fas fa-layer-group"></i>
+                全部系统
+            </button>
+            <button class="category-btn" data-category="firmware">
+                <i class="fas fa-microchip"></i>
+                固件系统
+            </button>
+            <button class="category-btn" data-category="tools">
+                <i class="fas fa-tools"></i>
+                工具软件
+            </button>
+            <!-- <button class="category-btn" data-category="drivers">
+                <i class="fas fa-cogs"></i>
+                驱动程序
+            </button> -->
+            <!-- <button class="category-btn" data-category="documents">
+                <i class="fas fa-book"></i>
+                文档资源
+            </button> -->
+        </div>
+
+        <!-- 下载统计 -->
+        <div class="download-stats">
+            <div class="stat-item">
+                <div class="stat-number" id="total-downloads">9</div>
+                <div class="stat-label">系统总数</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number" id="github-projects">8</div>
+                <div class="stat-label">GitHub项目</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number" id="active-projects">7</div>
+                <div class="stat-label">活跃项目</div>
+            </div>
+        </div>
+
+        <!-- 内容区域 -->
+        <div class="content-grid">
+            <!-- 固件系统 -->
+            <div class="content-card animated-card download-section" data-category="firmware">
+                <div class="section-header">
+                    <i class="fas fa-microchip"></i>
+                    <h3>固件系统</h3>
+                    <span class="section-badge" id="firmware-count">9</span>
+                </div>
+                <ul class="download-list" id="firmware-list">
+                    <!-- 固件列表将通过JavaScript加载 -->
+                </ul>
+            </div>
+
+            <!-- 刷机工具 -->
+            <div class="content-card animated-card download-section" data-category="tools">
+                <div class="section-header">
+                    <i class="fas fa-tools"></i>
+                    <h3>工具软件</h3>
+                    <span class="section-badge" id="tools-count">2</span>
+                </div>
+                <ul class="download-list" id="tools-list">
+                    <!-- 工具列表将通过JavaScript加载 -->
+                </ul>
+            </div>
+
+            <!-- 驱动程序 -->
+            <!-- <div class="content-card animated-card download-section" data-category="drivers">
+                <div class="section-header">
+                    <i class="fas fa-cogs"></i>
+                    <h3>驱动程序</h3>
+                    <span class="section-badge" id="drivers-count">0</span>
+                </div>
+                <ul class="download-list" id="drivers-list">
+                    <!-- 驱动列表将通过JavaScript加载
+                </ul>
+            </div> -->
+
+            <!-- 文档资源 -->
+            <!-- <div class="content-card animated-card download-section" data-category="documents">
+                <div class="section-header">
+                    <i class="fas fa-book"></i>
+                    <h3>文档资源</h3>
+                    <span class="section-badge" id="docs-count">0</span>
+                </div>
+                <ul class="download-list" id="docs-list">
+                    <!-- 文档列表将通过JavaScript加载 
+                </ul>
+            </div> -->
+        </div>
+        <!-- 微信公众号弹窗 -->
+        <div id="wechatModal" class="wechat-modal">
+            <div class="wechat-modal-content">
+                <div class="wechat-modal-header">
+                    <h3><i class="fab fa-weixin"></i> 微信公众号</h3>
+                    <span class="wechat-close">&times;</span>
+                </div>
+                <div class="wechat-modal-body">
+                    <div class="wechat-icon">
+                        <i class="fab fa-weixin"></i>
+                    </div>
+                    <div class="wechat-info">
+                        <h4 id="wechatPublicName">KK玩寨机</h4>
+                        <p id="wechatMessage">请关注微信公众号获取下载链接</p>
+                        <div class="wechat-actions">
+                            <button id="copyWechatName" class="copy-btn">
+                                <i class="fas fa-copy"></i> 复制公众号名称
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 底部提示 -->
+        <div class="download-footer">
+            <div class="footer-content">
+                <i class="fas fa-info-circle"></i>
+                <p>所有系统均为开源项目，使用前请仔细阅读相关文档和许可证</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="../js/downloads.js"></script>
+    <script src="../js/downloads-animation.js"></script>
+</body>
+
+</html>

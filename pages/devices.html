@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>设备识别 - R36S中文Wiki</title>
+    <link rel="stylesheet" href="../css/base.css">
+    <link rel="stylesheet" href="../css/layout.css">
+    <link rel="stylesheet" href="../css/components.css">
+    <link rel="stylesheet" href="../css/animations.css">
+    <link rel="stylesheet" href="../css/devices.css">
+    <link rel="stylesheet" href="../css/responsive.css">
+    <link rel="stylesheet" href="../css/foot.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="../js/footer-loader.js"></script>
+</head>
+
+<body>
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <i class="fas fa-microchip"></i>
+                    <span>类R36S中文百科</span>
+                </div>
+                <nav>
+                    <ul>
+                        <li><a href="../index.html" class="nav-link"><i class="fas fa-home"></i> 首页</a></li>
+                        <li><a href="devices.html" class="nav-link active"><i class="fas fa-fingerprint"></i> 设备识别</a>
+                        </li>
+                        <li><a href="guides.html" class="nav-link"><i class="fas fa-book"></i> 快速指南</a></li>
+                        <li><a href="downloads.html" class="nav-link"><i class="fas fa-download"></i> 开源系统</a></li>
+                        <li><a href="faq.html" class="nav-link"><i class="fas fa-question-circle"></i> 常见问题</a></li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="page-header">
+            <h1><i class="fas fa-fingerprint"></i> 设备识别</h1>
+            <p>识别您的R36S设备版本，查看详细规格和图片</p>
+        </div>
+
+        <!-- 侧边悬浮DTB识别区域 -->
+        <div class="floating-dtb-upload" id="floatingDtbUpload">
+            <div class="floating-dtb-trigger">
+                <i class="fas fa-microchip"></i>
+                <span>DTB识别</span>
+            </div>
+            <div class="floating-dtb-content">
+                <div class="floating-dtb-header">
+                    <i class="fas fa-upload"></i>
+                    <h3>DTB文件识别</h3>
+                    <span class="floating-dtb-close">&times;</span>
+                </div>
+                <p class="floating-dtb-description">上传DTB文件识别设备型号</p>
+
+                <div class="floating-upload-area" id="floatingUploadArea">
+                    <div class="floating-upload-icon">
+                        <i class="fas fa-file-code"></i>
+                    </div>
+                    <h4>拖放DTB文件到此处</h4>
+                    <p>或点击按钮选择文件</p>
+                    <input type="file" id="floatingDtbFileInput" class="file-input" accept=".dtb">
+                    <label for="floatingDtbFileInput" class="floating-upload-btn">
+                        <i class="fas fa-folder-open"></i> 选择文件
+                    </label>
+                    <div class="floating-selected-file" id="floatingSelectedFile"></div>
+                </div>
+
+                <!-- <button class="floating-process-btn" id="floatingProcessBtn" disabled>
+                    <i class="fas fa-search"></i> 识别DTB文件
+                </button> -->
+
+                <div class="floating-upload-info">
+                    <i class="fas fa-info-circle"></i>
+                    <span>支持 .dtb 格式文件</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- 搜索和设备网格 -->
+        <div class="search-container">
+            <div class="search-box">
+                <i class="fas fa-search"></i>
+                <input type="text" id="search-input" placeholder="搜索设备型号或特征...">
+            </div>
+        </div>
+
+        <div class="device-grid" id="device-grid">
+            <!-- 设备卡片将通过JavaScript动态加载 -->
+        </div>
+    </div>
+
+    <!-- 设备详情模态框 -->
+    <div class="modal" id="device-modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <div class="device-detail-container" id="modal-content">
+                <!-- 设备详情内容将通过JavaScript动态加载 -->
+            </div>
+        </div>
+    </div>
+
+    <!-- 图片查看模态框 - 新增部分 -->
+    <div id="imageModal" class="image-modal">
+        <span class="image-modal-close" onclick="closeImageModal()">&times;</span>
+        <div class="image-modal-content">
+            <img id="modalImage" src="" alt="">
+            <div class="image-modal-caption">
+                <h3 id="modalImageTitle"></h3>
+            </div>
+        </div>
+        <div class="image-modal-nav">
+            <button class="nav-btn prev-btn" onclick="navigateImage(-1)">
+                <i class="fas fa-chevron-left"></i>
+            </button>
+            <button class="nav-btn next-btn" onclick="navigateImage(1)">
+                <i class="fas fa-chevron-right"></i>
+            </button>
+        </div>
+    </div>
+
+    <script src="../js/devices.js"></script>
+</body>
+
+</html>

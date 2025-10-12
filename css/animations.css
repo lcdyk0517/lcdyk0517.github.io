@@ -1,0 +1,315 @@
+/* ===== 动画关键帧 ===== */
+
+@keyframes titleGlow {
+    0% {
+        text-shadow: 0 0 20px rgba(108, 99, 255, 0.5);
+    }
+    100% {
+        text-shadow: 0 0 30px rgba(108, 99, 255, 0.8), 0 0 40px rgba(0, 212, 255, 0.6);
+    }
+}
+
+@keyframes linePulse {
+    0%, 100% {
+        width: 100px;
+        opacity: 1;
+    }
+    50% {
+        width: 150px;
+        opacity: 0.7;
+    }
+}
+
+@keyframes typing {
+    0% {
+        width: 0;
+    }
+    50% {
+        width: 100%;
+    }
+    100% {
+        width: 0;
+    }
+}
+
+@keyframes blink {
+    0%, 50% {
+        border-color: var(--secondary);
+    }
+    51%, 100% {
+        border-color: transparent;
+    }
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes floatIn {
+    from {
+        opacity: 0;
+        transform: translateY(30px) scale(0.9);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+@keyframes cardSlideUp {
+    from {
+        opacity: 0;
+        transform: translateY(50px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes floatSymbol {
+    0% {
+        transform: translateY(0) rotate(0deg);
+    }
+    100% {
+        transform: translateY(-100vh) rotate(360deg);
+    }
+}
+
+@keyframes charSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(30px) rotateX(90deg);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) rotateX(0);
+    }
+}
+
+@keyframes floatUpDown {
+    0% {
+        transform: translateY(0px);
+    }
+    100% {
+        transform: translateY(-15px);
+    }
+}
+
+@keyframes searchPulse {
+    0%, 100% {
+        transform: translateY(-50%) scale(1);
+        opacity: 0.7;
+    }
+    50% {
+        transform: translateY(-50%) scale(1.2);
+        opacity: 1;
+    }
+}
+
+@keyframes numberPop {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.1);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+@keyframes cardSlideIn {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes slideInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes buttonPulse {
+    0% {
+        transform: scale(1);
+        box-shadow: 0 0 0 0 rgba(108, 99, 255, 0.7);
+    }
+    50% {
+        transform: scale(1.05);
+        box-shadow: 0 0 0 10px rgba(108, 99, 255, 0);
+    }
+    100% {
+        transform: scale(1.05);
+        box-shadow: 0 0 0 0 rgba(108, 99, 255, 0);
+    }
+}
+
+@keyframes slideInFromTop {
+    from {
+        opacity: 0;
+        transform: translateY(-50px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes bgFloatUp {
+    0% {
+        transform: translateY(0) rotate(0deg) scale(1);
+        opacity: 0;
+    }
+    10% {
+        opacity: 0.1;
+    }
+    90% {
+        opacity: 0.1;
+    }
+    100% {
+        transform: translateY(-120vh) rotate(360deg) scale(1.2);
+        opacity: 0;
+    }
+}
+
+/* ===== 动画类 ===== */
+
+/* 动画标题 */
+.animated-title {
+    text-align: center;
+    margin-bottom: 3rem;
+    position: relative;
+    z-index: 2;
+}
+
+.title-text {
+    font-size: 4rem;
+    font-weight: 800;
+    margin-bottom: 1rem;
+    background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 50%, var(--accent) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: titleGlow 3s ease-in-out infinite alternate;
+    position: relative;
+}
+
+.title-text::after {
+    content: '';
+    position: absolute;
+    bottom: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100px;
+    height: 4px;
+    background: linear-gradient(90deg, var(--primary), var(--secondary));
+    border-radius: 2px;
+    animation: linePulse 2s ease-in-out infinite;
+}
+
+.highlight {
+    background: linear-gradient(135deg, var(--accent) 0%, #ff6b9d 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-shadow: 0 0 30px rgba(255, 46, 99, 0.5);
+}
+
+.title-subtext {
+    font-size: 1.5rem;
+    color: var(--secondary);
+    margin-bottom: 2rem;
+    height: 2rem;
+}
+
+.typing-text {
+    border-right: 2px solid var(--secondary);
+    padding-right: 5px;
+    animation: typing 3s steps(20) infinite, blink 0.7s infinite;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+.hero-description {
+    font-size: 1.3rem;
+    color: #ccc;
+    margin-bottom: 3rem;
+    opacity: 0;
+    animation: fadeInUp 1s ease 1s forwards;
+}
+
+/* 动画快速访问卡片 */
+.animated-card {
+    position: relative;
+    overflow: hidden;
+    transform: translateY(50px);
+    opacity: 0;
+    animation: cardSlideUp 0.8s ease forwards;
+}
+
+.animated-card:nth-child(1) {
+    animation-delay: 0.2s;
+}
+
+.animated-card:nth-child(2) {
+    animation-delay: 0.4s;
+}
+
+.animated-card:nth-child(3) {
+    animation-delay: 0.6s;
+}
+
+.animated-card:nth-child(4) {
+    animation-delay: 0.8s;
+}
+
+.card-icon {
+    position: relative;
+    z-index: 2;
+}
+
+.card-hover-effect {
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+    transition: left 0.6s;
+}
+
+.animated-card:hover .card-hover-effect {
+    left: 100%;
+}
+
+/* 加载状态 */
+body.loaded .hero {
+    position: relative;
+    overflow: hidden;
+}
+
+.page-loaded * {
+    animation-duration: 0.5s !important;
+}
+
+/* 滚动进入视图的动画 */
+.in-view {
+    animation: slideInUp 0.6s ease forwards;
+}
+
+.animated-card.animate-in {
+    animation: cardSlideIn 0.6s ease forwards;
+}

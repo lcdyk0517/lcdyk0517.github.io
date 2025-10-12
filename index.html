@@ -4,1893 +4,443 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DTB Panel序列识别工具 | DTB Panel Sequence Identification Tool</title>
+    <title>类R36S掌机的中文百科 - 设备识别与折腾指南</title>
+    <link rel="stylesheet" href="css/base.css">
+    <link rel="stylesheet" href="css/layout.css">
+    <link rel="stylesheet" href="css/components.css">
+    <link rel="stylesheet" href="css/animations.css">
+    <link rel="stylesheet" href="css/responsive.css">
+    <link rel="stylesheet" href="css/foot.css"> <!-- 添加这一行 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="js/footer-loader.js"></script>
     <style>
-        :root {
-            --primary: #2c3e50;
-            --secondary: #3498db;
-            --success: #27ae60;
-            --warning: #f39c12;
-            --danger: #e74c3c;
-            --dark: #1a1a1a;
-            --light: #f8f9fa;
-            --arkos4clone: #3498db;
-            --arkosk36: #9b59b6;
-        }
-        
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', system-ui, sans-serif; }
-        body { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; padding: 20px; }
-        
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            background: white;
-            border-radius: 20px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.1);
-            overflow: hidden;
-        }
-        
-        header {
-            background: var(--primary);
-            color: white;
-            padding: 30px;
-            text-align: center;
-            position: relative;
-        }
-        
-        h1 {
-            font-size: 2.2rem;
-            margin-bottom: 10px;
-            font-weight: 300;
-        }
-        
-        .subtitle {
-            font-size: 1.1rem;
-            opacity: 0.9;
-            font-weight: 300;
-        }
-        
-        .main-content {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 0;
-            min-height: 600px;
-        }
-        
-        .upload-section {
-            padding: 30px;
-            background: var(--light);
-            display: flex;
-            flex-direction: column;
-        }
-        
-        .result-section {
-            padding: 30px;
-            background: var(--dark);
-            display: flex;
-            flex-direction: column;
-        }
-        
-        .upload-area {
-            border: 3px dashed #bdc3c7;
-            border-radius: 12px;
-            padding: 40px 20px;
-            text-align: center;
-            transition: all 0.3s ease;
-            background: white;
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-        }
-        
-        .upload-area.dragover {
-            border-color: var(--secondary);
-            background: #e3f2fd;
-        }
-        
-        .upload-icon {
-            font-size: 60px;
-            color: var(--secondary);
-            margin-bottom: 15px;
-        }
-        
-        .file-input {
-            display: none;
-        }
-        
-        .file-label {
-            background: var(--secondary);
-            color: white;
-            padding: 14px 28px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            display: inline-block;
-            margin: 15px 0;
-        }
-        
-        .file-label:hover {
-            background: #2980b9;
-        }
-        
-        .selected-file {
-            margin-top: 15px;
-            padding: 12px;
-            background: var(--success);
-            color: white;
-            border-radius: 8px;
-            font-weight: 600;
-            display: none;
-        }
-        
-        .process-btn {
-            background: var(--success);
-            color: white;
-            border: none;
-            padding: 16px;
-            border-radius: 8px;
-            font-size: 1.1rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            margin-top: 20px;
+        /* 临时加载样式，避免闪烁 */
+        #particles-js {
+            position: fixed;
             width: 100%;
-        }
-        
-        .process-btn:hover:not(:disabled) {
-            background: #219a52;
-        }
-        
-        .process-btn:disabled {
-            background: #95a5a6;
-            cursor: not-allowed;
-        }
-        
-    .result-area {
-        background: #1e1e1e;
-        border-radius: 12px;
-        padding: 20px;
-        flex: 1;
-        overflow-y: auto;
-        font-family: 'Fira Code', 'Cascadia Code', monospace;
-        font-size: 0.9rem;
-        line-height: 1.4;
-        position: relative;
-        white-space: pre-wrap;
-        color: #d4d4d4; /* VS Code风格的默认文字颜色 */
-    }
-        /* 链接样式 */
-    .result-area a {
-        color: #569CD6;
-        text-decoration: none;
-        border-bottom: 1px solid transparent;
-        transition: all 0.3s ease;
-    }
-    
-    .result-area a:hover {
-        color: #4EC9B0;
-        border-bottom-color: #4EC9B0;
-    }
-        
-        .loading {
-            position: absolute;
+            height: 100%;
             top: 0;
             left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(30, 30, 30, 0.95);
-            display: none;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            border-radius: 12px;
-            z-index: 10;
+            z-index: -1;
         }
-        
-        .spinner {
-            border: 3px solid rgba(255,255,255,0.1);
-            border-top: 3px solid var(--secondary);
-            border-radius: 50%;
-            width: 50px;
-            height: 50px;
-            animation: spin 1s linear infinite;
-            margin-bottom: 15px;
+
+        header {
+            z-index: 1000;
+            position: relative;
         }
-        
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+
+        .container {
+            position: relative;
+            z-index: 1;
         }
-        
-        .error-message {
-            background: var(--danger);
-            color: white;
-            padding: 12px;
-            border-radius: 8px;
-            margin: 15px 0;
-            display: none;
-        }
-        
-        /* 语法高亮 */
-    .node { color: #4EC9B0; font-weight: bold; } /* 青色 - 类/节点 */
-    .property { color: #9CDCFE; } /* 亮蓝色 - 属性 */
-    .value { color: #CE9178; } /* 橙色 - 值 */
-    .comment { color: #6A9955; font-style: italic; } /* 绿色 - 注释 */
-    .string { color: #CE9178; } /* 橙色 - 字符串 */
-    .number { color: #B5CEA8; } /* 浅绿色 - 数字 */
-    .hex { color: #D7BA7D; } /* 黄色 - 十六进制 */
-        
-    .sequence-block {
-        background: rgba(78, 201, 176, 0.08);
-        border: 1px solid #4EC9B0;
-        border-radius: 8px;
-        padding: 15px;
-        margin: 10px 0;
-        color: #d4d4d4;
-    }
-    
-    .gpio-block {
-        background: rgba(52, 152, 219, 0.08);
-        border: 1px solid #569CD6;
-        border-radius: 8px;
-        padding: 15px;
-        margin: 10px 0;
-        color: #d4d4d4;
-    }
-        
-        .info-box {
-            background: #e3f2fd;
-            border-left: 4px solid var(--secondary);
-            padding: 15px;
-            margin: 15px 0;
-            border-radius: 0 8px 8px 0;
-            font-size: 0.9rem;
-        }
-        
-    .match-success {
-        background: rgba(39, 174, 96, 0.15);
-        border: 1px solid #4EC9B0;
-        border-radius: 8px;
-        padding: 15px;
-        margin: 10px 0;
-        color: #4EC9B0;
-    }
-    
-    .match-warning {
-        background: rgba(243, 156, 18, 0.15);
-        border: 1px solid #FFD700;
-        border-radius: 8px;
-        padding: 15px;
-        margin: 10px 0;
-        color: #FFD700;
-    }
-    
-    .match-info {
-        background: rgba(52, 152, 219, 0.15);
-        border: 1px solid #569CD6;
-        border-radius: 8px;
-        padding: 15px;
-        margin: 10px 0;
-        color: #9CDCFE;
-    }
-        
-        .system-selector {
-            display: flex;
-            gap: 10px;
-            margin: 15px 0;
-        }
-        
-        .system-btn {
-            flex: 1;
-            padding: 12px;
-            border: 2px solid #bdc3c7;
-            border-radius: 8px;
-            background: white;
-            cursor: pointer;
-            font-weight: 600;
-            transition: all 0.3s ease;
+
+        .communities-section {
+            margin: 2rem 0;
             text-align: center;
         }
-        
-        .system-btn.active {
-            border-color: var(--secondary);
-            background: var(--secondary);
-            color: white;
+
+        .communities-title {
+            color: var(--light);
+            margin-bottom: 2rem;
+            font-size: 1.5rem;
+            font-weight: 600;
         }
-        
-        .system-btn.arkos4clone.active {
-            border-color: var(--arkos4clone);
-            background: var(--arkos4clone);
+
+        .communities-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 1rem;
+            align-items: stretch;
+            /* 确保所有卡片高度一致 */
         }
-        
-        .system-btn.arkosk36.active {
-            border-color: var(--arkosk36);
-            background: var(--arkosk36);
-        }
-        
-    .system-tag {
-        display: inline-block;
-        padding: 3px 8px;
-        border-radius: 4px;
-        font-size: 0.75rem;
-        font-weight: 600;
-        margin-left: 8px;
-        color: white;
-        background: #569CD6;
-    }
-        .tag-arkos4clone {
-            background: var(--arkos4clone);
-            color: white;
-        }
-        
-        .tag-arkosk36 {
-            background: var(--arkosk36);
-            color: white;
-        }
-        
-        /* 语言切换按钮 */
-        .language-switcher {
-            position: absolute;
-            top: 20px;
-            right: 20px;
+
+        .community-card {
             display: flex;
-            gap: 10px;
-        }
-        
-        .lang-btn {
-            background: rgba(255, 255, 255, 0.2);
-            color: white;
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            border-radius: 4px;
-            padding: 6px 12px;
-            cursor: pointer;
-            font-size: 0.8rem;
+            flex-direction: column;
+            justify-content: space-between;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            padding: 1.5rem;
+            backdrop-filter: blur(10px);
             transition: all 0.3s ease;
+            min-height: 180px;
+            /* 固定最小高度 */
+            height: 100%;
+            /* 确保所有卡片高度一致 */
         }
-        
-        .lang-btn.active {
-            background: rgba(255, 255, 255, 0.4);
-            border-color: rgba(255, 255, 255, 0.6);
+
+        .community-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+            border-color: rgba(18, 183, 245, 0.4);
         }
-        
+
+        .card-header {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            text-align: left;
+        }
+
+        .community-icon {
+            flex-shrink: 0;
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #12b7f5, #0084b4);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5rem;
+        }
+
+        .community-title {
+            flex: 1;
+            min-width: 0;
+            /* 防止文本溢出 */
+        }
+
+        .community-title h4 {
+            margin: 0 0 0.3rem 0;
+            color: var(--light);
+            font-size: 1.1rem;
+            font-weight: 600;
+            line-height: 1.2;
+        }
+
+        .community-title p {
+            margin: 0;
+            color: #ccc;
+            font-size: 0.9rem;
+            line-height: 1.3;
+            word-break: break-all;
+            /* 确保长文本换行 */
+        }
+
+        .join-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            background: linear-gradient(135deg, #12b7f5, #0084b4);
+            color: white !important;
+            text-decoration: none;
+            padding: 0.7rem 1.2rem;
+            border-radius: 20px;
+            font-weight: 500;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .join-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(18, 183, 245, 0.4);
+            color: white !important;
+        }
+
+        /* 为不同的群添加不同的颜色主题 */
+        .community-card:nth-child(2) .community-icon,
+        .community-card:nth-child(2) .join-btn {
+            background: linear-gradient(135deg, #ff6b6b, #ee5a52);
+        }
+
+        .community-card:nth-child(3) .community-icon,
+        .community-card:nth-child(3) .join-btn {
+            background: linear-gradient(135deg, #51cf66, #40c057);
+        }
+
+        .community-card:nth-child(4) .community-icon,
+        .community-card:nth-child(4) .join-btn {
+            background: linear-gradient(135deg, #ffd43b, #fcc419);
+        }
+
+        .community-card:nth-child(5) .community-icon,
+        .community-card:nth-child(5) .join-btn {
+            background: linear-gradient(135deg, #cc5de8, #be4bdb);
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 1200px) {
+            .communities-grid {
+                grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            }
+        }
+
         @media (max-width: 768px) {
-            .main-content {
+            .communities-grid {
+                grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+                gap: 1rem;
+            }
+
+            .community-card {
+                padding: 1.2rem;
+                min-height: 160px;
+            }
+
+            .card-header {
+                gap: 0.8rem;
+                margin-bottom: 1.2rem;
+            }
+
+            .community-icon {
+                width: 45px;
+                height: 45px;
+                font-size: 1.3rem;
+            }
+
+            .community-title h4 {
+                font-size: 1rem;
+            }
+
+            .community-title p {
+                font-size: 0.85rem;
+            }
+
+            .communities-title {
+                font-size: 1.3rem;
+                margin-bottom: 1.5rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .communities-grid {
                 grid-template-columns: 1fr;
+                padding: 0 0.5rem;
+                gap: 1rem;
             }
-            
-            header {
-                padding: 20px;
+
+            .community-card {
+                padding: 1rem;
+                min-height: 140px;
             }
-            
-            h1 {
-                font-size: 1.8rem;
+
+            .card-header {
+                gap: 0.6rem;
+                margin-bottom: 1rem;
             }
-            
-            .system-selector {
-                flex-direction: column;
+
+            .community-icon {
+                width: 40px;
+                height: 40px;
+                font-size: 1.2rem;
             }
-            
-            .language-switcher {
-                position: static;
-                justify-content: center;
-                margin-top: 15px;
-            }
+        }
+
+        /* 确保所有卡片内容垂直对齐 */
+        .community-card {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .card-header {
+            flex: 1;
+            /* 让标题区域占据剩余空间 */
+        }
+
+        .join-btn {
+            flex-shrink: 0;
+            /* 按钮保持固定高度 */
         }
     </style>
 </head>
+<!--#include file="foot.html" -->
 
 <body>
-    <div class="container">
+    <!-- 粒子动画背景 -->
+    <div id="particles-js"></div>
+
+    <!-- 主要内容区域 -->
+    <div class="main-content-wrapper">
         <header>
-            <div class="language-switcher">
-                <button class="lang-btn active" data-lang="zh">中文</button>
-                <button class="lang-btn" data-lang="en">English</button>
+            <div class="container">
+                <div class="header-content">
+                    <div class="logo">
+                        <i class="fas fa-microchip"></i>
+                        <span>类R36S中文百科</span>
+                    </div>
+                    <nav>
+                        <ul>
+                            <li><a href="index.html" class="nav-link active"><i class="fas fa-home"></i> 首页</a></li>
+                            <li><a href="pages/devices.html" class="nav-link"><i class="fas fa-fingerprint"></i>
+                                    设备识别</a></li>
+                            <li><a href="pages/guides.html" class="nav-link"><i class="fas fa-book"></i> 快速指南</a></li>
+                            <li><a href="pages/downloads.html" class="nav-link"><i class="fas fa-download"></i> 开源系统</a>
+                            </li>
+                            <li><a href="pages/faq.html" class="nav-link"><i class="fas fa-question-circle"></i>
+                                    常见问题</a></li>
+                        </ul>
+                    </nav>
+                </div>
             </div>
-            <h1 data-i18n="title">🔍 类R36S掌机dtb分析确认</h1>
-            <p class="subtitle" data-i18n="subtitle">基于MD5和Panel参数的DTB文件识别 - 支持ArkOS4Clone和ArkOSK36</p>
         </header>
 
-        <div class="main-content">
-            <div class="upload-section">
-                <div class="info-box">
-                    <h3 data-i18n="instructions.title">📋 使用说明</h3>
-                    <p data-i18n="instructions.step1">• 上传DTB文件</p>
-                    <p data-i18n="instructions.step2">• 选择目标系统 (ArkOS4Clone 或 ArkOSK36)</p>
-                    <p data-i18n="instructions.step3">• 自动计算MD5并与已知配置比对</p>
-                    <p data-i18n="instructions.step4">• 根据匹配程度提供识别建议</p>
-                </div>
-
-                <div class="system-selector">
-                    <div class="system-btn arkos4clone active" data-system="arkos4clone">
-                        ArkOS4Clone
-                    </div>
-                    <div class="system-btn arkosk36" data-system="arkosk36">
-                        ArkOSK36
+        <div class="container">
+            <div class="hero">
+                <!-- 动画标题 -->
+                <div class="animated-title">
+                    <h1 class="title-text">类R36S<span class="highlight">中文Wiki</span></h1>
+                    <div class="title-subtext">
+                        <span class="typing-text">探索无限可能</span>
                     </div>
                 </div>
 
-                <!-- 添加调试开关 -->
-                <div class="debug-toggle" style="margin: 15px 0; text-align: center;">
-                    <label style="color: var(--primary); font-weight: 600; cursor: pointer;">
-                        <input type="checkbox" id="debugToggle" style="margin-right: 8px;">
-                        <span data-i18n="debugToggle">详细数据</span>
-                    </label>
-                </div>
-                <div class="upload-area" id="uploadArea">
-                    <div class="upload-icon">📁</div>
-                    <h3 data-i18n="upload.drag">拖放DTB文件到此处</h3>
-                    <p data-i18n="upload.click">或点击下方按钮选择文件</p>
-                    <input type="file" id="fileInput" class="file-input" accept=".dtb,.dtbo">
-                    <label for="fileInput" class="file-label" data-i18n="upload.button">选择DTB文件</label>
-                    <div class="selected-file" id="selectedFile"></div>
+                <p class="hero-description">为您提供全面的类R36S设备信息、使用指南和问题解决方案</p>
+
+                <div class="communities-section">
+                    <h3 class="communities-title">加入我们的交流群</h3>
+                    <div class="communities-grid">
+                        <!-- 群1 -->
+                        <div class="community-card">
+                            <div class="card-header">
+                                <div class="community-icon">
+                                    <i class="fab fa-qq"></i>
+                                </div>
+                                <div class="community-title">
+                                    <h4>交流群</h4>
+                                    <p>寨中寨掌机交流群</p>
+                                </div>
+                            </div>
+                            <a href="https://qm.qq.com/q/ZAP3Zm8NUG" target="_blank" class="join-btn">
+                                <i class="fas fa-users"></i>
+                                立即加入
+                            </a>
+                        </div>
+
+                        <!-- 群2 -->
+                        <div class="community-card">
+                            <div class="card-header">
+                                <div class="community-icon">
+                                    <i class="fab fa-qq"></i>
+                                </div>
+                                <div class="community-title">
+                                    <h4>交流②群</h4>
+                                    <p>寨中寨掌机交流②群</p>
+                                </div>
+                            </div>
+                            <a href="https://qm.qq.com/q/YUAbQNV4Qe" target="_blank" class="join-btn">
+                                <i class="fas fa-users"></i>
+                                立即加入
+                            </a>
+                        </div>
+
+                        <!-- 群3 -->
+                        <div class="community-card">
+                            <div class="card-header">
+                                <div class="community-icon">
+                                    <i class="fab fa-qq"></i>
+                                </div>
+                                <div class="community-title">
+                                    <h4>交流③群</h4>
+                                    <p>寨中寨掌机交流③群</p>
+                                </div>
+                            </div>
+                            <a href="https://qm.qq.com/q/gnXJUtJl9m" target="_blank" class="join-btn">
+                                <i class="fas fa-users"></i>
+                                立即加入
+                            </a>
+                        </div>
+
+                        <!-- 群4 -->
+                        <div class="community-card">
+                            <div class="card-header">
+                                <div class="community-icon">
+                                    <i class="fab fa-qq"></i>
+                                </div>
+                                <div class="community-title">
+                                    <h4>交流④群</h4>
+                                    <p>寨中寨掌机交流④群</p>
+                                </div>
+                            </div>
+                            <a href="https://qm.qq.com/q/wDY92MkBaw" target="_blank" class="join-btn">
+                                <i class="fas fa-users"></i>
+                                立即加入
+                            </a>
+                        </div>
+
+                        <!-- 群5 -->
+                        <div class="community-card">
+                            <div class="card-header">
+                                <div class="community-icon">
+                                    <i class="fab fa-qq"></i>
+                                </div>
+                                <div class="community-title">
+                                    <h4>交流⑤群</h4>
+                                    <p>寨中寨掌机交流⑤群</p>
+                                </div>
+                            </div>
+                            <a href="https://qm.qq.com/q/wAcNko1Fok" target="_blank" class="join-btn">
+                                <i class="fas fa-users"></i>
+                                立即加入
+                            </a>
+                        </div>
+                    </div>
                 </div>
 
-                <button class="process-btn" id="processBtn" disabled data-i18n="processBtn">识别DTB文件</button>
-                <div class="error-message" id="errorMessage"></div>
-            </div>
-
-            <div class="result-section">
-                <h3 style="color: white; margin-bottom: 15px;" data-i18n="result.title">识别结果</h3>
-                <div class="result-area" id="resultArea">
-                    <span class="comment"></span>
+                <!-- 浮动卡片 -->
+                <div class="floating-cards">
+                    <div class="floating-card" style="--delay: 0s">
+                        <i class="fas fa-rocket"></i>
+                        <span>高性能</span>
+                    </div>
+                    <div class="floating-card" style="--delay: 0.5s">
+                        <i class="fas fa-shield-alt"></i>
+                        <span>开源</span>
+                    </div>
+                    <div class="floating-card" style="--delay: 1s">
+                        <i class="fas fa-users"></i>
+                        <span>社区</span>
+                    </div>
+                    <div class="floating-card" style="--delay: 1.5s">
+                        <i class="fas fa-code"></i>
+                        <span>可定制</span>
+                    </div>
                 </div>
 
-                <div class="loading" id="loading">
-                    <div class="spinner"></div>
-                    <h3 style="color: white;" data-i18n="loading.title">正在识别DTB文件...</h3>
-                    <p style="color: #ccc;" data-i18n="loading.subtitle">请稍候</p>
+                <div class="quick-access">
+                    <a href="pages/devices.html" class="quick-card animated-card">
+                        <div class="card-icon">
+                            <i class="fas fa-fingerprint"></i>
+                        </div>
+                        <h3>设备识别</h3>
+                        <p>识别您的R36S设备版本</p>
+                        <div class="card-hover-effect"></div>
+                    </a>
+                    <a href="pages/guides.html" class="quick-card animated-card" >
+                        <div class="card-icon">
+                            <i class="fas fa-book"></i>
+                        </div>
+                        <h3>快速指南</h3>
+                        <p>刷机和优化教程</p>
+                        <div class="card-hover-effect"></div>
+                    </a>
+                    <a href="pages/downloads.html" class="quick-card animated-card">
+                        <div class="card-icon">
+                            <i class="fas fa-download"></i>
+                        </div>
+                        <h3>开源系统</h3>
+                        <p>固件和工具下载</p>
+                        <div class="card-hover-effect"></div>
+                    </a>
+                    <a href="pages/faq.html" class="quick-card animated-card">
+                        <div class="card-icon">
+                            <i class="fas fa-question-circle"></i>
+                        </div>
+                        <h3>常见问题</h3>
+                        <p>问题解决方案</p>
+                        <div class="card-hover-effect"></div>
+                    </a>
                 </div>
             </div>
         </div>
     </div>
-
-    <script>
-        // 多语言支持
-        const translations = {
-            zh: {
-                title: "🔍 类R36S掌机dtb分析确认",
-                subtitle: "基于MD5和Panel参数的DTB文件识别 - 支持ArkOS4Clone和ArkOSK36",
-                "instructions.title": "📋 使用说明",
-                "instructions.step1": "• 上传DTB文件",
-                "instructions.step2": "• 选择目标系统 (ArkOS4Clone 或 ArkOSK36)",
-                "instructions.step3": "• 自动计算MD5并与已知配置比对",
-                "instructions.step4": "• 根据匹配程度提供识别建议",
-                "upload.drag": "拖放DTB文件到此处",
-                "upload.click": "或点击下方按钮选择文件",
-                "upload.button": "选择DTB文件",
-                "processBtn": "识别DTB文件",
-                "result.title": "识别结果",
-                "loading.title": "正在识别DTB文件...",
-                "loading.subtitle": "请稍候",
-                "debugToggle": "详细数据",
-                "fileInfo": "=== 文件信息 ===",
-                "fileMD5": "文件MD5",
-                "fileSize": "文件大小",
-                "projectUrl": "项目地址",
-                "targetSystem": "目标系统",
-                "panelInfo": "=== 提取的Panel信息 ===",
-                "noPanelSequence": "// 未找到 panel-init-sequence",
-                "noGpioConfig": "// 未找到GPIO配置",
-                "noSdioNode": "// 未找到SDIO节点",
-                "codecInfo": "=== Codec信息 ===",
-                "adaptationSuggestion": "=== ArkOS4Clone适配建议 ===",
-                "debugInfo": "// 调试信息:",
-                "md5Match": "MD5匹配",
-                "screenParamMatch": "屏幕参数匹配",
-                "exactMatch": "✅ 与开发使用的DTB完全一致，请使用该选项完全兼容你的设备",
-                "screenMatch": "⚠️ 屏幕参数匹配",
-                "screenMatchDesc": "检测到屏幕一致但是MD5不一致",
-                "screenMatchAdvice": "可以进行测试使用，但不保证完全兼容：",
-                "noMatch": "❓ 未找到匹配",
-                "noMatchDesc": "暂时不适配该系统",
-                "noMatchDetails": "未完全匹配节点如下：",
-                "noMatchReason1": "- panel-init-sequence 不匹配",
-                "noMatchReason2": "- GPIO配置 不匹配",
-                "noMatchReason3": "- use-ext-amplifier 不匹配"
-            },
-            en: {
-                title: "🔍 R36S-like Handheld DTB Analysis Tool",
-                subtitle: "DTB File Identification Based on MD5 and Panel Parameters - Supports ArkOS4Clone and ArkOSK36",
-                "instructions.title": "📋 Instructions",
-                "instructions.step1": "• Upload DTB file",
-                "instructions.step2": "• Select target system (ArkOS4Clone or ArkOSK36)",
-                "instructions.step3": "• Automatically calculate MD5 and compare with known configurations",
-                "instructions.step4": "• Provide identification suggestions based on match level",
-                "upload.drag": "Drag and drop DTB file here",
-                "upload.click": "or click the button below to select file",
-                "upload.button": "Select DTB File",
-                "processBtn": "Identify DTB File",
-                "result.title": "Identification Result",
-                "loading.title": "Identifying DTB file...",
-                "loading.subtitle": "Please wait",
-                "debugToggle": "Detailed Data",
-                "fileInfo": "=== File Information ===",
-                "fileMD5": "File MD5",
-                "fileSize": "File Size",
-                "projectUrl": "Project URL",
-                "targetSystem": "Target System",
-                "panelInfo": "=== Extracted Panel Information ===",
-                "noPanelSequence": "// No panel-init-sequence found",
-                "noGpioConfig": "// No GPIO configuration found",
-                "noSdioNode": "// No SDIO node found",
-                "codecInfo": "=== Codec Information ===",
-                "adaptationSuggestion": "=== ArkOS4Clone Adaptation Suggestion ===",
-                "debugInfo": "// Debug Information:",
-                "md5Match": "MD5 Match",
-                "screenParamMatch": "Screen Parameter Match",
-                "exactMatch": "✅ Exact match with development DTB, please use this option for full compatibility with your device",
-                "screenMatch": "⚠️ Screen Parameter Match",
-                "screenMatchDesc": "Screen detected as identical but MD5 differs",
-                "screenMatchAdvice": "Can be used for testing but full compatibility is not guaranteed:",
-                "noMatch": "❓ No Match Found",
-                "noMatchDesc": "It is temporarily not suitable for this system",
-                "noMatchDetails": "Nodes that did not fully match:",
-                "noMatchReason1": "- panel-init-sequence mismatch",
-                "noMatchReason2": "- GPIO configuration mismatch",
-                "noMatchReason3": "- use-ext-amplifier mismatch"
-            }
-        };
-
-        // 当前语言
-        let currentLanguage = 'zh';
-
-        // 语言切换函数
-        function switchLanguage(lang) {
-            currentLanguage = lang;
-            
-            // 更新所有带有data-i18n属性的元素
-            document.querySelectorAll('[data-i18n]').forEach(element => {
-                const key = element.getAttribute('data-i18n');
-                if (translations[lang][key]) {
-                    element.textContent = translations[lang][key];
-                }
-            });
-            
-            // 更新语言按钮状态
-            document.querySelectorAll('.lang-btn').forEach(btn => {
-                if (btn.dataset.lang === lang) {
-                    btn.classList.add('active');
-                } else {
-                    btn.classList.remove('active');
-                }
-            });
-            
-            // 如果当前有文件，重新处理以更新结果中的文本
-            if (currentFile) {
-                processBtn.click();
-            }
-        }
-
-        const IS_DEBUG = false;
-        // 经过测试的正确MD5实现
-        class MD5 {
-            static md5(input) {
-                if (input instanceof ArrayBuffer) {
-                    return this.md5FromArrayBuffer(input);
-                }
-                throw new Error('MD5: 只支持 ArrayBuffer 输入');
-            }
-
-            static md5FromArrayBuffer(arrayBuffer) {
-                const bytes = new Uint8Array(arrayBuffer);
-                return this.calculateMD5(bytes);
-            }
-
-            static calculateMD5(inputBytes) {
-                const S = [7, 12, 17, 22, 7, 12, 17, 22, 7, 12, 17, 22, 7, 12, 17, 22,
-                    5, 9, 14, 20, 5, 9, 14, 20, 5, 9, 14, 20, 5, 9, 14, 20,
-                    4, 11, 16, 23, 4, 11, 16, 23, 4, 11, 16, 23, 4, 11, 16, 23,
-                    6, 10, 15, 21, 6, 10, 15, 21, 6, 10, 15, 21, 6, 10, 15, 21];
-
-                const K = [0xd76aa478, 0xe8c7b756, 0x242070db, 0xc1bdceee,
-                    0xf57c0faf, 0x4787c62a, 0xa8304613, 0xfd469501,
-                    0x698098d8, 0x8b44f7af, 0xffff5bb1, 0x895cd7be,
-                    0x6b901122, 0xfd987193, 0xa679438e, 0x49b40821,
-                    0xf61e2562, 0xc040b340, 0x265e5a51, 0xe9b6c7aa,
-                    0xd62f105d, 0x02441453, 0xd8a1e681, 0xe7d3fbc8,
-                    0x21e1cde6, 0xc33707d6, 0xf4d50d87, 0x455a14ed,
-                    0xa9e3e905, 0xfcefa3f8, 0x676f02d9, 0x8d2a4c8a,
-                    0xfffa3942, 0x8771f681, 0x6d9d6122, 0xfde5380c,
-                    0xa4beea44, 0x4bdecfa9, 0xf6bb4b60, 0xbebfbc70,
-                    0x289b7ec6, 0xeaa127fa, 0xd4ef3085, 0x04881d05,
-                    0xd9d4d039, 0xe6db99e5, 0x1fa27cf8, 0xc4ac5665,
-                    0xf4292244, 0x432aff97, 0xab9423a7, 0xfc93a039,
-                    0x655b59c3, 0x8f0ccc92, 0xffeff47d, 0x85845dd1,
-                    0x6fa87e4f, 0xfe2ce6e0, 0xa3014314, 0x4e0811a1,
-                    0xf7537e82, 0xbd3af235, 0x2ad7d2bb, 0xeb86d391];
-
-                // 初始哈希值（无符号）
-                let a = 0x67452301 >>> 0;
-                let b = 0xEFCDAB89 >>> 0;
-                let c = 0x98BADCFE >>> 0;
-                let d = 0x10325476 >>> 0;
-
-                // 预处理（填充）
-                const originalLength = inputBytes.length;
-                const bitLength = (originalLength * 8) >>> 0; // 低32位
-                const bitLengthHigh = Math.floor((originalLength * 8) / 0x100000000) >>> 0; // 高32位（大多数文件不需要高位，但 RFC 要求 64 位）
-
-                // 计算需要的总长度：原数据 + 1 (0x80) + padZeros 到使 (len % 64 == 56) + 8 (长度)
-                const padLen = (56 - ((originalLength + 1) % 64) + 64) % 64;
-                const totalLength = originalLength + 1 + padLen + 8;
-                const padded = new Uint8Array(totalLength);
-                padded.set(inputBytes, 0);
-                padded[originalLength] = 0x80;
-                // padLen 个 0x00 已默认为 0
-
-                // 写入 64 位长度（小端，低32位先）
-                // 低 32 位
-                padded[totalLength - 8] = (bitLength & 0xff);
-                padded[totalLength - 7] = (bitLength >>> 8) & 0xff;
-                padded[totalLength - 6] = (bitLength >>> 16) & 0xff;
-                padded[totalLength - 5] = (bitLength >>> 24) & 0xff;
-                // 高 32 位
-                padded[totalLength - 4] = (bitLengthHigh & 0xff);
-                padded[totalLength - 3] = (bitLengthHigh >>> 8) & 0xff;
-                padded[totalLength - 2] = (bitLengthHigh >>> 16) & 0xff;
-                padded[totalLength - 1] = (bitLengthHigh >>> 24) & 0xff;
-
-                // 处理每个 512-bit 块
-                for (let chunkStart = 0; chunkStart < totalLength; chunkStart += 64) {
-                    const M = new Array(16);
-                    for (let i = 0; i < 16; i++) {
-                        const offset = chunkStart + i * 4;
-                        M[i] = (padded[offset] |
-                            (padded[offset + 1] << 8) |
-                            (padded[offset + 2] << 16) |
-                            (padded[offset + 3] << 24)) >>> 0;
-                    }
-
-                    let A = a, B = b, C = c, D = d;
-
-                    for (let i = 0; i < 64; i++) {
-                        let F, g;
-                        if (i < 16) {
-                            F = (B & C) | ((~B) & D);
-                            g = i;
-                        } else if (i < 32) {
-                            F = (D & B) | ((~D) & C);
-                            g = (5 * i + 1) % 16;
-                        } else if (i < 48) {
-                            F = B ^ C ^ D;
-                            g = (3 * i + 5) % 16;
-                        } else {
-                            F = C ^ (B | (~D));
-                            g = (7 * i) % 16;
-                        }
-
-                        // A + F + K[i] + M[g]
-                        let temp = (A + F + K[i] + M[g]) >>> 0;
-                        // 左旋并加到 B
-                        temp = this.rotateLeft(temp, S[i]);
-                        temp = (B + temp) >>> 0;
-
-                        // 轮转
-                        A = D;
-                        D = C;
-                        C = B;
-                        B = temp;
-                    }
-
-                    a = (a + A) >>> 0;
-                    b = (b + B) >>> 0;
-                    c = (c + C) >>> 0;
-                    d = (d + D) >>> 0;
-                }
-
-                return this.toHex(a) + this.toHex(b) + this.toHex(c) + this.toHex(d);
-            }
-
-            static add32(x, y) {
-                return (x + y) >>> 0;
-            }
-
-            static rotateLeft(value, shift) {
-                return (((value << shift) | (value >>> (32 - shift))) >>> 0);
-            }
-
-            static toHex(value) {
-                value = value >>> 0;
-                let str = '';
-                for (let i = 0; i < 4; i++) {
-                    const byte = (value >>> (i * 8)) & 0xff;
-                    str += byte.toString(16).padStart(2, '0');
-                }
-                return str;
-            }
-        }
-
-        // GPIO引脚映射表
-        const GPIO_MAPPING = {
-            0x0: "RK_PA0", 0x1: "RK_PA1", 0x2: "RK_PA2", 0x3: "RK_PA3",
-            0x4: "RK_PA4", 0x5: "RK_PA5", 0x6: "RK_PA6", 0x7: "RK_PA7",
-            0x8: "RK_PB0", 0x9: "RK_PB1", 0xa: "RK_PB2", 0xb: "RK_PB3",
-            0xc: "RK_PB4", 0xd: "RK_PB5", 0xe: "RK_PB6", 0xf: "RK_PB7",
-            0x10: "RK_PC0", 0x11: "RK_PC1", 0x12: "RK_PC2", 0x13: "RK_PC3",
-            0x14: "RK_PC4", 0x15: "RK_PC5", 0x16: "RK_PC6", 0x17: "RK_PC7",
-            0x18: "RK_PD0", 0x19: "RK_PD1", 0x1a: "RK_PD2", 0x1b: "RK_PD3",
-            0x1c: "RK_PD4", 0x1d: "RK_PD5", 0x1e: "RK_PD6", 0x1f: "RK_PD7"
-        };
-
-        // ArkOS4Clone 数据库 (保持原样)
-        const ARKOS4CLONE_DATABASE = [
-            {
-                name: "Clone R36s -> K36 Panel 8",
-                md5: "eaa316c532c147354ec5cb69dd4409b5",
-                panelInitSequence: "39 00 04 b9 f1 12 83 39 00 06 b1 00 00 00 da 80 39 00 04 b2 00 13 70 39 00 0b b3 10 10 28 28 03 ff 00 00 00 00 15 00 02 b4 80 15 00 03 b5 0a 0a 15 00 03 b6 82 82 39 00 05 b8 26 62 f0 63 39 00 1c ba 33 81 05 f9 0e 0e 20 00 00 00 00 00 00 00 44 25 00 90 0a 00 00 01 4f 01 00 00 37 15 00 02 bc 47 39 00 04 bf 02 11 00 39 00 0a c0 73 73 50 50 00 00 12 50 00 39 00 0d c1 53 00 32 32 77 d1 cc cc 77 77 33 33 39 00 07 c6 82 00 bf ff 00 ff 39 00 07 c7 b8 00 0a 00 00 00 39 00 05 c8 10 40 1e 02 15 00 02 cc 0b 39 00 23 e0 00 07 0d 37 35 3f 41 44 06 0c 0d 0f 11 10 12 14 1a 00 07 0d 37 35 3f 41 44 06 0c 0d 0f 11 10 12 14 1a 39 00 0f e3 07 07 0b 0b 0b 0b 00 00 00 00 ff 00 c0 10 39 00 40 e9 c8 10 02 00 00 b0 b1 11 31 23 28 80 b0 b1 27 08 00 04 02 00 00 00 00 04 02 00 00 00 88 88 ba 60 24 08 88 88 88 88 88 88 88 ba 71 35 18 88 88 88 88 88 00 00 00 01 00 00 00 00 00 00 00 00 00 39 00 3e ea 97 0a 82 02 03 07 00 00 00 00 00 00 81 88 ba 17 53 88 88 88 88 88 88 80 88 ba 06 42 88 88 88 88 88 88 23 00 00 02 80 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 39 00 04 ef ff ff 01 05 c8 01 11 05 14 01 29",
-                resetGpios: "&gpio3 RK_PD3 GPIO_ACTIVE_LOW",
-                enableGpios: "&gpio3 RK_PA3 GPIO_ACTIVE_HIGH",
-                sdio: "false",
-            },
-            {
-                name: "Clone R36s -> K36 Panel 4",
-                md5: "059c64824dbf92ed528880dec22a72ac",
-                panelInitSequence: "15 00 02 ff 30 15 00 02 ff 52 15 00 02 ff 01 15 00 02 e3 00 15 00 02 25 10 15 00 02 28 6f 15 00 02 29 01 15 00 02 2a df 15 00 02 2c 22 15 00 02 c3 0f 15 00 02 37 9c 15 00 02 38 a7 15 00 02 39 41 15 00 02 80 20 15 00 02 91 67 15 00 02 92 67 15 00 02 a0 55 15 00 02 a1 50 15 00 02 a3 58 15 00 02 a4 9c 15 00 02 a7 02 15 00 02 a8 01 15 00 02 a9 21 15 00 02 aa fc 15 00 02 ab 28 15 00 02 ac 06 15 00 02 ad 06 15 00 02 ae 06 15 00 02 af 03 15 00 02 b0 08 15 00 02 b1 26 15 00 02 b2 28 15 00 02 b3 28 15 00 02 b4 03 15 00 02 b5 08 15 00 02 b6 26 15 00 02 b7 08 15 00 02 b8 26 15 00 02 c0 00 15 00 02 c1 00 15 00 02 c2 00 15 00 02 ff 30 15 00 02 ff 52 15 00 02 ff 02 15 00 02 b0 02 15 00 02 d0 02 15 00 02 b1 0f 15 00 02 d1 10 15 00 02 b2 11 15 00 02 d2 12 15 00 02 b3 32 15 00 02 d3 33 15 00 02 b4 36 15 00 02 d4 36 15 00 02 b5 3c 15 00 02 d5 3c 15 00 02 b6 20 15 00 02 d6 20 15 00 02 b7 3e 15 00 02 d7 3e 15 00 02 b8 0e 15 00 02 d8 0d 15 00 02 b9 05 15 00 02 d9 05 15 00 02 ba 11 15 00 02 da 12 15 00 02 bb 11 15 00 02 db 11 15 00 02 bc 13 15 00 02 dc 14 15 00 02 bd 14 15 00 02 dd 14 15 00 02 be 16 15 00 02 de 18 15 00 02 bf 0e 15 00 02 df 0f 15 00 02 c0 17 15 00 02 e0 17 15 00 02 c1 07 15 00 02 e1 08 15 00 02 ff 30 15 00 02 ff 52 15 00 02 ff 03 15 00 02 08 8a 15 00 02 09 8b 15 00 02 30 00 15 00 02 31 00 15 00 02 32 00 15 00 02 33 00 15 00 02 34 61 15 00 02 35 d4 15 00 02 36 24 15 00 02 37 03 15 00 02 40 86 15 00 02 41 87 15 00 02 42 84 15 00 02 43 85 15 00 02 44 11 15 00 02 45 de 15 00 02 46 dd 15 00 02 47 11 15 00 02 48 e0 15 00 02 49 df 15 00 02 50 82 15 00 02 51 83 15 00 02 52 80 15 00 02 53 81 15 00 02 54 11 15 00 02 55 e2 15 00 02 56 e1 15 00 02 57 11 15 00 02 58 e4 15 00 02 59 e3 15 00 02 82 0f 15 00 02 83 0f 15 00 02 84 00 15 00 02 85 0f 15 00 02 86 0f 15 00 02 87 0e 15 00 02 88 0e 15 00 02 89 06 15 00 02 8a 06 15 00 02 8b 07 15 00 02 8c 07 15 00 02 8d 04 15 00 02 8e 04 15 00 02 8f 05 15 00 02 90 05 15 00 02 98 0f 15 00 02 99 0f 15 00 02 9a 00 15 00 02 9b 0f 15 00 02 9c 0f 15 00 02 9d 0e 15 00 02 9e 0e 15 00 02 9f 06 15 00 02 a0 06 15 00 02 a1 07 15 00 02 a2 07 15 00 02 a3 04 15 00 02 a4 04 15 00 02 a5 05 15 00 02 a6 05 15 00 02 e0 02 15 00 02 e1 52 15 00 02 ff 30 15 00 02 ff 52 15 00 02 ff 00 15 00 02 36 02 05 c8 01 11 05 64 01 29",
-                resetGpios: "&gpio3 RK_PB7 GPIO_ACTIVE_LOW",
-                enableGpios: "&gpio0 RK_PB5 GPIO_ACTIVE_HIGH",
-                sdio: "false",
-            },
-            {
-                name: "XiFan HandHelds -> XiFan R36Pro | Clone R36s -> K36 Panel 1",
-                md5: ["6de588c4eda969c2487402a4823ca60a", "2748ec226bcd9c06095bb94c4637493a"],
-                panelInitSequence: "39 00 04 b9 f1 12 83 39 00 06 b1 00 00 00 da 80 39 00 04 b2 00 13 70 39 00 0b b3 10 10 28 28 03 ff 00 00 00 00 15 00 02 b4 80 15 00 03 b5 0a 0a 15 00 03 b6 82 82 39 00 05 b8 26 62 f0 63 39 00 1c ba 33 81 05 f9 0e 0e 20 00 00 00 00 00 00 00 44 25 00 90 0a 00 00 01 4f 01 00 00 37 15 00 02 bc 47 39 00 04 bf 02 11 00 39 00 0a c0 73 73 50 50 00 00 12 50 00 39 00 0d c1 53 00 32 32 77 d1 cc cc 77 77 33 33 39 00 07 c6 82 00 bf ff 00 ff 39 00 07 c7 b8 00 0a 00 00 00 39 00 05 c8 10 40 1e 02 15 00 02 cc 0b 39 00 23 e0 00 07 0d 37 35 3f 41 44 06 0c 0d 0f 11 10 12 14 1a 00 07 0d 37 35 3f 41 44 06 0c 0d 0f 11 10 12 14 1a 39 00 0f e3 07 07 0b 0b 0b 0b 00 00 00 00 ff 00 c0 10 39 00 40 e9 c8 10 02 00 00 b0 b1 11 31 23 28 80 b0 b1 27 08 00 04 02 00 00 00 00 04 02 00 00 00 88 88 ba 60 24 08 88 88 88 88 88 88 88 ba 71 35 18 88 88 88 88 88 00 00 00 01 00 00 00 00 00 00 00 00 00 39 00 3e ea 97 0a 82 02 03 07 00 00 00 00 00 00 81 88 ba 17 53 88 88 88 88 88 88 80 88 ba 06 42 88 88 88 88 88 88 23 00 00 02 80 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 39 00 04 ef ff ff 01 05 c8 01 11 05 14 01 29",
-                resetGpios: "&gpio3 RK_PB7 GPIO_ACTIVE_LOW",
-                enableGpios: "&gpio0 RK_PB5 GPIO_ACTIVE_HIGH",
-                sdio: "false",
-            },
-            {
-                name: "Clone R36s -> K36 Panel 7",
-                md5: "",
-                panelInitSequence: "15 00 02 ff 30 15 00 02 ff 52 15 00 02 ff 01 15 00 02 e3 00 15 00 02 25 10 15 00 02 28 6f 15 00 02 29 01 15 00 02 2a df 15 00 02 2c 22 15 00 02 c3 0f 15 00 02 37 9c 15 00 02 38 a7 15 00 02 39 41 15 00 02 80 20 15 00 02 91 67 15 00 02 92 67 15 00 02 a0 55 15 00 02 a1 50 15 00 02 a3 58 15 00 02 a4 9c 15 00 02 a7 02 15 00 02 a8 01 15 00 02 a9 21 15 00 02 aa fc 15 00 02 ab 28 15 00 02 ac 06 15 00 02 ad 06 15 00 02 ae 06 15 00 02 af 03 15 00 02 b0 08 15 00 02 b1 26 15 00 02 b2 28 15 00 02 b3 28 15 00 02 b4 03 15 00 02 b5 08 15 00 02 b6 26 15 00 02 b7 08 15 00 02 b8 26 15 00 02 c0 00 15 00 02 c1 00 15 00 02 c2 00 15 00 02 ff 30 15 00 02 ff 52 15 00 02 ff 02 15 00 02 b0 02 15 00 02 d0 02 15 00 02 b1 0f 15 00 02 d1 10 15 00 02 b2 11 15 00 02 d2 12 15 00 02 b3 32 15 00 02 d3 33 15 00 02 b4 36 15 00 02 d4 36 15 00 02 b5 3c 15 00 02 d5 3c 15 00 02 b6 20 15 00 02 d6 20 15 00 02 b7 3e 15 00 02 d7 3e 15 00 02 b8 0e 15 00 02 d8 0d 15 00 02 b9 05 15 00 02 d9 05 15 00 02 ba 11 15 00 02 da 12 15 00 02 bb 11 15 00 02 db 11 15 00 02 bc 13 15 00 02 dc 14 15 00 02 bd 14 15 00 02 dd 14 15 00 02 be 16 15 00 02 de 18 15 00 02 bf 0e 15 00 02 df 0f 15 00 02 c0 17 15 00 02 e0 17 15 00 02 c1 07 15 00 02 e1 08 15 00 02 ff 30 15 00 02 ff 52 15 00 02 ff 03 15 00 02 08 8a 15 00 02 09 8b 15 00 02 30 00 15 00 02 31 00 15 00 02 32 00 15 00 02 33 00 15 00 02 34 61 15 00 02 35 d4 15 00 02 36 24 15 00 02 37 03 15 00 02 40 86 15 00 02 41 87 15 00 02 42 84 15 00 02 43 85 15 00 02 44 11 15 00 02 45 de 15 00 02 46 dd 15 00 02 47 11 15 00 02 48 e0 15 00 02 49 df 15 00 02 50 82 15 00 02 51 83 15 00 02 52 80 15 00 02 53 81 15 00 02 54 11 15 00 02 55 e2 15 00 02 56 e1 15 00 02 57 11 15 00 02 58 e4 15 00 02 59 e3 15 00 02 82 0f 15 00 02 83 0f 15 00 02 84 00 15 00 02 85 0f 15 00 02 86 0f 15 00 02 87 0e 15 00 02 88 0e 15 00 02 89 06 15 00 02 8a 06 15 00 02 8b 07 15 00 02 8c 07 15 00 02 8d 04 15 00 02 8e 04 15 00 02 8f 05 15 00 02 90 05 15 00 02 98 0f 15 00 02 99 0f 15 00 02 9a 00 15 00 02 9b 0f 15 00 02 9c 0f 15 00 02 9d 0e 15 00 02 9e 0e 15 00 02 9f 06 15 00 02 a0 06 15 00 02 a1 07 15 00 02 a2 07 15 00 02 a3 04 15 00 02 a4 04 15 00 02 a5 05 15 00 02 a6 05 15 00 02 e0 02 15 00 02 e1 52 15 00 02 ff 30 15 00 02 ff 52 15 00 02 ff 00 15 00 02 36 02 05 c8 01 11 05 64 01 29",
-                resetGpios: "&gpio3 RK_PB7 GPIO_ACTIVE_LOW",
-                enableGpios: "&gpio0 RK_PB5 GPIO_ACTIVE_HIGH",
-                sdio: "true",
-            },
-            {
-                name: "XiFan HandHelds -> XiFan XF40H",
-                md5: "f79ac4d535197064da5c2a50bae6f186",
-                panelInitSequence: "39 00 04 b9 f1 12 83 39 00 06 b1 00 00 00 da 80 39 00 04 b2 3c 12 30 39 00 0b b3 10 10 28 28 03 ff 00 00 00 00 15 00 02 b4 80 39 00 03 b5 0a 0a 39 00 03 b6 97 97 39 00 05 b8 26 22 f0 13 39 00 1c ba 33 81 05 f9 0e 0e 20 00 00 00 00 00 00 00 44 25 00 90 0a 00 00 01 4f 01 00 00 37 15 00 02 bc 47 39 00 04 bf 02 11 00 39 00 0a c0 73 73 50 50 00 00 12 70 00 39 00 0d c1 25 00 32 32 77 e4 ff ff cc cc 77 77 39 00 07 c6 82 00 bf ff 00 ff 39 00 07 c7 b8 00 0a 00 00 00 39 00 05 c8 10 40 1e 02 15 00 02 cc 0b 39 00 23 e0 00 0b 10 2c 3d 3f 42 3a 07 0d 0f 13 15 13 14 0f 16 00 0b 10 2c 3d 3f 42 3a 07 0d 0f 13 15 13 14 0f 16 39 00 0f e3 07 07 0b 0b 0b 0b 00 00 00 00 ff 00 c0 10 39 00 40 e9 c8 10 0a 00 00 80 81 12 31 23 4f 86 a0 00 47 08 00 00 0c 00 00 00 00 00 0c 00 00 00 98 02 8b af 46 02 88 88 88 88 88 98 13 8b af 57 13 88 88 88 88 88 00 00 00 00 00 00 00 00 00 00 00 00 00 39 00 3e ea 97 0c 09 09 09 78 00 00 00 00 00 00 9f 31 8b a8 31 75 88 88 88 88 88 9f 20 8b a8 20 64 88 88 88 88 88 23 00 00 02 71 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 40 80 81 00 00 00 00 39 00 04 ef ff ff 01 05 fa 01 11 05 32 01 29",
-                resetGpios: "&gpio3 RK_PB7 GPIO_ACTIVE_LOW",
-                enableGpios: "&gpio0 RK_PB5 GPIO_ACTIVE_HIGH",
-                sdio: "true",
-            },
-            {
-                name: "XiFan HandHelds -> XiFan XF35H",
-                md5: "97e25f0bb2fbdb2cc89b37bf3fb66ddf",
-                panelInitSequence: "39 00 04 b9 f1 12 83 39 00 06 b1 00 00 00 da 80 39 00 04 b2 00 13 70 39 00 0b b3 10 10 28 28 03 ff 00 00 00 00 15 00 02 b4 80 15 00 03 b5 0a 0a 15 00 03 b6 82 82 39 00 05 b8 26 62 f0 63 39 00 1c ba 33 81 05 f9 0e 0e 20 00 00 00 00 00 00 00 44 25 00 90 0a 00 00 01 4f 01 00 00 37 15 00 02 bc 47 39 00 04 bf 02 11 00 39 00 0a c0 73 73 50 50 00 00 12 50 00 39 00 0d c1 53 00 32 32 77 d1 cc cc 77 77 33 33 39 00 07 c6 82 00 bf ff 00 ff 39 00 07 c7 b8 00 0a 00 00 00 39 00 05 c8 10 40 1e 02 15 00 02 cc 0b 39 00 23 e0 00 07 0d 37 35 3f 41 44 06 0c 0d 0f 11 10 12 14 1a 00 07 0d 37 35 3f 41 44 06 0c 0d 0f 11 10 12 14 1a 39 00 0f e3 07 07 0b 0b 0b 0b 00 00 00 00 ff 00 c0 10 39 00 40 e9 c8 10 02 00 00 b0 b1 11 31 23 28 80 b0 b1 27 08 00 04 02 00 00 00 00 04 02 00 00 00 88 88 ba 60 24 08 88 88 88 88 88 88 88 ba 71 35 18 88 88 88 88 88 00 00 00 01 00 00 00 00 00 00 00 00 00 39 00 3e ea 97 0a 82 02 03 07 00 00 00 00 00 00 81 88 ba 17 53 88 88 88 88 88 88 80 88 ba 06 42 88 88 88 88 88 88 23 00 00 02 80 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 39 00 04 ef ff ff 01 05 c8 01 11 05 14 01 29",
-                resetGpios: "&gpio3 RK_PB7 GPIO_ACTIVE_LOW",
-                enableGpios: "&gpio0 RK_PB5 GPIO_ACTIVE_HIGH",
-                sdio: "true",
-            },
-            {
-                name: "Other -> GameConsole R36Ultra",
-                md5: "5cb5429b5418aa71b730501786578d04",
-                panelInitSequence: "39 00 04 b9 f1 12 83 39 00 06 b1 00 00 00 da 80 39 00 04 b2 3c 12 30 39 00 0b b3 10 10 28 28 03 ff 00 00 00 00 15 00 02 b4 80 39 00 03 b5 0a 0a 39 00 03 b6 97 97 39 00 05 b8 26 22 f0 13 39 00 1c ba 33 81 05 f9 0e 0e 20 00 00 00 00 00 00 00 44 25 00 90 0a 00 00 01 4f 01 00 00 37 15 00 02 bc 47 39 00 04 bf 02 11 00 39 00 0a c0 73 73 50 50 00 00 12 70 00 39 00 0d c1 25 00 32 32 77 e4 ff ff cc cc 77 77 39 00 07 c6 82 00 bf ff 00 ff 39 00 07 c7 b8 00 0a 00 00 00 39 00 05 c8 10 40 1e 02 15 00 02 cc 0b 39 00 23 e0 00 0b 10 2c 3d 3f 42 3a 07 0d 0f 13 15 13 14 0f 16 00 0b 10 2c 3d 3f 42 3a 07 0d 0f 13 15 13 14 0f 16 39 00 0f e3 07 07 0b 0b 0b 0b 00 00 00 00 ff 00 c0 10 39 00 40 e9 c8 10 0a 00 00 80 81 12 31 23 4f 86 a0 00 47 08 00 00 0c 00 00 00 00 00 0c 00 00 00 98 02 8b af 46 02 88 88 88 88 88 98 13 8b af 57 13 88 88 88 88 88 00 00 00 00 00 00 00 00 00 00 00 00 00 39 00 3e ea 97 0c 09 09 09 78 00 00 00 00 00 00 9f 31 8b a8 31 75 88 88 88 88 88 9f 20 8b a8 20 64 88 88 88 88 88 23 00 00 02 71 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 40 80 81 00 00 00 00 39 00 04 ef ff ff 01 05 fa 01 11 05 32 01 29",
-                resetGpios: "&gpio3 RK_PD3 GPIO_ACTIVE_LOW",
-                enableGpios: "&gpio3 RK_PA3 GPIO_ACTIVE_HIGH",
-                sdio: "true",
-            },
-            {
-                name: "XiFan HandHelds -> XiFan R36MAX",
-                md5: ["82f93e50285b7dfbb7ab05a133c2812b", "3d7f16bbd611f88ee9b0eb10791eadfc"],
-                panelInitSequence: "39 00 04 b9 f1 12 83 39 00 06 b1 00 00 00 da 80 39 00 04 b2 3c 12 30 39 00 0b b3 10 10 28 28 03 ff 00 00 00 00 15 00 02 b4 80 39 00 03 b5 0a 0a 39 00 03 b6 97 97 39 00 05 b8 26 22 f0 13 39 00 1c ba 33 81 05 f9 0e 0e 20 00 00 00 00 00 00 00 44 25 00 90 0a 00 00 01 4f 01 00 00 37 15 00 02 bc 47 39 00 04 bf 02 11 00 39 00 0a c0 73 73 50 50 00 00 12 70 00 39 00 0d c1 25 00 32 32 77 e4 ff ff cc cc 77 77 39 00 07 c6 82 00 bf ff 00 ff 39 00 07 c7 b8 00 0a 00 00 00 39 00 05 c8 10 40 1e 02 15 00 02 cc 0b 39 00 23 e0 00 0b 10 2c 3d 3f 42 3a 07 0d 0f 13 15 13 14 0f 16 00 0b 10 2c 3d 3f 42 3a 07 0d 0f 13 15 13 14 0f 16 39 00 0f e3 07 07 0b 0b 0b 0b 00 00 00 00 ff 00 c0 10 39 00 40 e9 c8 10 0a 00 00 80 81 12 31 23 4f 86 a0 00 47 08 00 00 0c 00 00 00 00 00 0c 00 00 00 98 02 8b af 46 02 88 88 88 88 88 98 13 8b af 57 13 88 88 88 88 88 00 00 00 00 00 00 00 00 00 00 00 00 00 39 00 3e ea 97 0c 09 09 09 78 00 00 00 00 00 00 9f 31 8b a8 31 75 88 88 88 88 88 9f 20 8b a8 20 64 88 88 88 88 88 23 00 00 02 71 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 40 80 81 00 00 00 00 39 00 04 ef ff ff 01 05 fa 01 11 05 32 01 29",
-                resetGpios: "&gpio3 RK_PB7 GPIO_ACTIVE_LOW",
-                enableGpios: "&gpio0 RK_PB5 GPIO_ACTIVE_HIGH",
-                sdio: "false",
-            },
-            {
-                name: "Other -> GameConsole RX6H",
-                md5: "0b11a2bf3a862dbb0e16ae6cd8b8b228",
-                panelInitSequence: "15 00 02 ff 30 15 00 02 ff 52 15 00 02 ff 01 15 00 02 e3 00 15 00 02 25 10 15 00 02 28 6f 15 00 02 29 01 15 00 02 2a df 15 00 02 2c 22 15 00 02 c3 0f 15 00 02 37 9c 15 00 02 38 a7 15 00 02 39 41 15 00 02 80 20 15 00 02 91 67 15 00 02 92 67 15 00 02 a0 55 15 00 02 a1 50 15 00 02 a3 58 15 00 02 a4 9c 15 00 02 a7 02 15 00 02 a8 01 15 00 02 a9 21 15 00 02 aa fc 15 00 02 ab 28 15 00 02 ac 06 15 00 02 ad 06 15 00 02 ae 06 15 00 02 af 03 15 00 02 b0 08 15 00 02 b1 26 15 00 02 b2 28 15 00 02 b3 28 15 00 02 b4 03 15 00 02 b5 08 15 00 02 b6 26 15 00 02 b7 08 15 00 02 b8 26 15 00 02 c0 00 15 00 02 c1 00 15 00 02 c2 00 15 00 02 ff 30 15 00 02 ff 52 15 00 02 ff 02 15 00 02 b0 02 15 00 02 d0 02 15 00 02 b1 0f 15 00 02 d1 10 15 00 02 b2 11 15 00 02 d2 12 15 00 02 b3 32 15 00 02 d3 33 15 00 02 b4 36 15 00 02 d4 36 15 00 02 b5 3c 15 00 02 d5 3c 15 00 02 b6 20 15 00 02 d6 20 15 00 02 b7 3e 15 00 02 d7 3e 15 00 02 b8 0e 15 00 02 d8 0d 15 00 02 b9 05 15 00 02 d9 05 15 00 02 ba 11 15 00 02 da 12 15 00 02 bb 11 15 00 02 db 11 15 00 02 bc 13 15 00 02 dc 14 15 00 02 bd 14 15 00 02 dd 14 15 00 02 be 16 15 00 02 de 18 15 00 02 bf 0e 15 00 02 df 0f 15 00 02 c0 17 15 00 02 e0 17 15 00 02 c1 07 15 00 02 e1 08 15 00 02 ff 30 15 00 02 ff 52 15 00 02 ff 03 15 00 02 08 8a 15 00 02 09 8b 15 00 02 30 00 15 00 02 31 00 15 00 02 32 00 15 00 02 33 00 15 00 02 34 61 15 00 02 35 d4 15 00 02 36 24 15 00 02 37 03 15 00 02 40 86 15 00 02 41 87 15 00 02 42 84 15 00 02 43 85 15 00 02 44 11 15 00 02 45 de 15 00 02 46 dd 15 00 02 47 11 15 00 02 48 e0 15 00 02 49 df 15 00 02 50 82 15 00 02 51 83 15 00 02 52 80 15 00 02 53 81 15 00 02 54 11 15 00 02 55 e2 15 00 02 56 e1 15 00 02 57 11 15 00 02 58 e4 15 00 02 59 e3 15 00 02 82 0f 15 00 02 83 0f 15 00 02 84 00 15 00 02 85 0f 15 00 02 86 0f 15 00 02 87 0e 15 00 02 88 0e 15 00 02 89 06 15 00 02 8a 06 15 00 02 8b 07 15 00 02 8c 07 15 00 02 8d 04 15 00 02 8e 04 15 00 02 8f 05 15 00 02 90 05 15 00 02 98 0f 15 00 02 99 0f 15 00 02 9a 00 15 00 02 9b 0f 15 00 02 9c 0f 15 00 02 9d 0e 15 00 02 9e 0e 15 00 02 9f 06 15 00 02 a0 06 15 00 02 a1 07 15 00 02 a2 07 15 00 02 a3 04 15 00 02 a4 04 15 00 02 a5 05 15 00 02 a6 05 15 00 02 e0 02 15 00 02 e1 52 15 00 02 ff 30 15 00 02 ff 52 15 00 02 ff 00 15 00 02 36 02 05 c8 01 11 05 64 01 29",
-                resetGpios: "&gpio3 RK_PB7 GPIO_ACTIVE_LOW",
-                enableGpios: "&gpio0 RK_PB5 GPIO_ACTIVE_HIGH",
-                sdio: "false",
-            },
-            {
-                name: "Other -> GameConsole K36S | Other -> GameConsole R36T",
-                md5: ["ccc295fcb58c947bbc3026d153eae978", "320555247f7e911cb5c8e1ef7899776e", "9782673a1f17f559a62ee210d4bbf206"],
-                panelInitSequence: "15 00 02 ff 30 15 00 02 ff 52 15 00 02 ff 01 15 00 02 e3 00 15 00 02 25 10 15 00 02 28 6f 15 00 02 29 01 15 00 02 2a df 15 00 02 2c 22 15 00 02 c3 0f 15 00 02 37 9c 15 00 02 38 a7 15 00 02 39 41 15 00 02 80 20 15 00 02 91 67 15 00 02 92 67 15 00 02 a0 55 15 00 02 a1 50 15 00 02 a3 58 15 00 02 a4 9c 15 00 02 a7 02 15 00 02 a8 01 15 00 02 a9 21 15 00 02 aa fc 15 00 02 ab 28 15 00 02 ac 06 15 00 02 ad 06 15 00 02 ae 06 15 00 02 af 03 15 00 02 b0 08 15 00 02 b1 26 15 00 02 b2 28 15 00 02 b3 28 15 00 02 b4 03 15 00 02 b5 08 15 00 02 b6 26 15 00 02 b7 08 15 00 02 b8 26 15 00 02 c0 00 15 00 02 c1 00 15 00 02 c2 00 15 00 02 ff 30 15 00 02 ff 52 15 00 02 ff 02 15 00 02 b0 02 15 00 02 d0 02 15 00 02 b1 0f 15 00 02 d1 10 15 00 02 b2 11 15 00 02 d2 12 15 00 02 b3 32 15 00 02 d3 33 15 00 02 b4 36 15 00 02 d4 36 15 00 02 b5 3c 15 00 02 d5 3c 15 00 02 b6 20 15 00 02 d6 20 15 00 02 b7 3e 15 00 02 d7 3e 15 00 02 b8 0e 15 00 02 d8 0d 15 00 02 b9 05 15 00 02 d9 05 15 00 02 ba 11 15 00 02 da 12 15 00 02 bb 11 15 00 02 db 11 15 00 02 bc 13 15 00 02 dc 14 15 00 02 bd 14 15 00 02 dd 14 15 00 02 be 16 15 00 02 de 18 15 00 02 bf 0e 15 00 02 df 0f 15 00 02 c0 17 15 00 02 e0 17 15 00 02 c1 07 15 00 02 e1 08 15 00 02 ff 30 15 00 02 ff 52 15 00 02 ff 03 15 00 02 08 8a 15 00 02 09 8b 15 00 02 30 00 15 00 02 31 00 15 00 02 32 00 15 00 02 33 00 15 00 02 34 61 15 00 02 35 d4 15 00 02 36 24 15 00 02 37 03 15 00 02 40 86 15 00 02 41 87 15 00 02 42 84 15 00 02 43 85 15 00 02 44 11 15 00 02 45 de 15 00 02 46 dd 15 00 02 47 11 15 00 02 48 e0 15 00 02 49 df 15 00 02 50 82 15 00 02 51 83 15 00 02 52 80 15 00 02 53 81 15 00 02 54 11 15 00 02 55 e2 15 00 02 56 e1 15 00 02 57 11 15 00 02 58 e4 15 00 02 59 e3 15 00 02 82 0f 15 00 02 83 0f 15 00 02 84 00 15 00 02 85 0f 15 00 02 86 0f 15 00 02 87 0e 15 00 02 88 0e 15 00 02 89 06 15 00 02 8a 06 15 00 02 8b 07 15 00 02 8c 07 15 00 02 8d 04 15 00 02 8e 04 15 00 02 8f 05 15 00 02 90 05 15 00 02 98 0f 15 00 02 99 0f 15 00 02 9a 00 15 00 02 9b 0f 15 00 02 9c 0f 15 00 02 9d 0e 15 00 02 9e 0e 15 00 02 9f 06 15 00 02 a0 06 15 00 02 a1 07 15 00 02 a2 07 15 00 02 a3 04 15 00 02 a4 04 15 00 02 a5 05 15 00 02 a6 05 15 00 02 e0 02 15 00 02 e1 52 15 00 02 ff 30 15 00 02 ff 52 15 00 02 ff 00 15 00 02 36 02 05 c8 01 11 05 64 01 29",
-                resetGpios: "&gpio3 RK_PB7 GPIO_ACTIVE_LOW",
-                enableGpios: "&gpio0 RK_PB5 GPIO_ACTIVE_HIGH",
-                sdio: "true",
-            },
-            {
-                name: "Other -> GameConsole HG36",
-                md5: "bd2e29ab7c1fdf9a40066821b6f61549",
-                panelInitSequence: "39 00 04 b9 f1 12 83 39 00 06 b1 00 00 00 da 80 39 00 04 b2 00 13 70 39 00 0b b3 10 10 28 28 03 ff 00 00 00 00 15 00 02 b4 80 15 00 03 b5 0a 0a 15 00 03 b6 82 82 39 00 05 b8 26 62 f0 63 39 00 1c ba 33 81 05 f9 0e 0e 20 00 00 00 00 00 00 00 44 25 00 90 0a 00 00 01 4f 01 00 00 37 15 00 02 bc 47 39 00 04 bf 02 11 00 39 00 0a c0 73 73 50 50 00 00 12 50 00 39 00 0d c1 53 00 32 32 77 d1 cc cc 77 77 33 33 39 00 07 c6 82 00 bf ff 00 ff 39 00 07 c7 b8 00 0a 00 00 00 39 00 05 c8 10 40 1e 02 15 00 02 cc 0b 39 00 23 e0 00 07 0d 37 35 3f 41 44 06 0c 0d 0f 11 10 12 14 1a 00 07 0d 37 35 3f 41 44 06 0c 0d 0f 11 10 12 14 1a 39 00 0f e3 07 07 0b 0b 0b 0b 00 00 00 00 ff 00 c0 10 39 00 40 e9 c8 10 02 00 00 b0 b1 11 31 23 28 80 b0 b1 27 08 00 04 02 00 00 00 00 04 02 00 00 00 88 88 ba 60 24 08 88 88 88 88 88 88 88 ba 71 35 18 88 88 88 88 88 00 00 00 01 00 00 00 00 00 00 00 00 00 39 00 3e ea 97 0a 82 02 03 07 00 00 00 00 00 00 81 88 ba 17 53 88 88 88 88 88 88 80 88 ba 06 42 88 88 88 88 88 88 23 00 00 02 80 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 39 00 04 ef ff ff 01 05 c8 01 11 05 14 01 29",
-                resetGpios: "&gpio3 RK_PB7 GPIO_ACTIVE_LOW",
-                enableGpios: "&gpio0 RK_PB5 GPIO_ACTIVE_HIGH",
-                sdio: "false",
-            },
-            {
-                name: "Other -> GameConsole XGB36",
-                md5: "4cb770d59316b68d4f5314b4b11859a5",
-                panelInitSequence: "39 00 04 b9 f1 12 83 39 00 06 b1 00 00 00 da 80 39 00 04 b2 00 13 70 39 00 0b b3 10 10 28 28 03 ff 00 00 00 00 15 00 02 b4 80 15 00 03 b5 0a 0a 15 00 03 b6 82 82 39 00 05 b8 26 62 f0 63 39 00 1c ba 33 81 05 f9 0e 0e 20 00 00 00 00 00 00 00 44 25 00 90 0a 00 00 01 4f 01 00 00 37 15 00 02 bc 47 39 00 04 bf 02 11 00 39 00 0a c0 73 73 50 50 00 00 12 50 00 39 00 0d c1 53 00 32 32 77 d1 cc cc 77 77 33 33 39 00 07 c6 82 00 bf ff 00 ff 39 00 07 c7 b8 00 0a 00 00 00 39 00 05 c8 10 40 1e 02 15 00 02 cc 0b 39 00 23 e0 00 07 0d 37 35 3f 41 44 06 0c 0d 0f 11 10 12 14 1a 00 07 0d 37 35 3f 41 44 06 0c 0d 0f 11 10 12 14 1a 39 00 0f e3 07 07 0b 0b 0b 0b 00 00 00 00 ff 00 c0 10 39 00 40 e9 c8 10 02 00 00 b0 b1 11 31 23 28 80 b0 b1 27 08 00 04 02 00 00 00 00 04 02 00 00 00 88 88 ba 60 24 08 88 88 88 88 88 88 88 ba 71 35 18 88 88 88 88 88 00 00 00 01 00 00 00 00 00 00 00 00 00 39 00 3e ea 97 0a 82 02 03 07 00 00 00 00 00 00 81 88 ba 17 53 88 88 88 88 88 88 80 88 ba 06 42 88 88 88 88 88 88 23 00 00 02 80 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 39 00 04 ef ff ff 01 05 c8 01 11 05 14 01 29",
-                resetGpios: "&gpio3 RK_PD3 GPIO_ACTIVE_LOW",
-                enableGpios: "&gpio3 RK_PA3 GPIO_ACTIVE_HIGH",
-                sdio: "false",
-            },
-            {
-                name: "XiFan HandHelds -> XiFan MYMINI",
-                md5: ["04d57af3acefbad48505b005d0803c3e", "0bd2d5c14c10918598467cd5cbd259b7", "38644ce69040902198adb12228554cd0"],
-                panelInitSequence: "39 00 04 b9 f1 12 83 39 00 06 b1 00 00 00 da 80 39 00 04 b2 00 13 70 39 00 0b b3 10 10 28 28 03 ff 00 00 00 00 15 00 02 b4 80 15 00 03 b5 0a 0a 15 00 03 b6 82 82 39 00 05 b8 26 62 f0 63 39 00 1c ba 33 81 05 f9 0e 0e 20 00 00 00 00 00 00 00 44 25 00 90 0a 00 00 01 4f 01 00 00 37 15 00 02 bc 47 39 00 04 bf 02 11 00 39 00 0a c0 73 73 50 50 00 00 12 50 00 39 00 0d c1 53 00 32 32 77 d1 cc cc 77 77 33 33 39 00 07 c6 82 00 bf ff 00 ff 39 00 07 c7 b8 00 0a 00 00 00 39 00 05 c8 10 40 1e 02 15 00 02 cc 0b 39 00 23 e0 00 07 0d 37 35 3f 41 44 06 0c 0d 0f 11 10 12 14 1a 00 07 0d 37 35 3f 41 44 06 0c 0d 0f 11 10 12 14 1a 39 00 0f e3 07 07 0b 0b 0b 0b 00 00 00 00 ff 00 c0 10 39 00 40 e9 c8 10 02 00 00 b0 b1 11 31 23 28 80 b0 b1 27 08 00 04 02 00 00 00 00 04 02 00 00 00 88 88 ba 60 24 08 88 88 88 88 88 88 88 ba 71 35 18 88 88 88 88 88 00 00 00 01 00 00 00 00 00 00 00 00 00 39 00 3e ea 97 0a 82 02 03 07 00 00 00 00 00 00 81 88 ba 17 53 88 88 88 88 88 88 80 88 ba 06 42 88 88 88 88 88 88 23 00 00 02 80 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 39 00 04 ef ff ff 01 05 c8 01 11 05 14 01 29",
-                resetGpios: "&gpio3 RK_PB7 GPIO_ACTIVE_LOW",
-                enableGpios: "&gpio0 RK_PB5 GPIO_ACTIVE_HIGH",
-                sdio: "false",
-            },
-            {
-                name: "GameConsole -> GameConsole R36s Panel 0",
-                md5: "bfc6068ef7d80575bef04b36ef881619",
-                panelInitSequence: "39 00 04 b9 f1 12 83 39 00 06 b1 00 00 00 da 80 39 00 04 b2 00 13 70 39 00 0b b3 10 10 28 28 03 ff 00 00 00 00 15 00 02 b4 80 15 00 03 b5 0a 0a 15 00 03 b6 7f 7f 39 00 05 b8 26 62 f0 63 39 00 1c ba 33 81 05 f9 0e 0e 20 00 00 00 00 00 00 00 44 25 00 90 0a 00 00 01 4f 01 00 00 37 15 00 02 bc 47 39 00 04 bf 02 11 00 39 00 0a c0 73 73 50 50 00 00 12 50 00 39 00 0d c1 53 c0 32 32 77 e1 dd dd 77 77 33 33 39 00 07 c6 82 00 bf ff 00 ff 39 00 07 c7 b8 00 0a 00 00 00 39 00 05 c8 10 40 1e 02 15 00 02 cc 0b 39 00 23 e0 00 07 0d 37 35 3f 41 44 06 0c 0d 0f 11 10 12 14 1a 00 07 0d 37 35 3f 41 44 06 0c 0d 0f 11 10 12 14 1a 39 00 0f e3 07 07 0b 0b 0b 0b 00 00 00 00 ff 00 c0 10 39 00 40 e9 c8 10 02 00 00 b0 b1 11 31 23 28 80 b0 b1 27 08 00 04 02 00 00 00 00 04 02 00 00 00 88 88 ba 60 24 08 88 88 88 88 88 88 88 ba 71 35 18 88 88 88 88 88 00 00 00 01 00 00 00 00 00 00 00 00 00 39 00 3e ea 97 0a 82 02 03 07 00 00 00 00 00 00 81 88 ba 17 53 88 88 88 88 88 88 80 88 ba 06 42 88 88 88 88 88 88 23 00 00 02 80 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 39 00 04 ef ff ff 01 05 c8 01 11 05 32 01 29",
-                resetGpios: "&gpio3 RK_PC0 GPIO_ACTIVE_LOW",
-                enableGpios: null,
-                sdio: "false",
-            },
-            {
-                name: "GameConsole -> GameConsole R36s Panel 1",
-                md5: "a3d55922b4ccce3e2b23c57cefdd9ba7",
-                panelInitSequence: "39 00 03 e0 ab ba 39 00 03 e1 ba ab 39 00 05 b1 10 01 47 ff 39 00 07 b2 0c 08 04 50 50 14 39 00 04 b3 56 12 e0 39 00 04 b4 33 30 04 39 00 08 b6 b0 00 00 10 00 10 00 39 00 06 b8 05 12 29 49 48 39 00 27 b9 7f 63 52 45 42 34 39 24 3e 3d 3c 59 46 4d 3e 3d 30 22 00 7f 63 52 45 42 34 39 24 3e 3d 3c 59 46 4d 3e 3d 30 22 00 39 00 11 c0 32 10 12 34 22 22 22 22 90 04 90 04 0f 00 00 c1 39 00 0b c1 12 9f 8e 89 90 04 90 04 54 40 39 00 0d c2 77 09 08 89 08 11 22 33 44 87 18 00 39 00 17 c3 88 4a 24 24 1e 1f 12 0c 0e 10 04 06 24 24 02 02 02 02 02 02 02 02 39 00 17 c4 09 0b 24 24 1e 1f 13 0d 0f 11 05 07 24 24 02 02 02 02 02 02 02 02 39 00 03 c6 46 55 39 00 07 c8 12 00 31 42 34 16 39 00 03 ca 18 43 39 00 09 cd 0e 64 64 2c 16 6b 06 b3 39 00 05 d2 e3 2b 38 08 39 00 0c d4 00 01 00 0e 04 44 08 10 00 00 00 39 00 09 e6 80 09 ff ff ff ff ff ff 39 00 06 f0 12 03 20 00 ff 15 00 02 f3 03 05 c8 01 11 05 14 01 29",
-                resetGpios: "&gpio3 RK_PC0 GPIO_ACTIVE_LOW",
-                enableGpios: null,
-                sdio: "false",
-            },
-            {
-                name: "GameConsole -> GameConsole R36s Panel 2",
-                md5: "a5d6f30491abac29423d0c1334ad88d3",
-                panelInitSequence: "15 00 02 ff 30 15 00 02 ff 52 15 00 02 ff 01 15 00 02 e3 00 15 00 02 40 0a 15 00 02 03 40 15 00 02 04 00 15 00 02 05 03 15 00 02 24 12 15 00 02 25 1e 15 00 02 26 6f 15 00 02 27 52 15 00 02 28 67 15 00 02 29 01 15 00 02 2a df 15 00 02 37 9c 15 00 02 38 a7 15 00 02 39 53 15 00 02 44 00 15 00 02 49 3c 15 00 02 59 fe 15 00 02 5c 00 15 00 02 80 20 15 00 02 91 77 15 00 02 92 77 15 00 02 a0 55 15 00 02 a1 50 15 00 02 a4 9c 15 00 02 a7 02 15 00 02 a8 01 15 00 02 a9 21 15 00 02 aa fc 15 00 02 ab 28 15 00 02 ac 06 15 00 02 ad 06 15 00 02 ae 06 15 00 02 af 03 15 00 02 b0 08 15 00 02 b1 26 15 00 02 b2 28 15 00 02 b3 28 15 00 02 b4 33 15 00 02 b5 08 15 00 02 b6 26 15 00 02 b7 08 15 00 02 b8 26 15 00 02 ff 30 15 00 02 ff 52 15 00 02 ff 02 15 00 02 b0 0b 15 00 02 b1 16 15 00 02 b2 17 15 00 02 b3 2c 15 00 02 b4 32 15 00 02 b5 3b 15 00 02 b6 29 15 00 02 b7 40 15 00 02 b8 0d 15 00 02 b9 05 15 00 02 ba 12 15 00 02 bb 10 15 00 02 bc 12 15 00 02 bd 15 15 00 02 be 19 15 00 02 bf 0e 15 00 02 c0 16 15 00 02 c1 0a 15 00 02 d0 0c 15 00 02 d1 17 15 00 02 d2 14 15 00 02 d3 2e 15 00 02 d4 32 15 00 02 d5 3c 15 00 02 d6 22 15 00 02 d7 3d 15 00 02 d8 0d 15 00 02 d9 07 15 00 02 da 13 15 00 02 db 13 15 00 02 dc 11 15 00 02 dd 15 15 00 02 de 19 15 00 02 df 10 15 00 02 e0 17 15 00 02 e1 0a 15 00 02 ff 30 15 00 02 ff 52 15 00 02 ff 03 15 00 02 00 2a 15 00 02 01 2a 15 00 02 02 2a 15 00 02 03 2a 15 00 02 04 61 15 00 02 05 80 15 00 02 06 c7 15 00 02 07 01 15 00 02 08 82 15 00 02 09 83 15 00 02 30 2a 15 00 02 31 2a 15 00 02 32 2a 15 00 02 33 2a 15 00 02 34 a1 15 00 02 35 c5 15 00 02 36 80 15 00 02 37 23 15 00 02 40 82 15 00 02 41 83 15 00 02 42 80 15 00 02 43 81 15 00 02 44 55 15 00 02 45 e6 15 00 02 46 e5 15 00 02 47 55 15 00 02 48 e8 15 00 02 49 e7 15 00 02 50 02 15 00 02 51 01 15 00 02 52 04 15 00 02 53 03 15 00 02 54 55 15 00 02 55 ea 15 00 02 56 e9 15 00 02 57 55 15 00 02 58 ec 15 00 02 59 eb 15 00 02 7e 02 15 00 02 7f 80 15 00 02 e0 5a 15 00 02 b1 00 15 00 02 b4 0e 15 00 02 b5 0f 15 00 02 b6 04 15 00 02 b7 07 15 00 02 b8 06 15 00 02 b9 05 15 00 02 ba 0f 15 00 02 c7 00 15 00 02 ca 0e 15 00 02 cb 0f 15 00 02 cc 04 15 00 02 cd 07 15 00 02 ce 06 15 00 02 cf 05 15 00 02 d0 0f 15 00 02 81 0f 15 00 02 84 0e 15 00 02 85 0f 15 00 02 86 07 15 00 02 87 04 15 00 02 88 05 15 00 02 89 06 15 00 02 8a 00 15 00 02 97 0f 15 00 02 9a 0e 15 00 02 9b 0f 15 00 02 9c 07 15 00 02 9d 04 15 00 02 9e 05 15 00 02 9f 06 15 00 02 a0 00 15 00 02 ff 30 15 00 02 ff 52 15 00 02 ff 02 15 00 02 01 01 15 00 02 02 da 15 00 02 03 ba 15 00 02 04 a8 15 00 02 05 9a 15 00 02 06 70 15 00 02 07 ff 15 00 02 08 91 15 00 02 09 90 15 00 02 0a ff 15 00 02 0b 8f 15 00 02 0c 60 15 00 02 0d 58 15 00 02 0e 48 15 00 02 0f 38 15 00 02 10 2b 15 00 02 ff 30 15 00 02 ff 52 15 00 02 ff 00 15 00 02 36 02 15 00 02 3a 70 05 c8 01 11 05 14 01 29",
-                resetGpios: "&gpio3 RK_PC0 GPIO_ACTIVE_LOW",
-                enableGpios: null,
-                sdio: "false",
-            },
-            {
-                name: "GameConsole -> GameConsole R36s Panel 3",
-                md5: "b3bf18765a4453b8eaeaf60362b79b3d",
-                panelInitSequence: "15 00 02 ff 30 15 00 02 ff 52 15 00 02 ff 01 15 00 02 e3 00 15 00 02 04 00 15 00 02 05 03 15 00 02 24 12 15 00 02 25 1e 15 00 02 26 6f 15 00 02 27 52 15 00 02 28 67 15 00 02 29 01 15 00 02 2a df 15 00 02 37 9c 15 00 02 38 a7 15 00 02 39 53 15 00 02 44 00 15 00 02 49 3c 15 00 02 59 fe 15 00 02 5c 00 15 00 02 80 20 15 00 02 91 77 15 00 02 92 77 15 00 02 a0 55 15 00 02 a1 50 15 00 02 a4 9c 15 00 02 a7 02 15 00 02 a8 01 15 00 02 a9 21 15 00 02 aa fc 15 00 02 ab 28 15 00 02 ac 06 15 00 02 ad 06 15 00 02 ae 06 15 00 02 af 03 15 00 02 b0 08 15 00 02 b1 26 15 00 02 b2 28 15 00 02 b3 28 15 00 02 b4 33 15 00 02 b5 08 15 00 02 b6 26 15 00 02 b7 08 15 00 02 b8 26 15 00 02 c0 00 15 00 02 c1 00 15 00 02 c2 00 15 00 02 ff 30 15 00 02 ff 52 15 00 02 ff 02 15 00 02 b0 0b 15 00 02 b1 16 15 00 02 b2 17 15 00 02 b3 2c 15 00 02 b4 32 15 00 02 b5 3b 15 00 02 b6 29 15 00 02 b7 40 15 00 02 b8 0d 15 00 02 b9 05 15 00 02 ba 12 15 00 02 bb 10 15 00 02 bc 12 15 00 02 bd 15 15 00 02 be 19 15 00 02 bf 0e 15 00 02 c0 16 15 00 02 c1 0a 15 00 02 d0 0c 15 00 02 d1 17 15 00 02 d2 14 15 00 02 d3 2e 15 00 02 d4 32 15 00 02 d5 3c 15 00 02 d6 22 15 00 02 d7 3d 15 00 02 d8 0d 15 00 02 d9 07 15 00 02 da 13 15 00 02 db 13 15 00 02 dc 11 15 00 02 dd 15 15 00 02 de 19 15 00 02 df 10 15 00 02 e0 17 15 00 02 e1 0a 15 00 02 ff 30 15 00 02 ff 52 15 00 02 ff 03 15 00 02 00 2a 15 00 02 01 2a 15 00 02 02 2a 15 00 02 03 2a 15 00 02 04 61 15 00 02 05 80 15 00 02 06 c7 15 00 02 07 01 15 00 02 08 82 15 00 02 09 83 15 00 02 30 2a 15 00 02 31 2a 15 00 02 32 2a 15 00 02 33 2a 15 00 02 34 a1 15 00 02 35 c5 15 00 02 36 80 15 00 02 37 23 15 00 02 40 82 15 00 02 41 83 15 00 02 42 80 15 00 02 43 81 15 00 02 44 55 15 00 02 45 e6 15 00 02 46 e5 15 00 02 47 55 15 00 02 48 e8 15 00 02 49 e7 15 00 02 50 02 15 00 02 51 01 15 00 02 52 04 15 00 02 53 03 15 00 02 54 55 15 00 02 55 ea 15 00 02 56 e9 15 00 02 57 55 15 00 02 58 ec 15 00 02 59 eb 15 00 02 7e 02 15 00 02 7f 80 15 00 02 e0 5a 15 00 02 b1 00 15 00 02 b4 0e 15 00 02 b5 0f 15 00 02 b6 04 15 00 02 b7 07 15 00 02 b8 06 15 00 02 b9 05 15 00 02 ba 0f 15 00 02 c7 00 15 00 02 ca 0e 15 00 02 cb 0f 15 00 02 cc 04 15 00 02 cd 07 15 00 02 ce 06 15 00 02 cf 05 15 00 02 d0 0f 15 00 02 81 0f 15 00 02 84 0e 15 00 02 85 0f 15 00 02 86 07 15 00 02 87 04 15 00 02 88 05 15 00 02 89 06 15 00 02 8a 00 15 00 02 97 0f 15 00 02 9a 0e 15 00 02 9b 0f 15 00 02 9c 07 15 00 02 9d 04 15 00 02 9e 05 15 00 02 9f 06 15 00 02 a0 00 15 00 02 ff 30 15 00 02 ff 52 15 00 02 ff 02 15 00 02 01 01 15 00 02 02 da 15 00 02 03 ba 15 00 02 04 a8 15 00 02 05 9a 15 00 02 06 70 15 00 02 07 ff 15 00 02 08 91 15 00 02 09 90 15 00 02 0a ff 15 00 02 0b 8f 15 00 02 0c 60 15 00 02 0d 58 15 00 02 0e 48 15 00 02 0f 38 15 00 02 10 2b 15 00 02 ff 30 15 00 02 ff 52 15 00 02 ff 00 15 00 02 36 02 15 00 02 3a 70 05 c8 01 11 05 14 01 29",
-                resetGpios: "&gpio3 RK_PC0 GPIO_ACTIVE_LOW",
-                enableGpios: null,
-                sdio: "false",
-            },
-            {
-                name: "GameConsole -> GameConsole R36s Panel 4",
-                md5: ["42a3021377abadd36375e62a7d5a2e40", "9f41df45acac67bff88ec52306efc225", "4863e7544738df62eaae4a1bec031fd9"],
-                panelInitSequence: "15 00 02 ff 30 15 00 02 ff 52 15 00 02 ff 01 15 00 02 e3 00 15 00 02 25 10 15 00 02 28 6f 15 00 02 29 01 15 00 02 2a df 15 00 02 2c 22 15 00 02 c3 0f 15 00 02 37 9c 15 00 02 38 a7 15 00 02 39 41 15 00 02 80 20 15 00 02 91 67 15 00 02 92 67 15 00 02 a0 55 15 00 02 a1 50 15 00 02 a3 58 15 00 02 a4 9c 15 00 02 a7 02 15 00 02 a8 01 15 00 02 a9 21 15 00 02 aa fc 15 00 02 ab 28 15 00 02 ac 06 15 00 02 ad 06 15 00 02 ae 06 15 00 02 af 03 15 00 02 b0 08 15 00 02 b1 26 15 00 02 b2 28 15 00 02 b3 28 15 00 02 b4 03 15 00 02 b5 08 15 00 02 b6 26 15 00 02 b7 08 15 00 02 b8 26 15 00 02 2c 22 15 00 02 5c 40 15 00 02 c0 00 15 00 02 c1 00 15 00 02 c2 00 15 00 02 ff 30 15 00 02 ff 52 15 00 02 ff 02 15 00 02 b0 02 15 00 02 d0 02 15 00 02 b1 0f 15 00 02 d1 10 15 00 02 b2 11 15 00 02 d2 12 15 00 02 b3 32 15 00 02 d3 33 15 00 02 b4 36 15 00 02 d4 36 15 00 02 b5 3c 15 00 02 d5 3c 15 00 02 b6 20 15 00 02 d6 20 15 00 02 b7 3e 15 00 02 d7 3e 15 00 02 b8 0e 15 00 02 d8 0d 15 00 02 b9 05 15 00 02 d9 05 15 00 02 ba 11 15 00 02 da 12 15 00 02 bb 11 15 00 02 db 11 15 00 02 bc 13 15 00 02 dc 14 15 00 02 bd 14 15 00 02 dd 14 15 00 02 be 16 15 00 02 de 18 15 00 02 bf 0e 15 00 02 df 0f 15 00 02 c0 17 15 00 02 e0 17 15 00 02 c1 07 15 00 02 e1 08 15 00 02 ff 30 15 00 02 ff 52 15 00 02 ff 03 15 00 02 08 8a 15 00 02 09 8b 15 00 02 30 00 15 00 02 31 00 15 00 02 32 00 15 00 02 33 00 15 00 02 34 61 15 00 02 35 d4 15 00 02 36 24 15 00 02 37 03 15 00 02 40 86 15 00 02 41 87 15 00 02 42 84 15 00 02 43 85 15 00 02 44 11 15 00 02 45 de 15 00 02 46 dd 15 00 02 47 11 15 00 02 48 e0 15 00 02 49 df 15 00 02 50 82 15 00 02 51 83 15 00 02 52 80 15 00 02 53 81 15 00 02 54 11 15 00 02 55 e2 15 00 02 56 e1 15 00 02 57 11 15 00 02 58 e4 15 00 02 59 e3 15 00 02 82 0f 15 00 02 83 0f 15 00 02 84 00 15 00 02 85 0f 15 00 02 86 0f 15 00 02 87 0e 15 00 02 88 0e 15 00 02 89 06 15 00 02 8a 06 15 00 02 8b 07 15 00 02 8c 07 15 00 02 8d 04 15 00 02 8e 04 15 00 02 8f 05 15 00 02 90 05 15 00 02 98 0f 15 00 02 99 0f 15 00 02 9a 00 15 00 02 9b 0f 15 00 02 9c 0f 15 00 02 9d 0e 15 00 02 9e 0e 15 00 02 9f 06 15 00 02 a0 06 15 00 02 a1 07 15 00 02 a2 07 15 00 02 a3 04 15 00 02 a4 04 15 00 02 a5 05 15 00 02 a6 05 15 00 02 e0 02 15 00 02 e1 52 15 00 02 ff 30 15 00 02 ff 52 15 00 02 ff 00 15 00 02 36 02 15 00 02 11 00 15 00 02 29 00 05 c8 01 11 05 14 01 29",
-                resetGpios: "&gpio3 RK_PC0 GPIO_ACTIVE_LOW",
-                enableGpios: null,
-                sdio: "false",
-            },
-            {
-                name: "GameConsole -> GameConsole R36s Panel 5",
-                md5: ["6043228f47ed2ebd01970f46be133ca9", "861278f7ab7ade97ac1515aedbbdeff0"],
-                panelInitSequence: "39 00 04 b9 f1 12 83 39 00 1c ba 33 81 05 f9 0e 0e 20 00 00 00 00 00 00 00 44 25 00 91 0a 00 00 02 4f d1 00 00 37 15 00 02 b8 25 39 00 04 bf 02 11 00 39 00 0b b3 0c 10 0a 50 03 ff 00 00 00 00 39 00 0a c0 73 73 50 50 00 00 08 70 00 15 00 02 bc 46 15 00 02 cc 0b 15 00 02 b4 80 39 00 04 b2 00 13 f0 39 00 0f e3 07 07 0b 0b 03 0b 00 00 00 00 ff 00 c0 10 39 00 0d c1 53 00 1e 1e 77 e1 cc dd 67 77 33 33 39 00 03 b5 10 10 39 00 03 b6 6c 7c 39 00 40 e9 08 00 0e 00 00 b0 b1 11 31 23 28 10 b0 b1 27 08 00 04 02 00 00 00 00 04 02 00 00 00 88 88 ba 60 24 08 88 88 88 88 88 88 88 ba 71 35 18 88 88 88 88 88 00 00 00 01 00 00 00 00 00 00 00 00 00 39 00 3e ea 97 0a 82 02 13 07 00 00 00 00 00 00 80 88 ba 17 53 88 88 88 88 88 88 81 88 ba 06 42 88 88 88 88 88 88 23 10 00 02 80 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 39 00 23 e0 00 07 0b 27 2d 3f 3b 37 05 0a 0b 0f 11 0f 12 12 18 00 07 0b 27 2d 3f 3b 37 05 0a 0b 0f 11 0f 12 12 18 05 96 01 11 05 32 01 29",
-                resetGpios: "&gpio3 RK_PC0 GPIO_ACTIVE_LOW",
-                enableGpios: "&gpio1 RK_PC2 GPIO_ACTIVE_LOW",
-                sdio: "false",
-            },
-            {
-                name: "GameConsole -> GameConsole R36s Panel 6",
-                md5: "2a79e4190f205868b14f6c3db836f23e",
-                panelInitSequence: "15 00 02 ff 30 15 00 02 ff 52 15 00 02 ff 01 15 00 02 e3 00 15 00 02 25 10 15 00 02 28 6f 15 00 02 29 01 15 00 02 2a df 15 00 02 2c 22 15 00 02 c3 0f 15 00 02 37 9c 15 00 02 38 a7 15 00 02 39 41 15 00 02 80 20 15 00 02 91 67 15 00 02 92 67 15 00 02 a0 55 15 00 02 a1 50 15 00 02 a3 58 15 00 02 a4 9c 15 00 02 a7 02 15 00 02 a8 01 15 00 02 a9 21 15 00 02 aa fc 15 00 02 ab 28 15 00 02 ac 06 15 00 02 ad 06 15 00 02 ae 06 15 00 02 af 03 15 00 02 b0 08 15 00 02 b1 26 15 00 02 b2 28 15 00 02 b3 28 15 00 02 b4 03 15 00 02 b5 08 15 00 02 b6 26 15 00 02 b7 08 15 00 02 b8 26 15 00 02 c0 00 15 00 02 c1 00 15 00 02 c2 00 15 00 02 ff 30 15 00 02 ff 52 15 00 02 ff 02 15 00 02 b0 02 15 00 02 d0 02 15 00 02 b1 0f 15 00 02 d1 10 15 00 02 b2 11 15 00 02 d2 12 15 00 02 b3 32 15 00 02 d3 33 15 00 02 b4 36 15 00 02 d4 36 15 00 02 b5 3c 15 00 02 d5 3c 15 00 02 b6 20 15 00 02 d6 20 15 00 02 b7 3e 15 00 02 d7 3e 15 00 02 b8 0e 15 00 02 d8 0d 15 00 02 b9 05 15 00 02 d9 05 15 00 02 ba 11 15 00 02 da 12 15 00 02 bb 11 15 00 02 db 11 15 00 02 bc 13 15 00 02 dc 14 15 00 02 bd 14 15 00 02 dd 14 15 00 02 be 16 15 00 02 de 18 15 00 02 bf 0e 15 00 02 df 0f 15 00 02 c0 17 15 00 02 e0 17 15 00 02 c1 07 15 00 02 e1 08 15 00 02 ff 30 15 00 02 ff 52 15 00 02 ff 03 15 00 02 08 8a 15 00 02 09 8b 15 00 02 30 00 15 00 02 31 00 15 00 02 32 00 15 00 02 33 00 15 00 02 34 61 15 00 02 35 d4 15 00 02 36 24 15 00 02 37 03 15 00 02 40 86 15 00 02 41 87 15 00 02 42 84 15 00 02 43 85 15 00 02 44 11 15 00 02 45 de 15 00 02 46 dd 15 00 02 47 11 15 00 02 48 e0 15 00 02 49 df 15 00 02 50 82 15 00 02 51 83 15 00 02 52 80 15 00 02 53 81 15 00 02 54 11 15 00 02 55 e2 15 00 02 56 e1 15 00 02 57 11 15 00 02 58 e4 15 00 02 59 e3 15 00 02 82 0f 15 00 02 83 0f 15 00 02 84 00 15 00 02 85 0f 15 00 02 86 0f 15 00 02 87 0e 15 00 02 88 0e 15 00 02 89 06 15 00 02 8a 06 15 00 02 8b 07 15 00 02 8c 07 15 00 02 8d 04 15 00 02 8e 04 15 00 02 8f 05 15 00 02 90 05 15 00 02 98 0f 15 00 02 99 0f 15 00 02 9a 00 15 00 02 9b 0f 15 00 02 9c 0f 15 00 02 9d 0e 15 00 02 9e 0e 15 00 02 9f 06 15 00 02 a0 06 15 00 02 a1 07 15 00 02 a2 07 15 00 02 a3 04 15 00 02 a4 04 15 00 02 a5 05 15 00 02 a6 05 15 00 02 e0 02 15 00 02 e1 52 15 00 02 ff 30 15 00 02 ff 52 15 00 02 ff 00 15 00 02 36 02 15 c8 02 11 00 15 64 02 29 00",
-                resetGpios: "&gpio3 RK_PC0 GPIO_ACTIVE_LOW",
-                enableGpios: "&gpio1 RK_PC2 GPIO_ACTIVE_LOW",
-                sdio: "false",
-            },
-            {
-                name: "GameConsole -> GameConsole R46H",
-                md5: "4c2b2e92efc4de69a37326a5b504107f",
-                panelInitSequence: "15 00 02 ee 01 15 00 02 ea 07 15 00 02 eb 12 15 00 02 0a 8b 15 00 02 17 35 15 00 02 1d 33 15 00 02 21 01 15 00 02 28 1c 15 00 02 29 27 15 00 02 2a 63 15 00 02 2b b5 15 00 02 2c 00 15 00 02 2d 33 15 00 02 2f f3 15 00 02 ee 02 15 00 02 39 78 15 00 02 39 78 15 00 02 00 00 15 00 02 01 18 15 00 02 02 15 15 00 02 03 10 15 00 02 04 18 15 00 02 05 3f 15 00 02 06 11 15 00 02 07 11 15 00 02 08 11 15 00 02 09 0f 15 00 02 0a 10 15 00 02 0b 54 15 00 02 0c 14 15 00 02 0d 17 15 00 02 0e 35 15 00 02 0f 37 15 00 02 10 3f 15 00 02 20 00 15 00 02 21 18 15 00 02 22 15 15 00 02 23 10 15 00 02 24 12 15 00 02 25 37 15 00 02 26 0b 15 00 02 27 0d 15 00 02 28 0d 15 00 02 29 0b 15 00 02 2a 10 15 00 02 2b 54 15 00 02 2c 14 15 00 02 2d 17 15 00 02 2e 35 15 00 02 2f 37 15 00 02 30 3f 15 00 02 ee 04 15 00 02 00 04 15 00 02 01 01 15 00 02 02 80 15 00 02 03 04 15 00 02 04 00 15 00 02 06 16 15 00 02 07 03 15 00 02 08 13 15 00 02 09 0a 15 00 02 0a 0f 15 00 02 0b 10 15 00 02 22 80 15 00 02 24 08 15 00 02 2a 00 15 00 02 ee 05 15 00 02 00 04 15 00 02 01 08 15 00 02 02 55 15 00 02 03 05 15 00 02 04 00 15 00 02 05 04 15 00 02 06 00 15 00 02 07 13 15 00 02 08 1e 15 00 02 09 66 15 00 02 0d 22 15 00 02 10 08 15 00 02 11 0c 15 00 02 12 55 15 00 02 13 05 15 00 02 19 14 15 00 02 1a 76 15 00 02 23 00 15 00 02 43 13 15 00 02 40 44 15 00 02 41 00 15 00 02 30 01 15 00 02 31 01 15 00 02 32 00 15 00 02 33 14 15 00 02 34 14 15 00 02 35 b4 15 00 02 36 01 15 00 02 37 01 15 00 02 38 00 15 00 02 39 14 15 00 02 3a 14 15 00 02 44 01 15 00 02 45 81 15 00 02 46 05 15 00 02 ee 06 15 00 02 00 23 15 00 02 01 01 15 00 02 02 04 15 00 02 06 cd 15 00 02 08 67 15 00 02 09 45 15 00 02 0a 23 15 00 02 0b 01 15 00 02 ee 07 15 00 02 00 3c 15 00 02 01 20 15 00 02 02 20 15 00 02 03 21 15 00 02 04 21 15 00 02 05 3c 15 00 02 06 3c 15 00 02 07 04 15 00 02 08 04 15 00 02 09 0c 15 00 02 0a 0c 15 00 02 0b 01 15 00 02 0c 15 15 00 02 0d 15 15 00 02 0e 17 15 00 02 0f 17 15 00 02 10 11 15 00 02 11 11 15 00 02 12 13 15 00 02 13 13 15 00 02 14 0d 15 00 02 15 0d 15 00 02 20 3c 15 00 02 21 20 15 00 02 22 20 15 00 02 23 21 15 00 02 24 21 15 00 02 25 3c 15 00 02 26 3c 15 00 02 27 04 15 00 02 28 04 15 00 02 29 0c 15 00 02 2a 0c 15 00 02 2b 00 15 00 02 2c 14 15 00 02 2d 14 15 00 02 2e 16 15 00 02 2f 16 15 00 02 30 10 15 00 02 31 10 15 00 02 32 12 15 00 02 33 12 15 00 02 34 0d 15 00 02 35 0d 15 00 02 ee 08 15 00 02 10 00 15 00 02 12 da 15 00 02 14 10 15 00 02 22 69 15 00 02 ee 0f 15 00 02 00 01 15 00 02 01 10 15 00 02 ee 00 15 00 02 ea 00 15 00 02 eb 00 05 c8 01 11 05 14 01 29",
-                resetGpios: "&gpio3 RK_PC0 GPIO_ACTIVE_LOW",
-                enableGpios: null,
-                sdio: "false",
-            },
-            {
-                name: "GameConsole -> GameConsole R36sPlus",
-                md5: "ff983f16c0dbc18ab97116cc3677f559",
-                panelInitSequence: "05 fa 01 11 39 00 04 b9 f1 12 83 39 00 1c ba 33 81 05 f9 0e 0e 20 00 00 00 00 00 00 00 44 25 00 90 0a 00 00 01 4f 01 00 00 37 39 00 05 b8 25 22 f0 63 39 00 04 bf 02 11 00 39 00 0b b3 10 10 28 28 03 ff 00 00 00 00 39 00 0a c0 73 73 50 50 00 00 12 70 00 15 00 02 bc 46 15 00 02 cc 0b 15 00 02 b4 80 39 00 04 b2 3c 12 30 39 00 0f e3 07 07 0b 0b 03 0b 00 00 00 00 ff 00 c0 10 39 00 0d c1 36 00 32 32 77 f1 cc cc 77 77 33 33 39 00 03 b5 0a 0a 39 00 03 b6 88 88 39 00 40 e9 c8 10 0a 10 0f a1 80 12 31 23 47 86 a1 80 47 08 00 00 0d 00 00 00 00 00 0d 00 00 00 48 02 8b af 46 02 88 88 88 88 88 48 13 8b af 57 13 88 88 88 88 88 00 00 00 00 00 00 00 00 00 00 00 00 00 39 00 3e ea 96 12 01 01 01 78 02 00 00 00 00 00 4f 31 8b a8 31 75 88 88 88 88 88 4f 20 8b a8 20 64 88 88 88 88 88 23 00 00 01 02 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 40 a1 80 00 00 00 00 39 00 23 e0 00 0a 0f 29 3b 3f 42 39 06 0d 10 13 15 14 15 10 17 00 0a 0f 29 3b 3f 42 39 06 0d 10 13 15 14 15 10 17 05 32 01 29",
-                resetGpios: "&gpio3 RK_PC0 GPIO_ACTIVE_LOW",
-                enableGpios: null,
-                sdio: "false",
-            },
-            {
-                name: "YMC -> YMC A10MINI",
-                md5: "f5e765e3d4f05f46276aa44076db5afc",
-                panelInitSequence: "05 78 01 11 15 00 02 36 d0 15 00 02 3a 77 29 00 05 2a 00 00 02 7f 29 00 05 2b 00 00 0a df 05 0a 01 29",
-                resetGpios: "&gpio3 RK_PC0 GPIO_ACTIVE_LOW",
-                enableGpios: null,
-                sdio: "false",
-            },
-        ];
-
-        // ArkOSK36 数据库 (新增)
-        const ARKOSK36_DATABASE = [
-            {
-                name: "K36 Panel 1",
-                md5: "df50e4c1847859cc94f7e6d3e4951e15",
-                panelInitSequence: "39 00 04 b9 f1 12 83 39 00 06 b1 00 00 00 da 80 39 00 04 b2 00 13 70 39 00 0b b3 10 10 28 28 03 ff 00 00 00 00 15 00 02 b4 80 15 00 03 b5 0a 0a 15 00 03 b6 82 82 39 00 05 b8 26 62 f0 63 39 00 1c ba 33 81 05 f9 0e 0e 20 00 00 00 00 00 00 00 44 25 00 90 0a 00 00 01 4f 01 00 00 37 15 00 02 bc 47 39 00 04 bf 02 11 00 39 00 0a c0 73 73 50 50 00 00 12 50 00 39 00 0d c1 53 00 32 32 77 d1 cc cc 77 77 33 33 39 00 07 c6 82 00 bf ff 00 ff 39 00 07 c7 b8 00 0a 00 00 00 39 00 05 c8 10 40 1e 02 15 00 02 cc 0b 39 00 23 e0 00 07 0d 37 35 3f 41 44 06 0c 0d 0f 11 10 12 14 1a 00 07 0d 37 35 3f 41 44 06 0c 0d 0f 11 10 12 14 1a 39 00 0f e3 07 07 0b 0b 0b 0b 00 00 00 00 ff 00 c0 10 39 00 40 e9 c8 10 02 00 00 b0 b1 11 31 23 28 80 b0 b1 27 08 00 04 02 00 00 00 00 04 02 00 00 00 88 88 ba 60 24 08 88 88 88 88 88 88 88 ba 71 35 18 88 88 88 88 88 00 00 00 01 00 00 00 00 00 00 00 00 00 39 00 3e ea 97 0a 82 02 03 07 00 00 00 00 00 00 81 88 ba 17 53 88 88 88 88 88 88 80 88 ba 06 42 88 88 88 88 88 88 23 00 00 02 80 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 39 00 04 ef ff ff 01 05 c8 01 11 05 14 01 29",
-                resetGpios: "&gpio3 RK_PB7 GPIO_ACTIVE_LOW",
-                enableGpios: "&gpio0 RK_PB5 GPIO_ACTIVE_HIGH",
-                useExtAmplifier: false
-            },
-            {
-                name: "K36 Panel 2",
-                md5: "c063209abc99cb31638daf66952af4db",
-                panelInitSequence: "39 00 04 b9 f1 12 83 39 00 06 b1 00 00 00 da 80 39 00 04 b2 00 13 70 39 00 0b b3 10 10 28 28 03 ff 00 00 00 00 15 00 02 b4 80 15 00 03 b5 0a 0a 15 00 03 b6 82 82 39 00 05 b8 26 62 f0 63 39 00 1c ba 33 81 05 f9 0e 0e 20 00 00 00 00 00 00 00 44 25 00 90 0a 00 00 01 4f 01 00 00 37 15 00 02 bc 47 39 00 04 bf 02 11 00 39 00 0a c0 73 73 50 50 00 00 12 50 00 39 00 0d c1 53 00 32 32 77 d1 cc cc 77 77 33 33 39 00 07 c6 82 00 bf ff 00 ff 39 00 07 c7 b8 00 0a 00 00 00 39 00 05 c8 10 40 1e 02 15 00 02 cc 0b 39 00 23 e0 00 07 0d 37 35 3f 41 44 06 0c 0d 0f 11 10 12 14 1a 00 07 0d 37 35 3f 41 44 06 0c 0d 0f 11 10 12 14 1a 39 00 0f e3 07 07 0b 0b 0b 0b 00 00 00 00 ff 00 c0 10 39 00 40 e9 c8 10 02 00 00 b0 b1 11 31 23 28 80 b0 b1 27 08 00 04 02 00 00 00 00 04 02 00 00 00 88 88 ba 60 24 08 88 88 88 88 88 88 88 ba 71 35 18 88 88 88 88 88 00 00 00 01 00 00 00 00 00 00 00 00 00 39 00 3e ea 97 0a 82 02 03 07 00 00 00 00 00 00 81 88 ba 17 53 88 88 88 88 88 88 80 88 ba 06 42 88 88 88 88 88 88 23 00 00 02 80 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 39 00 04 ef ff ff 01 05 c8 01 11 05 14 01 29",
-                resetGpios: "&gpio3 RK_PB7 GPIO_ACTIVE_LOW",
-                enableGpios: "&gpio0 RK_PB5 GPIO_ACTIVE_HIGH",
-                useExtAmplifier: false
-            },
-            {
-                name: "K36 Panel 3",
-                md5: "cb1e59976247acff3308b185909d441b",
-                panelInitSequence: "15 00 02 ff 30 15 00 02 ff 52 15 00 02 ff 01 15 00 02 e3 00 15 00 02 25 10 15 00 02 28 6f 15 00 02 29 01 15 00 02 2a df 15 00 02 2c 22 15 00 02 c3 0f 15 00 02 37 9c 15 00 02 38 a7 15 00 02 39 41 15 00 02 80 20 15 00 02 91 67 15 00 02 92 67 15 00 02 a0 55 15 00 02 a1 50 15 00 02 a3 58 15 00 02 a4 9c 15 00 02 a7 02 15 00 02 a8 01 15 00 02 a9 21 15 00 02 aa fc 15 00 02 ab 28 15 00 02 ac 06 15 00 02 ad 06 15 00 02 ae 06 15 00 02 af 03 15 00 02 b0 08 15 00 02 b1 26 15 00 02 b2 28 15 00 02 b3 28 15 00 02 b4 03 15 00 02 b5 08 15 00 02 b6 26 15 00 02 b7 08 15 00 02 b8 26 15 00 02 c0 00 15 00 02 c1 00 15 00 02 c2 00 15 00 02 ff 30 15 00 02 ff 52 15 00 02 ff 02 15 00 02 b0 02 15 00 02 d0 02 15 00 02 b1 0f 15 00 02 d1 10 15 00 02 b2 11 15 00 02 d2 12 15 00 02 b3 32 15 00 02 d3 33 15 00 02 b4 36 15 00 02 d4 36 15 00 02 b5 3c 15 00 02 d5 3c 15 00 02 b6 20 15 00 02 d6 20 15 00 02 b7 3e 15 00 02 d7 3e 15 00 02 b8 0e 15 00 02 d8 0d 15 00 02 b9 05 15 00 02 d9 05 15 00 02 ba 11 15 00 02 da 12 15 00 02 bb 11 15 00 02 db 11 15 00 02 bc 13 15 00 02 dc 14 15 00 02 bd 14 15 00 02 dd 14 15 00 02 be 16 15 00 02 de 18 15 00 02 bf 0e 15 00 02 df 0f 15 00 02 c0 17 15 00 02 e0 17 15 00 02 c1 07 15 00 02 e1 08 15 00 02 ff 30 15 00 02 ff 52 15 00 02 ff 03 15 00 02 08 8a 15 00 02 09 8b 15 00 02 30 00 15 00 02 31 00 15 00 02 32 00 15 00 02 33 00 15 00 02 34 61 15 00 02 35 d4 15 00 02 36 24 15 00 02 37 03 15 00 02 40 86 15 00 02 41 87 15 00 02 42 84 15 00 02 43 85 15 00 02 44 11 15 00 02 45 de 15 00 02 46 dd 15 00 02 47 11 15 00 02 48 e0 15 00 02 49 df 15 00 02 50 82 15 00 02 51 83 15 00 02 52 80 15 00 02 53 81 15 00 02 54 11 15 00 02 55 e2 15 00 02 56 e1 15 00 02 57 11 15 00 02 58 e4 15 00 02 59 e3 15 00 02 82 0f 15 00 02 83 0f 15 00 02 84 00 15 00 02 85 0f 15 00 02 86 0f 15 00 02 87 0e 15 00 02 88 0e 15 00 02 89 06 15 00 02 8a 06 15 00 02 8b 07 15 00 02 8c 07 15 00 02 8d 04 15 00 02 8e 04 15 00 02 8f 05 15 00 02 90 05 15 00 02 98 0f 15 00 02 99 0f 15 00 02 9a 00 15 00 02 9b 0f 15 00 02 9c 0f 15 00 02 9d 0e 15 00 02 9e 0e 15 00 02 9f 06 15 00 02 a0 06 15 00 02 a1 07 15 00 02 a2 07 15 00 02 a3 04 15 00 02 a4 04 15 00 02 a5 05 15 00 02 a6 05 15 00 02 e0 02 15 00 02 e1 52 15 00 02 ff 30 15 00 02 ff 52 15 00 02 ff 00 15 00 02 36 02 05 c8 01 11 05 64 01 29",
-                resetGpios: "&gpio3 RK_PB7 GPIO_ACTIVE_LOW",
-                enableGpios: "&gpio0 RK_PB5 GPIO_ACTIVE_HIGH",
-                useExtAmplifier: true
-            },
-            {
-                name: "K36 Panel 4",
-                md5: "9153251523a603af76c4cbe0825a9580",
-                panelInitSequence: "15 00 02 ff 30 15 00 02 ff 52 15 00 02 ff 01 15 00 02 e3 00 15 00 02 25 10 15 00 02 28 6f 15 00 02 29 01 15 00 02 2a df 15 00 02 2c 22 15 00 02 c3 0f 15 00 02 37 9c 15 00 02 38 a7 15 00 02 39 41 15 00 02 80 20 15 00 02 91 67 15 00 02 92 67 15 00 02 a0 55 15 00 02 a1 50 15 00 02 a3 58 15 00 02 a4 9c 15 00 02 a7 02 15 00 02 a8 01 15 00 02 a9 21 15 00 02 aa fc 15 00 02 ab 28 15 00 02 ac 06 15 00 02 ad 06 15 00 02 ae 06 15 00 02 af 03 15 00 02 b0 08 15 00 02 b1 26 15 00 02 b2 28 15 00 02 b3 28 15 00 02 b4 03 15 00 02 b5 08 15 00 02 b6 26 15 00 02 b7 08 15 00 02 b8 26 15 00 02 c0 00 15 00 02 c1 00 15 00 02 c2 00 15 00 02 ff 30 15 00 02 ff 52 15 00 02 ff 02 15 00 02 b0 02 15 00 02 d0 02 15 00 02 b1 0f 15 00 02 d1 10 15 00 02 b2 11 15 00 02 d2 12 15 00 02 b3 32 15 00 02 d3 33 15 00 02 b4 36 15 00 02 d4 36 15 00 02 b5 3c 15 00 02 d5 3c 15 00 02 b6 20 15 00 02 d6 20 15 00 02 b7 3e 15 00 02 d7 3e 15 00 02 b8 0e 15 00 02 d8 0d 15 00 02 b9 05 15 00 02 d9 05 15 00 02 ba 11 15 00 02 da 12 15 00 02 bb 11 15 00 02 db 11 15 00 02 bc 13 15 00 02 dc 14 15 00 02 bd 14 15 00 02 dd 14 15 00 02 be 16 15 00 02 de 18 15 00 02 bf 0e 15 00 02 df 0f 15 00 02 c0 17 15 00 02 e0 17 15 00 02 c1 07 15 00 02 e1 08 15 00 02 ff 30 15 00 02 ff 52 15 00 02 ff 03 15 00 02 08 8a 15 00 02 09 8b 15 00 02 30 00 15 00 02 31 00 15 00 02 32 00 15 00 02 33 00 15 00 02 34 61 15 00 02 35 d4 15 00 02 36 24 15 00 02 37 03 15 00 02 40 86 15 00 02 41 87 15 00 02 42 84 15 00 02 43 85 15 00 02 44 11 15 00 02 45 de 15 00 02 46 dd 15 00 02 47 11 15 00 02 48 e0 15 00 02 49 df 15 00 02 50 82 15 00 02 51 83 15 00 02 52 80 15 00 02 53 81 15 00 02 54 11 15 00 02 55 e2 15 00 02 56 e1 15 00 02 57 11 15 00 02 58 e4 15 00 02 59 e3 15 00 02 82 0f 15 00 02 83 0f 15 00 02 84 00 15 00 02 85 0f 15 00 02 86 0f 15 00 02 87 0e 15 00 02 88 0e 15 00 02 89 06 15 00 02 8a 06 15 00 02 8b 07 15 00 02 8c 07 15 00 02 8d 04 15 00 02 8e 04 15 00 02 8f 05 15 00 02 90 05 15 00 02 98 0f 15 00 02 99 0f 15 00 02 9a 00 15 00 02 9b 0f 15 00 02 9c 0f 15 00 02 9d 0e 15 00 02 9e 0e 15 00 02 9f 06 15 00 02 a0 06 15 00 02 a1 07 15 00 02 a2 07 15 00 02 a3 04 15 00 02 a4 04 15 00 02 a5 05 15 00 02 a6 05 15 00 02 e0 02 15 00 02 e1 52 15 00 02 ff 30 15 00 02 ff 52 15 00 02 ff 00 15 00 02 36 02 05 c8 01 11 05 64 01 29",
-                resetGpios: "&gpio3 RK_PB7 GPIO_ACTIVE_LOW",
-                enableGpios: "&gpio0 RK_PB5 GPIO_ACTIVE_HIGH",
-                useExtAmplifier: false
-            },
-            {
-                name: "K36 Panel 5",
-                md5: ["88f853daa7524244ca4ce7a7da3bedbc", "31f968d5a1d000a42c82207fb7c875b7"],
-                panelInitSequence: "39 00 04 b9 f1 12 83 39 00 06 b1 00 00 00 da 80 39 00 04 b2 00 13 70 39 00 0b b3 10 10 28 28 03 ff 00 00 00 00 15 00 02 b4 80 15 00 03 b5 0a 0a 15 00 03 b6 82 82 39 00 05 b8 26 62 f0 63 39 00 1c ba 33 81 05 f9 0e 0e 20 00 00 00 00 00 00 00 44 25 00 90 0a 00 00 01 4f 01 00 00 37 15 00 02 bc 47 39 00 04 bf 02 11 00 39 00 0a c0 73 73 50 50 00 00 12 50 00 39 00 0d c1 53 00 32 32 77 d1 cc cc 77 77 33 33 39 00 07 c6 82 00 bf ff 00 ff 39 00 07 c7 b8 00 0a 00 00 00 39 00 05 c8 10 40 1e 02 15 00 02 cc 0b 39 00 23 e0 00 07 0d 37 35 3f 41 44 06 0c 0d 0f 11 10 12 14 1a 00 07 0d 37 35 3f 41 44 06 0c 0d 0f 11 10 12 14 1a 39 00 0f e3 07 07 0b 0b 0b 0b 00 00 00 00 ff 00 c0 10 39 00 40 e9 c8 10 02 00 00 b0 b1 11 31 23 28 80 b0 b1 27 08 00 04 02 00 00 00 00 04 02 00 00 00 88 88 ba 60 24 08 88 88 88 88 88 88 88 ba 71 35 18 88 88 88 88 88 00 00 00 01 00 00 00 00 00 00 00 00 00 39 00 3e ea 97 0a 82 02 03 07 00 00 00 00 00 00 81 88 ba 17 53 88 88 88 88 88 88 80 88 ba 06 42 88 88 88 88 88 88 23 00 00 02 80 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 39 00 04 ef ff ff 01 05 c8 01 11 05 14 01 29",
-                resetGpios: "&gpio3 RK_PD3 GPIO_ACTIVE_LOW",
-                enableGpios: "&gpio3 RK_PA3 GPIO_ACTIVE_HIGH",
-                useExtAmplifier: true
-            },
-            {
-                name: "K36 Panel 6",
-                md5: "85a6f808b362c2e79ae9860b81ae6f66",
-                panelInitSequence: "15 00 02 ff 30 15 00 02 ff 52 15 00 02 ff 01 15 00 02 e3 00 15 00 02 25 10 15 00 02 28 6f 15 00 02 29 01 15 00 02 2a df 15 00 02 2c 22 15 00 02 c3 0f 15 00 02 37 9c 15 00 02 38 a7 15 00 02 39 41 15 00 02 80 20 15 00 02 91 67 15 00 02 92 67 15 00 02 a0 55 15 00 02 a1 50 15 00 02 a3 58 15 00 02 a4 9c 15 00 02 a7 02 15 00 02 a8 01 15 00 02 a9 21 15 00 02 aa fc 15 00 02 ab 28 15 00 02 ac 06 15 00 02 ad 06 15 00 02 ae 06 15 00 02 af 03 15 00 02 b0 08 15 00 02 b1 26 15 00 02 b2 28 15 00 02 b3 28 15 00 02 b4 03 15 00 02 b5 08 15 00 02 b6 26 15 00 02 b7 08 15 00 02 b8 26 15 00 02 c0 00 15 00 02 c1 00 15 00 02 c2 00 15 00 02 ff 30 15 00 02 ff 52 15 00 02 ff 02 15 00 02 b0 02 15 00 02 d0 02 15 00 02 b1 0f 15 00 02 d1 10 15 00 02 b2 11 15 00 02 d2 12 15 00 02 b3 32 15 00 02 d3 33 15 00 02 b4 36 15 00 02 d4 36 15 00 02 b5 3c 15 00 02 d5 3c 15 00 02 b6 20 15 00 02 d6 20 15 00 02 b7 3e 15 00 02 d7 3e 15 00 02 b8 0e 15 00 02 d8 0d 15 00 02 b9 05 15 00 02 d9 05 15 00 02 ba 11 15 00 02 da 12 15 00 02 bb 11 15 00 02 db 11 15 00 02 bc 13 15 00 02 dc 14 15 00 02 bd 14 15 00 02 dd 14 15 00 02 be 16 15 00 02 de 18 15 00 02 bf 0e 15 00 02 df 0f 15 00 02 c0 17 15 00 02 e0 17 15 00 02 c1 07 15 00 02 e1 08 15 00 02 ff 30 15 00 02 ff 52 15 00 02 ff 03 15 00 02 08 8a 15 00 02 09 8b 15 00 02 30 00 15 00 02 31 00 15 00 02 32 00 15 00 02 33 00 15 00 02 34 61 15 00 02 35 d4 15 00 02 36 24 15 00 02 37 03 15 00 02 40 86 15 00 02 41 87 15 00 02 42 84 15 00 02 43 85 15 00 02 44 11 15 00 02 45 de 15 00 02 46 dd 15 00 02 47 11 15 00 02 48 e0 15 00 02 49 df 15 00 02 50 82 15 00 02 51 83 15 00 02 52 80 15 00 02 53 81 15 00 02 54 11 15 00 02 55 e2 15 00 02 56 e1 15 00 02 57 11 15 00 02 58 e4 15 00 02 59 e3 15 00 02 82 0f 15 00 02 83 0f 15 00 02 84 00 15 00 02 85 0f 15 00 02 86 0f 15 00 02 87 0e 15 00 02 88 0e 15 00 02 89 06 15 00 02 8a 06 15 00 02 8b 07 15 00 02 8c 07 15 00 02 8d 04 15 00 02 8e 04 15 00 02 8f 05 15 00 02 90 05 15 00 02 98 0f 15 00 02 99 0f 15 00 02 9a 00 15 00 02 9b 0f 15 00 02 9c 0f 15 00 02 9d 0e 15 00 02 9e 0e 15 00 02 9f 06 15 00 02 a0 06 15 00 02 a1 07 15 00 02 a2 07 15 00 02 a3 04 15 00 02 a4 04 15 00 02 a5 05 15 00 02 a6 05 15 00 02 e0 02 15 00 02 e1 52 15 00 02 ff 30 15 00 02 ff 52 15 00 02 ff 00 15 00 02 36 02 05 c8 01 11 05 64 01 29",
-                resetGpios: "&gpio3 RK_PD3 GPIO_ACTIVE_LOW",
-                enableGpios: "&gpio3 RK_PA3 GPIO_ACTIVE_HIGH",
-                useExtAmplifier: true
-            },
-            {
-                name: "K36 Panel 7",
-                md5: "01de1c13af2882c697e013224f40bc5b",
-                panelInitSequence: "15 00 02 e0 00 15 00 02 e1 93 15 00 02 e2 65 15 00 02 e3 f8 15 00 02 80 03 15 00 02 e0 01 15 00 02 00 00 15 00 02 01 73 15 00 02 03 00 15 00 02 04 7d 15 00 02 0c 74 15 00 02 17 00 15 00 02 18 bf 15 00 02 19 01 15 00 02 1a 00 15 00 02 1b bf 15 00 02 1c 01 15 00 02 24 fe 15 00 02 37 09 15 00 02 38 04 15 00 02 40 03 15 00 02 41 3c 15 00 02 42 a0 15 00 02 43 0d 15 00 02 44 09 15 00 02 45 76 15 00 02 4b 04 15 00 02 55 02 15 00 02 57 89 15 00 02 5a 34 15 00 02 5b 12 15 00 02 5d 7f 15 00 02 5e 70 15 00 02 5f 62 15 00 02 60 58 15 00 02 61 54 15 00 02 62 46 15 00 02 63 48 15 00 02 64 31 15 00 02 65 46 15 00 02 66 42 15 00 02 67 3e 15 00 02 68 56 15 00 02 69 41 15 00 02 6a 44 15 00 02 6b 35 15 00 02 6c 30 15 00 02 6d 23 15 00 02 6e 13 15 00 02 6f 0c 15 00 02 70 7f 15 00 02 71 70 15 00 02 72 62 15 00 02 73 58 15 00 02 74 54 15 00 02 75 46 15 00 02 76 48 15 00 02 77 31 15 00 02 78 46 15 00 02 79 42 15 00 02 7a 3e 15 00 02 7b 56 15 00 02 7c 41 15 00 02 7d 44 15 00 02 7e 35 15 00 02 7f 30 15 00 02 80 23 15 00 02 81 13 15 00 02 82 0c 15 00 02 e0 02 15 00 02 00 5d 15 00 02 01 5d 15 00 02 02 5f 15 00 02 03 5f 15 00 02 04 57 15 00 02 05 58 15 00 02 06 4a 15 00 02 07 44 15 00 02 08 46 15 00 02 09 48 15 00 02 0a 40 15 00 02 0b 5d 15 00 02 0c 5f 15 00 02 0d 5f 15 00 02 0e 5f 15 00 02 0f 5f 15 00 02 10 5f 15 00 02 11 5f 15 00 02 12 5f 15 00 02 13 5f 15 00 02 14 5f 15 00 02 15 5f 15 00 02 16 5d 15 00 02 17 5d 15 00 02 18 5f 15 00 02 19 5f 15 00 02 1a 57 15 00 02 1b 58 15 00 02 1c 4b 15 00 02 1d 45 15 00 02 1e 47 15 00 02 1f 49 15 00 02 20 41 15 00 02 21 5d 15 00 02 22 5f 15 00 02 23 5f 15 00 02 24 5f 15 00 02 25 5f 15 00 02 26 5f 15 00 02 27 5f 15 00 02 28 5f 15 00 02 29 5f 15 00 02 2a 5f 15 00 02 2b 5f 15 00 02 2c 5d 15 00 02 2d 41 15 00 02 2e 5f 15 00 02 2f 5f 15 00 02 30 57 15 00 02 31 58 15 00 02 32 45 15 00 02 33 4b 15 00 02 34 49 15 00 02 35 47 15 00 02 36 5d 15 00 02 37 5d 15 00 02 38 5f 15 00 02 39 5f 15 00 02 3a 5f 15 00 02 3b 5f 15 00 02 3c 5f 15 00 02 3d 5f 15 00 02 3e 5f 15 00 02 3f 5f 15 00 02 40 5f 15 00 02 41 5f 15 00 02 42 5d 15 00 02 43 40 15 00 02 44 5f 15 00 02 45 5f 15 00 02 46 57 15 00 02 47 58 15 00 02 48 44 15 00 02 49 4a 15 00 02 4a 48 15 00 02 4b 46 15 00 02 4c 5d 15 00 02 4d 5d 15 00 02 4e 5f 15 00 02 4f 5f 15 00 02 50 5f 15 00 02 51 5f 15 00 02 52 5f 15 00 02 53 5f 15 00 02 54 5f 15 00 02 55 5f 15 00 02 56 5f 15 00 02 57 5f 15 00 02 58 40 15 00 02 59 00 15 00 02 5a 00 15 00 02 5b 10 15 00 02 5c 06 15 00 02 5d 20 15 00 02 5e 01 15 00 02 5f 02 15 00 02 60 10 15 00 02 61 01 15 00 02 62 02 15 00 02 63 40 15 00 02 64 48 15 00 02 65 15 15 00 02 66 0c 15 00 02 67 72 15 00 02 68 08 15 00 02 69 60 15 00 02 6a 40 15 00 02 6b 08 15 00 02 6c 20 15 00 02 75 87 15 00 02 76 04 15 00 02 77 08 15 00 02 78 02 15 00 02 8f e0 15 00 02 90 06 15 00 02 91 08 15 00 02 92 08 15 00 02 e0 00 15 00 02 35 00 05 78 01 11 05 14 01 29",
-                resetGpios: "&gpio3 RK_PD3 GPIO_ACTIVE_LOW",
-                enableGpios: "&gpio3 RK_PA3 GPIO_ACTIVE_HIGH",
-                useExtAmplifier: true
-            },
-            {
-                name: "K36 Panel 8",
-                md5: "2cc8f4054fe0b5db5aac45d36c46779c",
-                panelInitSequence: "39 00 04 b9 f1 12 83 39 00 06 b1 00 00 00 da 80 39 00 04 b2 00 13 70 39 00 0b b3 10 10 28 28 03 ff 00 00 00 00 15 00 02 b4 80 15 00 03 b5 0a 0a 15 00 03 b6 82 82 39 00 05 b8 26 62 f0 63 39 00 1c ba 33 81 05 f9 0e 0e 20 00 00 00 00 00 00 00 44 25 00 90 0a 00 00 01 4f 01 00 00 37 15 00 02 bc 47 39 00 04 bf 02 11 00 39 00 0a c0 73 73 50 50 00 00 12 50 00 39 00 0d c1 53 00 32 32 77 d1 cc cc 77 77 33 33 39 00 07 c6 82 00 bf ff 00 ff 39 00 07 c7 b8 00 0a 00 00 00 39 00 05 c8 10 40 1e 02 15 00 02 cc 0b 39 00 23 e0 00 07 0d 37 35 3f 41 44 06 0c 0d 0f 11 10 12 14 1a 00 07 0d 37 35 3f 41 44 06 0c 0d 0f 11 10 12 14 1a 39 00 0f e3 07 07 0b 0b 0b 0b 00 00 00 00 ff 00 c0 10 39 00 40 e9 c8 10 02 00 00 b0 b1 11 31 23 28 80 b0 b1 27 08 00 04 02 00 00 00 00 04 02 00 00 00 88 88 ba 60 24 08 88 88 88 88 88 88 88 ba 71 35 18 88 88 88 88 88 00 00 00 01 00 00 00 00 00 00 00 00 00 39 00 3e ea 97 0a 82 02 03 07 00 00 00 00 00 00 81 88 ba 17 53 88 88 88 88 88 88 80 88 ba 06 42 88 88 88 88 88 88 23 00 00 02 80 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 39 00 04 ef ff ff 01 05 c8 01 11 05 14 01 29",
-                resetGpios: "&gpio3 RK_PD3 GPIO_ACTIVE_LOW",
-                enableGpios: "&gpio3 RK_PA3 GPIO_ACTIVE_HIGH",
-                useExtAmplifier: false
-            },
-            {
-                name: "K36 Panel 9",
-                md5: "2be6f8864414af729c0666089ac3af88",
-                panelInitSequence: "15 00 02 ff 30 15 00 02 ff 52 15 00 02 ff 01 15 00 02 e3 00 15 00 02 25 10 15 00 02 28 6f 15 00 02 29 01 15 00 02 2a df 15 00 02 2c 22 15 00 02 c3 0f 15 00 02 37 9c 15 00 02 38 a7 15 00 02 39 41 15 00 02 80 20 15 00 02 91 67 15 00 02 92 67 15 00 02 a0 55 15 00 02 a1 50 15 00 02 a3 58 15 00 02 a4 9c 15 00 02 a7 02 15 00 02 a8 01 15 00 02 a9 21 15 00 02 aa fc 15 00 02 ab 28 15 00 02 ac 06 15 00 02 ad 06 15 00 02 ae 06 15 00 02 af 03 15 00 02 b0 08 15 00 02 b1 26 15 00 02 b2 28 15 00 02 b3 28 15 00 02 b4 03 15 00 02 b5 08 15 00 02 b6 26 15 00 02 b7 08 15 00 02 b8 26 15 00 02 c0 00 15 00 02 c1 00 15 00 02 c2 00 15 00 02 ff 30 15 00 02 ff 52 15 00 02 ff 02 15 00 02 b0 02 15 00 02 d0 02 15 00 02 b1 0f 15 00 02 d1 10 15 00 02 b2 11 15 00 02 d2 12 15 00 02 b3 32 15 00 02 d3 33 15 00 02 b4 36 15 00 02 d4 36 15 00 02 b5 3c 15 00 02 d5 3c 15 00 02 b6 20 15 00 02 d6 20 15 00 02 b7 3e 15 00 02 d7 3e 15 00 02 b8 0e 15 00 02 d8 0d 15 00 02 b9 05 15 00 02 d9 05 15 00 02 ba 11 15 00 02 da 12 15 00 02 bb 11 15 00 02 db 11 15 00 02 bc 13 15 00 02 dc 14 15 00 02 bd 14 15 00 02 dd 14 15 00 02 be 16 15 00 02 de 18 15 00 02 bf 0e 15 00 02 df 0f 15 00 02 c0 17 15 00 02 e0 17 15 00 02 c1 07 15 00 02 e1 08 15 00 02 ff 30 15 00 02 ff 52 15 00 02 ff 03 15 00 02 08 8a 15 00 02 09 8b 15 00 02 30 00 15 00 02 31 00 15 00 02 32 00 15 00 02 33 00 15 00 02 34 61 15 00 02 35 d4 15 00 02 36 24 15 00 02 37 03 15 00 02 40 86 15 00 02 41 87 15 00 02 42 84 15 00 02 43 85 15 00 02 44 11 15 00 02 45 de 15 00 02 46 dd 15 00 02 47 11 15 00 02 48 e0 15 00 02 49 df 15 00 02 50 82 15 00 02 51 83 15 00 02 52 80 15 00 02 53 81 15 00 02 54 11 15 00 02 55 e2 15 00 02 56 e1 15 00 02 57 11 15 00 02 58 e4 15 00 02 59 e3 15 00 02 82 0f 15 00 02 83 0f 15 00 02 84 00 15 00 02 85 0f 15 00 02 86 0f 15 00 02 87 0e 15 00 02 88 0e 15 00 02 89 06 15 00 02 8a 06 15 00 02 8b 07 15 00 02 8c 07 15 00 02 8d 04 15 00 02 8e 04 15 00 02 8f 05 15 00 02 90 05 15 00 02 98 0f 15 00 02 99 0f 15 00 02 9a 00 15 00 02 9b 0f 15 00 02 9c 0f 15 00 02 9d 0e 15 00 02 9e 0e 15 00 02 9f 06 15 00 02 a0 06 15 00 02 a1 07 15 00 02 a2 07 15 00 02 a3 04 15 00 02 a4 04 15 00 02 a5 05 15 00 02 a6 05 15 00 02 e0 02 15 00 02 e1 52 15 00 02 ff 30 15 00 02 ff 52 15 00 02 ff 00 15 00 02 36 02 05 c8 01 11 05 64 01 29",
-                resetGpios: "&gpio3 RK_PD3 GPIO_ACTIVE_LOW",
-                enableGpios: "&gpio3 RK_PA3 GPIO_ACTIVE_HIGH",
-                useExtAmplifier: false
-            },
-            {
-                name: "K36 Panel 10",
-                md5: "037dfec5cb0bf9938864489fac9d9e3c",
-                panelInitSequence: "05 fa 01 11 39 00 04 b9 f1 12 83 39 00 06 b1 00 00 00 da 80 39 00 04 b2 00 13 70 39 00 0b b3 10 10 28 28 03 ff 00 00 00 00 15 00 02 b4 82 15 00 03 b5 07 07 15 00 03 b6 9c 9c 39 00 05 b8 2a 62 f0 60 39 00 1c ba 33 81 05 f9 0e 0e 20 00 00 00 00 00 00 00 44 25 00 90 0a 00 00 01 4f 01 00 00 37 39 00 02 bc 47 39 00 04 bf 02 11 00 39 00 0a c0 73 73 50 50 00 00 12 70 00 39 00 0d c1 25 c0 32 32 77 e4 ff ff cc cc 77 77 39 00 07 c6 82 00 bf ff 00 ff 39 00 07 c7 b8 00 0a 00 00 00 39 00 05 c8 10 40 1e 02 39 00 02 cc 0b 39 00 23 e0 00 07 0d 37 35 3f 41 44 06 0c 0d 0f 11 10 12 14 1a 00 07 0d 37 35 3f 41 44 06 0c 0d 0f 11 10 12 14 1a 39 00 0f e3 07 07 0b 0b 0b 0b 00 00 00 00 ff 00 c0 10 39 00 40 e9 c8 10 0a 00 00 f0 08 12 31 23 4f 86 f0 08 47 08 00 00 10 00 00 00 00 00 10 00 00 00 88 88 08 f8 f4 46 60 02 28 88 88 88 88 18 f8 f5 57 71 13 38 88 88 00 00 00 01 00 00 00 00 00 00 00 00 00 39 00 3e ea 00 1a 00 00 00 00 00 00 00 00 00 00 88 f8 18 f8 83 31 17 75 58 88 88 88 f8 08 f8 82 20 06 64 48 88 88 23 00 00 03 f0 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 39 00 04 ef ff ff 01 05 32 01 29",
-                resetGpios: "&gpio3 RK_PB7 GPIO_ACTIVE_LOW",
-                enableGpios: "&gpio0 RK_PB5 GPIO_ACTIVE_HIGH",
-                useExtAmplifier: false
-            },
-            {
-                name: "R36Max",
-                md5: ["3101828659a9256f3bfc70631ba58dfc", "3d7f16bbd611f88ee9b0eb10791eadfc"],
-                panelInitSequence: "39 00 04 b9 f1 12 83 39 00 06 b1 00 00 00 da 80 39 00 04 b2 3c 12 30 39 00 0b b3 10 10 28 28 03 ff 00 00 00 00 15 00 02 b4 80 39 00 03 b5 0a 0a 39 00 03 b6 97 97 39 00 05 b8 26 22 f0 13 39 00 1c ba 33 81 05 f9 0e 0e 20 00 00 00 00 00 00 00 44 25 00 90 0a 00 00 01 4f 01 00 00 37 15 00 02 bc 47 39 00 04 bf 02 11 00 39 00 0a c0 73 73 50 50 00 00 12 70 00 39 00 0d c1 25 00 32 32 77 e4 ff ff cc cc 77 77 39 00 07 c6 82 00 bf ff 00 ff 39 00 07 c7 b8 00 0a 00 00 00 39 00 05 c8 10 40 1e 02 15 00 02 cc 0b 39 00 23 e0 00 0b 10 2c 3d 3f 42 3a 07 0d 0f 13 15 13 14 0f 16 00 0b 10 2c 3d 3f 42 3a 07 0d 0f 13 15 13 14 0f 16 39 00 0f e3 07 07 0b 0b 0b 0b 00 00 00 00 ff 00 c0 10 39 00 40 e9 c8 10 0a 00 00 80 81 12 31 23 4f 86 a0 00 47 08 00 00 0c 00 00 00 00 00 0c 00 00 00 98 02 8b af 46 02 88 88 88 88 88 98 13 8b af 57 13 88 88 88 88 88 00 00 00 00 00 00 00 00 00 00 00 00 00 39 00 3e ea 97 0c 09 09 09 78 00 00 00 00 00 00 9f 31 8b a8 31 75 88 88 88 88 88 9f 20 8b a8 20 64 88 88 88 88 88 23 00 00 02 71 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 40 80 81 00 00 00 00 39 00 04 ef ff ff 01 05 fa 01 11 05 32 01 29",
-                resetGpios: "&gpio3 RK_PB7 GPIO_ACTIVE_LOW",
-                enableGpios: "&gpio0 RK_PB5 GPIO_ACTIVE_HIGH",
-                useExtAmplifier: true
-            },
-            // 可以继续添加更多ArkOSK36的设备配置
-        ];
-
-        class DTBIdentifier {
-            constructor() {
-                this.currentSystem = 'arkos4clone'; // 默认系统
-                this.phandleMap = new Map();
-                this.nodePaths = new Map();
-                this.isDebug = IS_DEBUG;
-            }
-
-            setSystem(system) {
-                this.currentSystem = system;
-            }
-
-            getCurrentDatabase() {
-                return this.currentSystem === 'arkos4clone' ? ARKOS4CLONE_DATABASE : ARKOSK36_DATABASE;
-            }
-
-            getSystemName() {
-                return this.currentSystem === 'arkos4clone' ? 'ArkOS4Clone' : 'ArkOSK36';
-            }
-
-            getSystemTag() {
-                return this.currentSystem === 'arkos4clone' ? 'tag-arkos4clone' : 'tag-arkosk36';
-            }
-
-            getSystemUrl() {
-                return this.currentSystem === 'arkos4clone' ? 'https://github.com/lcdyk0517/arkos4clone' : 'https://github.com/AeolusUX/ArkOS-K36';
-            }
-
-            // 修改 identifyDtb 方法，添加多语言支持
-            async identifyDtb(arrayBuffer) {
-                const result = [];
-                const database = this.getCurrentDatabase();
-                const systemName = this.getSystemName();
-                const systemTag = this.getSystemTag();
-                const systemUrl = this.getSystemUrl();
-
-                // 计算MD5
-                const md5 = MD5.md5(arrayBuffer);
-                result.push(`<span class="comment">${translations[currentLanguage].fileInfo}</span>`);
-                result.push(`<span class="property">${translations[currentLanguage].fileMD5}</span>: <span class="value">${md5}</span>`);
-                result.push(`<span class="property">${translations[currentLanguage].fileSize}</span>: <span class="value">${arrayBuffer.byteLength}</span> ${currentLanguage === 'zh' ? '字节' : 'bytes'}`);
-                result.push(`<span class="property">${translations[currentLanguage].projectUrl}</span>: <a href="${systemUrl}" target="_blank" style="color: var(--secondary); text-decoration: none; border-bottom: 1px solid var(--secondary);">${systemUrl}</a>`);
-                if (currentLanguage === 'zh') {
-                    result.push(`<span class="property">💬 寨中寨QQ群聊请加: 324222122</span>`);
-                }
-
-                result.push(`<span class="property">${translations[currentLanguage].targetSystem}</span>: <span class="system-tag ${systemTag}">${systemName}</span>\n`);
-
-                // 构建节点树
-                this.buildNodeTree(arrayBuffer);
-
-                // 提取Panel相关信息
-                const panelInfo = this.extractPanelInfo(arrayBuffer);
-
-                // 提取Codec相关信息
-                const codecInfo = this.extractCodecInfo(arrayBuffer);
-
-                // 只有在调试模式下才显示详细提取信息
-                if (this.isDebug) {
-                    result.push(`<span class="comment">${translations[currentLanguage].panelInfo}</span>`);
-
-                    // 显示panel-init-sequence
-                    if (panelInfo.initSequence) {
-                        result.push(`<div class="sequence-block">`);
-                        result.push(`<span class="property">panel-init-sequence</span> = ${this.formatSequence(panelInfo.initSequence)};`);
-                        result.push(`</div>`);
-                    } else {
-                        result.push(`<span class="comment">${translations[currentLanguage].noPanelSequence}</span>`);
-                    }
-
-                    // 显示GPIO配置
-                    if (panelInfo.resetGpios || panelInfo.enableGpios) {
-                        result.push(`<div class="gpio-block">`);
-                        if (panelInfo.resetGpios) {
-                            result.push(`<span class="property">reset-gpios</span> = ${this.formatGpios(panelInfo.resetGpios, arrayBuffer)};`);
-                        } else {
-                            result.push(`<span class="comment">${translations[currentLanguage].noGpioConfig}</span>`);
-                        }
-                        if (panelInfo.enableGpios) {
-                            if (panelInfo.resetGpios) result.push(``);
-                            result.push(`<span class="property">enable-gpios</span> = ${this.formatGpios(panelInfo.enableGpios, arrayBuffer)};`);
-                        } else {
-                            result.push(`<span class="comment">${translations[currentLanguage].noGpioConfig}</span>`);
-                        }
-                        result.push(`</div>`);
-                    } else {
-                        result.push(`<span class="comment">${translations[currentLanguage].noGpioConfig}</span>`);
-                    }
-
-                    // 根据系统类型显示不同的信息
-                    if (this.currentSystem === 'arkos4clone') {
-                        // 显示SD卡控制器信息
-                        if (panelInfo.sdioSupport || panelInfo.sdSupport) {
-                            result.push(`<span class="comment">=== SDIO信息 ===</span>`);
-                            if (panelInfo.sdioSupport) {
-                                result.push(`<span class="property">supports-sdio</span> = <span class="value">true</span>;`);
-                                result.push(`<span class="property">supports-sd</span> = <span class="value">false</span>;`);
-                            } else if (panelInfo.sdSupport) {
-                                result.push(`<span class="property">supports-sdio</span> = <span class="value">false</span>;`);
-                                result.push(`<span class="property">supports-sd</span> = <span class="value">true</span>;`);
-                            }
-                            result.push(``);
-                        } else {
-                            result.push(`<span class="comment">${translations[currentLanguage].noSdioNode}</span>`);
-                        }
-                    } else if (this.currentSystem === 'arkosk36') {
-                        // 显示Codec信息
-                        result.push(`<span class="comment">${translations[currentLanguage].codecInfo}</span>`);
-                        result.push(`<span class="property">use-ext-amplifier</span> = <span class="value">${codecInfo.useExtAmplifier ? 'true' : 'false'}</span>;`);
-                        result.push(``);
-                    }
-                }
-
-                // 进行识别
-                result.push(`<span class="comment">=== ${systemName}${currentLanguage === 'zh' ? '适配建议' : ' Adaptation Suggestion'} ===</span>`);
-                const identification = this.identify(md5, panelInfo, codecInfo, database);
-
-                // 只有在调试模式下才显示调试信息
-                if (this.isDebug) {
-                    result.push(`<div class="match-info">`);
-                    result.push(`<span class="comment">${translations[currentLanguage].debugInfo}</span>`);
-                    result.push(`<span class="property">${translations[currentLanguage].md5Match}</span>: ${identification.exactMatch ? (currentLanguage === 'zh' ? '是' : 'Yes') : (currentLanguage === 'zh' ? '否' : 'No')}`);
-                    result.push(`<span class="property">${translations[currentLanguage].screenParamMatch}</span>: ${identification.screenMatch ? (currentLanguage === 'zh' ? '是' : 'Yes') : (currentLanguage === 'zh' ? '否' : 'No')}`);
-                    result.push(`</div>`);
-                }
-
-                if (identification.exactMatch) {
-                    result.push(`<div class="match-success">`);
-                    result.push(`✅ <span class="property">${translations[currentLanguage].exactMatch}</span><br>`);
-                    result.push(`${identification.matchedName}`);
-                    result.push(`</div>`);
-                } else if (identification.screenMatch) {
-                    result.push(`<div class="match-warning">`);
-                    result.push(`⚠️ <span class="property">${translations[currentLanguage].screenMatch}</span><br>`);
-                    result.push(`${translations[currentLanguage].screenMatchDesc}`);
-                    result.push(`<br>${translations[currentLanguage].screenMatchAdvice}`);
-
-                    // 显示所有匹配的设备
-                    if (identification.matchedNames) {
-                        identification.matchedNames.forEach(name => {
-                            result.push(`<br>• ${name}`);
-                        });
-                    } else {
-                        result.push(`<br>• ${identification.matchedName}`);
-                    }
-
-                    result.push(`</div>`);
-                } else {
-                    result.push(`<div class="match-info">`);
-                    result.push(`❓ <span class="property">${translations[currentLanguage].noMatch}</span>`);
-                    result.push(`${translations[currentLanguage].noMatchDesc}`);
-
-                    // 只有在调试模式下才显示详细原因
-                    if (this.isDebug) {
-                        result.push(`<br><span class="comment">${translations[currentLanguage].noMatchDetails}</span>`);
-                        result.push(`<br>${translations[currentLanguage].noMatchReason1}`);
-                        result.push(`<br>${translations[currentLanguage].noMatchReason2}`);
-                        if (this.currentSystem === 'arkosk36') {
-                            result.push(`<br>${translations[currentLanguage].noMatchReason3}`);
-                        }
-                    }
-                    result.push(`</div>`);
-                }
-                return result.join('\n');
-            }
-
-            // 其他方法保持不变...
-            identify(md5, panelInfo, codecInfo, database) {
-                let exactMatch = null;
-                let screenMatches = [];
-
-                console.log(`=== 开始识别 ===`);
-                console.log(`系统: ${this.currentSystem}, MD5: ${md5}`);
-                console.log('提取的panelInfo:', {
-                    initSequence: panelInfo.initSequence ? `长度: ${panelInfo.initSequence.length}` : 'null',
-                    resetGpios: panelInfo.resetGpios,
-                    enableGpios: panelInfo.enableGpios,
-                    sdioSupport: panelInfo.sdioSupport,
-                    sdSupport: panelInfo.sdSupport
-                });
-                console.log('提取的codecInfo:', codecInfo);
-
-                for (const dbItem of database) {
-                    console.log(`\n检查设备: ${dbItem.name}`);
-
-                    // 1. 精确MD5匹配（支持数组格式）
-                    let md5Match = false;
-                    if (Array.isArray(dbItem.md5)) {
-                        md5Match = dbItem.md5.includes(md5);
-                        console.log(`MD5数组匹配: ${dbItem.md5} 包含 ${md5} ? ${md5Match}`);
-                    } else {
-                        md5Match = dbItem.md5 === md5;
-                        console.log(`MD5字符串匹配: ${dbItem.md5} === ${md5} ? ${md5Match}`);
-                    }
-
-                    if (md5Match) {
-                        console.log(`✅ 精确MD5匹配: ${dbItem.name}`);
-                        exactMatch = {
-                            matchedName: dbItem.name,
-                            exactMatch: true,
-                            screenMatch: true
-                        };
-                        break;
-                    }
-
-                    // 2. 屏幕参数匹配
-                    console.log(`开始屏幕参数匹配检查...`);
-                    const isScreenMatch = this.compareScreenParams(dbItem, panelInfo, codecInfo);
-                    console.log(`屏幕参数匹配结果: ${isScreenMatch}`);
-
-                    if (isScreenMatch) {
-                        console.log(`✅ 屏幕参数匹配: ${dbItem.name}`);
-                        screenMatches.push({
-                            matchedName: dbItem.name,
-                            exactMatch: false,
-                            screenMatch: true
-                        });
-                    } else {
-                        console.log(`❌ 屏幕参数不匹配: ${dbItem.name}`);
-                    }
-                }
-
-                console.log(`\n=== 最终识别结果 ===`);
-                console.log(`精确匹配: ${exactMatch ? exactMatch.matchedName : '无'}`);
-                console.log(`屏幕匹配数量: ${screenMatches.length}`);
-                screenMatches.forEach(match => console.log(`  - ${match.matchedName}`));
-
-                if (exactMatch) {
-                    return exactMatch;
-                }
-
-                if (screenMatches.length > 0) {
-                    return {
-                        exactMatch: false,
-                        screenMatch: true,
-                        matchedNames: screenMatches.map(match => match.matchedName),
-                        allMatches: screenMatches
-                    };
-                }
-
-                return {
-                    exactMatch: false,
-                    screenMatch: false,
-                    matchedName: null
-                };
-            }
-
-            // 其他方法保持不变...
-            compareScreenParams(dbItem, panelInfo, codecInfo) {
-                console.log(`比较屏幕参数: ${dbItem.name}`);
-
-                // 比较panel-init-sequence
-                if (!this.compareSequences(dbItem.panelInitSequence, panelInfo.initSequence)) {
-                    console.log(`panel-init-sequence 不匹配`);
-                    return false;
-                }
-                console.log(`panel-init-sequence 匹配`);
-
-                // 比较reset-gpios
-                if (!this.compareGpios(dbItem.resetGpios, panelInfo.resetGpios)) {
-                    console.log(`reset-gpios 不匹配`);
-                    return false;
-                }
-                console.log(`reset-gpios 匹配`);
-
-                // 比较enable-gpios（两者都为null也算匹配）
-                if (!this.compareGpios(dbItem.enableGpios, panelInfo.enableGpios)) {
-                    console.log(`enable-gpios 不匹配`);
-                    return false;
-                }
-                console.log(`enable-gpios 匹配`);
-
-                // 根据系统类型比较不同的属性
-                if (this.currentSystem === 'arkos4clone') {
-                    // ArkOS4Clone系统：比较SDIO/SD支持
-                    if (dbItem.sdio !== undefined) {
-                        const dbSdio = dbItem.sdio === "true";
-                        const extractedSdio = panelInfo.sdioSupport;
-                        const extractedSd = panelInfo.sdSupport;
-
-                        if (dbSdio && (!extractedSdio || extractedSd)) {
-                            console.log(`sdio 不匹配`);
-                            return false;
-                        }
-                        if (!dbSdio && (extractedSdio || !extractedSd)) {
-                            console.log(`sdio 不匹配`);
-                            return false;
-                        }
-                    }
-                    console.log(`sdio 匹配`);
-                } else if (this.currentSystem === 'arkosk36') {
-                    // ArkOSK36系统：比较use-ext-amplifier
-                    // 修复：处理字符串和布尔值的类型转换
-                    if (dbItem.useExtAmplifier !== undefined) {
-                        console.log(`数据库 useExtAmplifier: ${dbItem.useExtAmplifier} (类型: ${typeof dbItem.useExtAmplifier})`);
-                        console.log(`提取的 useExtAmplifier: ${codecInfo.useExtAmplifier} (类型: ${typeof codecInfo.useExtAmplifier})`);
-
-                        // 统一转换为布尔值进行比较
-                        const dbUseExtAmplifier = dbItem.useExtAmplifier === true || dbItem.useExtAmplifier === "true";
-                        const extractedUseExtAmplifier = codecInfo.useExtAmplifier === true || codecInfo.useExtAmplifier === "true";
-
-                        console.log(`转换后 - 数据库: ${dbUseExtAmplifier}, 提取: ${extractedUseExtAmplifier}`);
-
-                        if (dbUseExtAmplifier !== extractedUseExtAmplifier) {
-                            console.log(`use-ext-amplifier 不匹配`);
-                            return false;
-                        }
-                        console.log(`use-ext-amplifier 匹配`);
-                    } else {
-                        console.log(`数据库未定义 useExtAmplifier，跳过比较`);
-                    }
-                }
-
-                console.log(`所有参数匹配成功!`);
-                return true;
-            }
-
-            compareSequences(dbSequence, extractedSequence) {
-                if (!dbSequence || !extractedSequence) return false;
-                const dbBytes = this.sequenceStringToBytes(dbSequence);
-                const extractedBytes = extractedSequence;
-                if (dbBytes.length !== extractedBytes.length) return false;
-                for (let i = 0; i < dbBytes.length; i++) {
-                    if (dbBytes[i] !== extractedBytes[i]) return false;
-                }
-                return true;
-            }
-
-            // 修改 formatGpiosForCompare 方法，确保格式一致
-            formatGpiosForCompare(gpioData) {
-                if (!gpioData || gpioData.length < 3) return '';
-
-                const [phandle, pin, flags] = gpioData;
-                const nodePath = this.phandleMap.get(phandle);
-                let gpioController;
-
-                if (nodePath) {
-                    const nodeName = this.getNodeNameFromPath(nodePath);
-                    // 确保格式与数据库中的格式一致
-                    gpioController = `&${nodeName.split('@')[0]}`;
-                } else {
-                    gpioController = `&unknown_${phandle.toString(16)}`;
-                }
-
-                const pinName = GPIO_MAPPING[pin] || `0x${pin.toString(16)}`;
-                const flagMap = { 0x0: "GPIO_ACTIVE_HIGH", 0x1: "GPIO_ACTIVE_LOW" };
-                const flagStr = flagMap[flags] || `0x${flags.toString(16)}`;
-
-                return `${gpioController} ${pinName} ${flagStr}`;
-            }
-
-            // 修改 compareGpios 方法，修复GPIO比较逻辑
-            compareGpios(dbGpios, extractedGpios) {
-                // 如果数据库中的值为null，表示该设备没有这个GPIO
-                if (dbGpios === null) {
-                    return extractedGpios === null;
-                }
-                // 如果提取到的值为null，但数据库中有值，不匹配
-                if (extractedGpios === null && dbGpios !== null) {
-                    return false;
-                }
-                // 如果两者都为null，匹配
-                if (extractedGpios === null && dbGpios === null) {
-                    return true;
-                }
-
-                // 处理字符串格式比较（数据库中的格式）
-                if (typeof dbGpios === 'string' && Array.isArray(extractedGpios)) {
-                    // 将提取的GPIO数组格式化为字符串进行比较
-                    const formattedExtracted = this.formatGpiosForCompare(extractedGpios);
-                    console.log(`GPIO比较 - 数据库: ${dbGpios}, 提取: ${formattedExtracted}, 匹配: ${dbGpios === formattedExtracted}`);
-                    return dbGpios === formattedExtracted;
-                }
-
-                // 原来的数组比较逻辑（保持向后兼容）
-                if (Array.isArray(dbGpios) && Array.isArray(extractedGpios)) {
-                    if (dbGpios.length !== extractedGpios.length) return false;
-                    for (let i = 0; i < dbGpios.length; i++) {
-                        if (dbGpios[i] !== extractedGpios[i]) return false;
-                    }
-                    return true;
-                }
-
-                return false;
-            }
-
-            // 修改 extractCodecInfo 方法，确保能正确找到codec节点
-            extractCodecInfo(arrayBuffer) {
-                const view = new DataView(arrayBuffer);
-                let useExtAmplifier = false;
-
-                const magic = view.getUint32(0, false);
-                if (magic !== 0xd00dfeed) {
-                    return { useExtAmplifier };
-                }
-
-                const off_dt_strings = view.getUint32(12, false);
-
-                // 查找codec节点 - 放宽搜索条件
-                for (let offset = 0; offset < view.byteLength - 100; offset++) {
-                    const nodeInfo = this.findCodecNodeAtOffset(view, offset, off_dt_strings);
-                    if (nodeInfo && nodeInfo.name) {
-                        console.log(`找到codec节点: ${nodeInfo.name} at offset ${offset}`);
-                        const properties = this.findPropertiesInNode(view, nodeInfo.offset, off_dt_strings);
-                        if (properties.useExtAmplifier) {
-                            useExtAmplifier = true;
-                            console.log('找到 use-ext-amplifier 属性');
-                            break;
-                        }
-                    }
-                }
-
-                console.log(`最终提取的codec信息: useExtAmplifier = ${useExtAmplifier}`);
-                return { useExtAmplifier };
-            }
-
-            // 修改 findCodecNodeAtOffset 方法，放宽搜索条件
-            findCodecNodeAtOffset(view, offset, stringOffset) {
-                try {
-                    const token = view.getUint32(offset, false);
-                    if (token === 1) { // FDT_BEGIN_NODE
-                        const name = this.readString(view, offset + 4);
-                        // 放宽搜索条件，匹配更多可能的codec节点名称
-                        if (name && (
-                            name.includes('codec') ||
-                            name.includes('sound') ||
-                            name.includes('audio') ||
-                            name.includes('es8316') || // 常见的音频codec
-                            name.includes('acodec') ||
-                            name.endsWith('codec') // 以codec结尾的节点
-                        )) {
-                            return { name: name, offset: offset };
-                        }
-                    }
-                } catch (e) {
-                    // 忽略错误，继续搜索
-                }
-                return null;
-            }
-
-            // 其他方法保持不变（buildNodeTree, extractPanelInfo, formatGpios等）
-            buildNodeTree(arrayBuffer) {
-                const view = new DataView(arrayBuffer);
-                this.phandleMap.clear();
-                this.nodePaths.clear();
-
-                const magic = view.getUint32(0, false);
-                if (magic !== 0xd00dfeed) return;
-
-                const off_dt_struct = view.getUint32(8, false);
-                const off_dt_strings = view.getUint32(12, false);
-
-                const pathStack = [];
-                this.parseNodeTree(view, off_dt_struct, off_dt_strings, pathStack, '/');
-            }
-
-            parseNodeTree(view, offset, stringOffset, pathStack, currentPath) {
-                let currentOffset = offset;
-
-                while (true) {
-                    if (currentOffset + 4 > view.byteLength) break;
-
-                    const token = view.getUint32(currentOffset, false);
-                    currentOffset += 4;
-
-                    switch (token) {
-                        case 0x1: // FDT_BEGIN_NODE
-                            const nodeName = this.readString(view, currentOffset);
-                            currentOffset += nodeName.length + 1;
-                            currentOffset = this.align4(currentOffset);
-
-                            const nodePath = currentPath + (currentPath === '/' ? '' : '/') + nodeName;
-                            pathStack.push({ offset: currentOffset, path: nodePath });
-                            this.nodePaths.set(currentOffset, nodePath);
-
-                            const phandle = this.findPhandleInNode(view, currentOffset, stringOffset);
-                            if (phandle !== null) {
-                                this.phandleMap.set(phandle, nodePath);
-                            }
-
-                            currentOffset = this.parseNodeTree(view, currentOffset, stringOffset, pathStack, nodePath);
-                            break;
-
-                        case 0x2: // FDT_END_NODE
-                            pathStack.pop();
-                            return currentOffset;
-
-                        case 0x3: // FDT_PROP
-                            const len = view.getUint32(currentOffset, false); currentOffset += 4;
-                            const nameoff = view.getUint32(currentOffset, false); currentOffset += 4;
-                            currentOffset += len;
-                            currentOffset = this.align4(currentOffset);
-                            break;
-
-                        case 0x9: // FDT_END
-                            return currentOffset;
-
-                        default:
-                            return currentOffset;
-                    }
-                }
-                return currentOffset;
-            }
-
-            findPhandleInNode(view, nodeOffset, stringOffset) {
-                let offset = nodeOffset;
-
-                while (true) {
-                    if (offset + 4 > view.byteLength) break;
-
-                    const token = view.getUint32(offset, false);
-                    offset += 4;
-
-                    if (token === 0x2 || token === 0x9) break;
-
-                    if (token === 0x3) {
-                        const len = view.getUint32(offset, false); offset += 4;
-                        const nameoff = view.getUint32(offset, false); offset += 4;
-                        const propName = this.readString(view, stringOffset + nameoff);
-
-                        if (propName === 'phandle') {
-                            const data = new Uint8Array(view.buffer, offset, Math.min(len, 4));
-                            return this.parseUint32(data);
-                        }
-
-                        offset += len;
-                        offset = this.align4(offset);
-                    }
-                }
-                return null;
-            }
-
-            extractPanelInfo(arrayBuffer) {
-                const view = new DataView(arrayBuffer);
-                let initSequence = null;
-                let resetGpios = null;
-                let enableGpios = null;
-                let powerSupplyPhandle = null;
-                let sdioSupport = false;
-                let sdSupport = false;
-
-                const magic = view.getUint32(0, false);
-                if (magic !== 0xd00dfeed) {
-                    return { initSequence: null, resetGpios: null, enableGpios: null, sdioSupport, sdSupport };
-                }
-
-                const off_dt_strings = view.getUint32(12, false);
-
-                // 查找panel节点
-                for (let offset = 0; offset < view.byteLength - 100; offset++) {
-                    const nodeInfo = this.findPanelNodeAtOffset(view, offset, off_dt_strings);
-                    if (nodeInfo && nodeInfo.name) {
-                        const properties = this.findPropertiesInNode(view, offset, off_dt_strings);
-                        if (properties.init) initSequence = properties.init;
-                        if (properties.resetGpios) resetGpios = properties.resetGpios;
-                        if (properties.enableGpios) {
-                            enableGpios = properties.enableGpios;
-                        } else if (properties.powerSupply) {
-                            // 如果panel节点下没有enable-gpios，但有power-supply，记录phandle
-                            powerSupplyPhandle = properties.powerSupply[0];
-                        }
-
-                        if (initSequence || resetGpios || enableGpios || powerSupplyPhandle) {
-                            break;
-                        }
-                    }
-                }
-
-                // 查找dwmmc节点
-                for (let offset = 0; offset < view.byteLength - 100; offset++) {
-                    const nodeInfo = this.findDwmmcNodeAtOffset(view, offset, off_dt_strings);
-                    if (nodeInfo && nodeInfo.name) {
-                        const properties = this.findPropertiesInNode(view, offset, off_dt_strings);
-                        if (properties.supportsSdio) sdioSupport = true;
-                        if (properties.supportsSd) sdSupport = true;
-
-                        if (sdioSupport || sdSupport) {
-                            break;
-                        }
-                    }
-                }
-
-                // 如果panel节点下没有enable-gpios，但有power-supply，尝试从power-supply节点获取gpio
-                if (!enableGpios && powerSupplyPhandle) {
-                    enableGpios = this.findGpioFromPowerSupply(view, off_dt_strings, powerSupplyPhandle);
-                }
-
-                return { initSequence, resetGpios, enableGpios, sdioSupport, sdSupport };
-            }
-
-            findGpioFromPowerSupply(view, stringOffset, powerSupplyPhandle) {
-                // 通过phandle找到power-supply节点
-                const powerSupplyNodePath = this.phandleMap.get(powerSupplyPhandle);
-                if (!powerSupplyNodePath) return null;
-
-                // 找到power-supply节点的偏移量
-                for (const [offset, path] of this.nodePaths.entries()) {
-                    if (path === powerSupplyNodePath) {
-                        // 在power-supply节点中查找gpio属性
-                        const properties = this.findPropertiesInNode(view, offset, stringOffset);
-                        return properties.gpio; // 返回power-supply节点下的gpio属性
-                    }
-                }
-                return null;
-            }
-
-            findPropertiesInNode(view, nodeOffset, stringOffset) {
-                let initSequence = null;
-                let resetGpios = null;
-                let enableGpios = null;
-                let powerSupply = null;
-                let gpio = null;
-                let supportsSdio = false;
-                let supportsSd = false;
-                let useExtAmplifier = false;
-                let offset = nodeOffset + 4;
-
-                offset += this.readString(view, offset).length + 1;
-                offset = this.align4(offset);
-
-                for (let i = 0; i < 100; i++) {
-                    if (offset + 8 >= view.byteLength) break;
-
-                    const token = view.getUint32(offset, false);
-                    if (token === 2 || token === 9) break;
-
-                    if (token === 3) {
-                        const len = view.getUint32(offset + 4, false);
-                        const nameoff = view.getUint32(offset + 8, false);
-                        const propName = this.readString(view, stringOffset + nameoff);
-
-                        if (propName === 'panel-init-sequence') {
-                            const data = new Uint8Array(view.buffer, offset + 12, len);
-                            initSequence = this.parseSequenceData(data);
-                        } else if (propName === 'reset-gpios') {
-                            const data = new Uint8Array(view.buffer, offset + 12, len);
-                            resetGpios = this.parseGpioData(data);
-                        } else if (propName === 'enable-gpios') {
-                            const data = new Uint8Array(view.buffer, offset + 12, len);
-                            enableGpios = this.parseGpioData(data);
-                        } else if (propName === 'power-supply') {
-                            const data = new Uint8Array(view.buffer, offset + 12, len);
-                            powerSupply = this.parseGpioData(data);
-                        } else if (propName === 'gpio') {
-                            const data = new Uint8Array(view.buffer, offset + 12, len);
-                            gpio = this.parseGpioData(data);
-                        } else if (propName === 'supports-sdio') {
-                            supportsSdio = true;
-                        } else if (propName === 'supports-sd') {
-                            supportsSd = true;
-                        } else if (propName === 'use-ext-amplifier') { // 新增
-                            useExtAmplifier = true;
-                        }
-
-                        offset += 12 + len;
-                        offset = this.align4(offset);
-                    } else {
-                        offset += 4;
-                    }
-                }
-
-                return { init: initSequence, resetGpios, enableGpios, powerSupply, gpio, supportsSdio, supportsSd, useExtAmplifier };
-            }
-
-            parseGpioData(data) {
-                const values = [];
-                for (let i = 0; i < data.length; i += 4) {
-                    if (i + 4 <= data.length) {
-                        const val = (data[i] << 24) | (data[i + 1] << 16) | (data[i + 2] << 8) | data[i + 3];
-                        values.push(val);
-                    }
-                }
-                return values;
-            }
-
-            formatGpios(gpioData, arrayBuffer) {
-                if (!gpioData || gpioData.length < 3) return '<span class="string">""</span>';
-
-                const [phandle, pin, flags] = gpioData;
-                const nodePath = this.phandleMap.get(phandle);
-                let gpioController;
-
-                if (nodePath) {
-                    const nodeName = this.getNodeNameFromPath(nodePath);
-                    // 移除@后面的部分，只保留节点名称
-                    gpioController = `&${nodeName.split('@')[0]}`;
-                } else {
-                    gpioController = `&unknown_${phandle.toString(16)}`;
-                }
-
-                const pinName = GPIO_MAPPING[pin] || `0x${pin.toString(16)}`;
-                const flagMap = { 0x0: "GPIO_ACTIVE_HIGH", 0x1: "GPIO_ACTIVE_LOW" };
-                const flagStr = flagMap[flags] || `0x${flags.toString(16)}`;
-
-                return `<${gpioController} ${pinName} ${flagStr}>`;
-            }
-
-            getNodeNameFromPath(nodePath) {
-                const parts = nodePath.split('/');
-                return parts[parts.length - 1] || nodePath;
-            }
-
-            sequenceStringToBytes(sequenceString) {
-                return sequenceString.split(' ').map(hex => parseInt(hex, 16));
-            }
-
-            parseSequenceData(data) {
-                const bytes = [];
-                for (let i = 0; i < data.length; i++) {
-                    bytes.push(data[i]);
-                }
-                return bytes;
-            }
-
-            formatSequence(sequence) {
-                if (!sequence || sequence.length === 0) return '<span class="string">""</span>';
-                const hexValues = sequence.map(b =>
-                    `<span class="hex">${b.toString(16).padStart(2, '0')}</span>`
-                );
-                return `[${hexValues.join(' ')}]`;
-            }
-
-            findPanelNodeAtOffset(view, offset, stringOffset) {
-                try {
-                    const token = view.getUint32(offset, false);
-                    if (token === 1) {
-                        const name = this.readString(view, offset + 4);
-                        if (name && (name.includes('panel') || name.includes('display') || name.includes('lcd'))) {
-                            return { name: name, offset: offset };
-                        }
-                    }
-                } catch (e) { }
-                return null;
-            }
-
-            findDwmmcNodeAtOffset(view, offset, stringOffset) {
-                try {
-                    const token = view.getUint32(offset, false);
-                    if (token === 1) {
-                        const name = this.readString(view, offset + 4);
-                        if (name && name.includes('dwmmc') && name.includes('ff380000')) {
-                            return { name: name, offset: offset };
-                        }
-                    }
-                } catch (e) { }
-                return null;
-            }
-
-            parseUint32(data) {
-                if (data.length >= 4) {
-                    return (data[0] << 24) | (data[1] << 16) | (data[2] << 8) | data[3];
-                }
-                return null;
-            }
-
-            readString(view, offset) {
-                let str = '';
-                for (let i = offset; i < view.byteLength; i++) {
-                    const char = view.getUint8(i);
-                    if (char === 0) break;
-                    str += String.fromCharCode(char);
-                }
-                return str;
-            }
-
-            align4(offset) {
-                return (offset + 3) & ~3;
-            }
-        }
-
-        // 页面初始化
-        document.addEventListener('DOMContentLoaded', function () {
-            const fileInput = document.getElementById('fileInput');
-            const uploadArea = document.getElementById('uploadArea');
-            const selectedFile = document.getElementById('selectedFile');
-            const processBtn = document.getElementById('processBtn');
-            const loading = document.getElementById('loading');
-            const resultArea = document.getElementById('resultArea');
-            const errorMessage = document.getElementById('errorMessage');
-            const systemBtns = document.querySelectorAll('.system-btn');
-            const langBtns = document.querySelectorAll('.lang-btn');
-
-            const identifier = new DTBIdentifier();
-            let currentFile = null;
-
-            // 语言切换事件
-            langBtns.forEach(btn => {
-                btn.addEventListener('click', function () {
-                    switchLanguage(this.dataset.lang);
-                });
-            });
-
-            // 系统选择事件
-            systemBtns.forEach(btn => {
-                btn.addEventListener('click', function () {
-                    systemBtns.forEach(b => b.classList.remove('active'));
-                    this.classList.add('active');
-                    identifier.setSystem(this.dataset.system);
-                });
-            });
-
-            fileInput.addEventListener('change', function (e) {
-                if (e.target.files.length > 0) {
-                    currentFile = e.target.files[0];
-                    const fileSizeText = currentLanguage === 'zh' ? 
-                        `✅ 已选择: ${currentFile.name} (${(currentFile.size / 1024).toFixed(1)} KB)` :
-                        `✅ Selected: ${currentFile.name} (${(currentFile.size / 1024).toFixed(1)} KB)`;
-                    selectedFile.textContent = fileSizeText;
-                    selectedFile.style.display = 'block';
-                    processBtn.disabled = false;
-                    hideError();
-                }
-            });
-
-            ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
-                uploadArea.addEventListener(eventName, preventDefaults, false);
-            });
-
-            function preventDefaults(e) {
-                e.preventDefault();
-                e.stopPropagation();
-            }
-
-            ['dragenter', 'dragover'].forEach(eventName => {
-                uploadArea.addEventListener(eventName, () => uploadArea.classList.add('dragover'), false);
-            });
-
-            ['dragleave', 'drop'].forEach(eventName => {
-                uploadArea.addEventListener(eventName, () => uploadArea.classList.remove('dragover'), false);
-            });
-
-            uploadArea.addEventListener('drop', function (e) {
-                const files = e.dataTransfer.files;
-                if (files.length > 0 && (files[0].name.endsWith('.dtb') || files[0].name.endsWith('.dtbo'))) {
-                    fileInput.files = files;
-                    currentFile = files[0];
-                    const fileSizeText = currentLanguage === 'zh' ? 
-                        `✅ 已选择: ${currentFile.name} (${(currentFile.size / 1024).toFixed(1)} KB)` :
-                        `✅ Selected: ${currentFile.name} (${(currentFile.size / 1024).toFixed(1)} KB)`;
-                    selectedFile.textContent = fileSizeText;
-                    selectedFile.style.display = 'block';
-                    processBtn.disabled = false;
-                    hideError();
-                }
-            });
-
-            processBtn.addEventListener('click', async function () {
-                if (!currentFile) return;
-
-                loading.style.display = 'flex';
-                const loadingText = currentLanguage === 'zh' ? 
-                    '<span class="comment">// 正在识别DTB文件...</span>' :
-                    '<span class="comment">// Identifying DTB file...</span>';
-                resultArea.innerHTML = loadingText;
-                processBtn.disabled = true;
-                hideError();
-
-                try {
-                    const arrayBuffer = await currentFile.arrayBuffer();
-                    // 使用await调用MD5
-                    const md5 = await MD5.md5(arrayBuffer);
-
-                    // 在识别结果中显示MD5
-                    const result = await identifier.identifyDtb(arrayBuffer, md5);
-                    resultArea.innerHTML = result;
-                } catch (error) {
-                    const errorText = currentLanguage === 'zh' ? 
-                        `识别错误: ${error.message}` :
-                        `Identification Error: ${error.message}`;
-                    showError(errorText);
-                    resultArea.innerHTML = `<span style="color: #e74c3c">${errorText}</span>`;
-                } finally {
-                    loading.style.display = 'none';
-                    processBtn.disabled = false;
-                }
-            });
-
-            function showError(message) {
-                errorMessage.textContent = message;
-                errorMessage.style.display = 'block';
-            }
-
-            function hideError() {
-                errorMessage.style.display = 'none';
-            }
-
-            const debugToggle = document.getElementById('debugToggle');
-            debugToggle.addEventListener('change', function() {
-                identifier.isDebug = this.checked;
-                // 如果当前有文件，重新处理
-                if (currentFile) {
-                    processBtn.click();
-                }
-            });
-        });
-    </script>
 </body>
+
 </html>
