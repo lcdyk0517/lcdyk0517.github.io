@@ -368,6 +368,96 @@ const devicesData = {
         }
     },
     {
+        id: 'r36s_v21_2024_12_18',
+        title: 'R36S 原版机 新主板',
+        model: 'R36S 原版机 新主板',
+        category: '原版机',
+        description: '该设备有声音功放，使用两个lpddr3(使用BGA96封装)',
+        features: [
+            'RK3326芯片',
+            '1G运行内存',
+            '无内置存储',
+            '有声音功放',
+        ],
+        gallery: [{
+            title: '主板丝印照片',
+            path: '../images/R36S_V21_2024_12_18/mainboard.jpg'
+        },
+        {
+            title: '主板照片',
+            path: '../images/R36S_V21_2024_12_18/mainboard.jpg'
+        },
+        {
+            title: '背部贴纸',
+            path: '../images/R36S_V21_2024_12_18/back.jpg'
+        },
+        {
+            title: '整体外观',
+            path: '../images/R36S_V21_2024_12_18/front.jpg'
+        }
+        ],
+        systemInfos: ['Rocknix MOD', 'Arkos4Clone', 'ArkOS R3XS', 'Rocknix', 'Rocknix每夜构建', 'UnofficialOS', 'Amberelec', "PAN4elec"],
+        dtbNames: ['origin panel 4'],
+        systemDetails: {
+            'Rocknix MOD': {
+                status: '完全支持',
+                description: 'Rocknix KK魔改版完美支持',
+                tutorial: 'Rocknix KK魔改版建使用教程：\n1. 下载Rocknix 3326系统镜像\n2. 使用烧录工具写入TF卡\n3. 打开rocknix分区运行dtb_selector.exe选择GameConsole R36s P4屏幕\n4. 插入设备并启动',
+                notes: ['请自行测试'],
+                pageLink: '../pages/downloads.html'
+            },
+            'Arkos4Clone': {
+                status: '完全支持',
+                description: 'Arkos4Clone基于该设备开发',
+                tutorial: '使用教程：\n1. 下载Arkos4Clone系统镜像\n2. 使用烧录工具写入TF卡\n3. 打开boot运行dtb_selector.exe选择GameConsole->GameConsole R36s Panel 4\n4. 插入设备并启动',
+                notes: ['请仔细阅读下载注意事项'],
+                pageLink: '../pages/downloads.html'
+            },
+            'ArkOS R3XS': {
+                status: '完全支持',
+                description: 'ArkOS R3XS系统在此设备上运行稳定',
+                tutorial: 'ArkOS R3XS使用教程：\n1. 下载ArkOS R3XS系统镜像\n2. 使用烧录工具写入TF卡\n3. 打开boot分区的的ScreenFiles->Panel4复制全部文件\n4. 粘贴到boot的根目录\n5. 插入设备即可启动',
+                notes: ['请自行测试'],
+                pageLink: '../pages/downloads.html'
+            },
+            'Rocknix': {
+                status: '完全支持',
+                description: 'Rocknix系统在此设备上运行稳定',
+                tutorial: 'Rocknix使用教程：\n1. 下载Rocknix 3326b系统镜像\n2. 使用烧录工具写入TF卡\n3. 打开rocknix分区创建一个overlays文件夹\n4. 把工具中panel4设备dtbo放到该文件夹内\n5. 插入设备并启动',
+                notes: ['请自行测试'],
+                pageLink: '../pages/downloads.html'
+            },
+            'Rocknix每夜构建': {
+                status: '完全支持',
+                description: 'Rocknix每夜构建系统在此设备上运行稳定',
+                tutorial: 'Rocknix每夜构建使用教程：\n1. 下载Rocknix 3326b系统镜像\n2. 使用烧录工具写入TF卡\n3. 打开rocknix分区创建一个overlays文件夹\n4. 把工具中panel4设备dtbo放到该文件夹内\n5. 插入设备并启动',
+                notes: ['请自行测试'],
+                pageLink: '../pages/downloads.html'
+            },
+            'UnofficialOS': {
+                status: '完全支持',
+                description: 'UnofficialOS系统在此设备上运行稳定',
+                tutorial: 'UnofficialOS使用教程：\n1. 下载UnofficialOS Clone系统镜像\n2. 使用烧录工具写入TF卡\n3. 打开UnofficialOS分区创建一个overlays文件夹\n4. 把工具中panel4设备dtbo放到该文件夹内\n5. 插入设备并启动',
+                notes: ['请自行测试'],
+                pageLink: '../pages/downloads.html'
+            },
+            'Amberelec': {
+                status: '完全支持',
+                description: 'Amberelec系统在此设备上运行稳定',
+                tutorial: 'Amberelec使用教程：\n1. 下载Amberelec 351MP系统镜像\n2. 使用烧录工具写入TF卡\n3. 下载AmberelecR36s的dtb\n4. 把工具中panel4设备dtb放到该文件夹内\n5. 插入设备并启动',
+                notes: ['请自行测试'],
+                pageLink: '../pages/downloads.html'
+            },
+            'PAN4elec': {
+                status: '完全支持',
+                description: 'PAN4elec系统在此设备上运行稳定',
+                tutorial: 'PAN4elec使用教程：\n1. 下载PAN4elec系统镜像\n2. 使用烧录工具写入TF卡\n3. 插入设备并启动',
+                notes: ['请自行测试'],
+                pageLink: '../pages/downloads.html'
+            }
+        }
+    },
+    {
         id: 'r36s_v12_2023_08_18',
         title: 'R36S 原版机 P0屏幕',
         model: 'R36S 原版机 P0屏幕',
