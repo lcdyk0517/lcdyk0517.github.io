@@ -703,7 +703,7 @@ const devicesData = {
             path: '../images/R36S_V12_2023_08_18_PANEL1_2/front.jpg'
         }
         ],
-        dtbNames: ['r36s_v12_2023_08_18_1_2', , 'K36 Panel 1', 'K36 Panel 2'],
+        dtbNames: ['r36s_v12_2023_08_18_1_2', 'K36 Panel 1', 'K36 Panel 2'],
         systemInfos: ['Rocknix MOD', 'Arkos4Clone', 'ArkOS K36', 'Rocknix WIP', 'Rocknix每夜构建', 'UnofficialOS'],
         systemDetails: {
             'Rocknix MOD': {
@@ -724,6 +724,156 @@ const devicesData = {
                 status: '完全支持',
                 description: 'ArkOS K36系统在此设备上运行稳定',
                 tutorial: 'ArkOS K36使用教程：\n1. 下载ArkOS K36系统镜像\n2. 使用烧录工具写入TF卡\n3. 无需更改dtb插入设备即可启动',
+                notes: ['右摇杆识别颠倒'],
+                pageLink: '../pages/downloads.html'
+            },
+            'Rocknix WIP': {
+                status: '测试支持',
+                description: 'Rocknix WIP系统在此设备上运行稳定',
+                tutorial: 'Rocknix WIP使用教程：\n1. 下载Rocknix WIP系统镜像\n2. 使用烧录工具写入TF卡\n3. 打开rocknix分区创建一个stock文件夹\n4. 把该设备dtb放到该文件夹内\n5. 插入设备并启动',
+                notes: ['该项目为WIP构建，如果需要设备摇杆 声音问题，请打开Rocknix dtbo网页生成工具重新生成dtbo放到rocknix分区的overlays文件夹内'],
+                pageLink: '../pages/downloads.html'
+            },
+            'Rocknix每夜构建': {
+                status: '测试支持',
+                description: 'Rocknix每夜构建系统在此设备上运行稳定',
+                tutorial: 'Rocknix每夜构建使用教程：\n1. 下载Rocknix B系统镜像\n2. 使用烧录工具写入TF卡\n3. 打开rocknix分区创建一个overlays文件夹\n4. Rocknix dtbo网页生成工具重新生成dtbo并放到文件夹内\n5. 插入设备并启动',
+                notes: ['请自行测试'],
+                pageLink: '../pages/downloads.html'
+            },
+            'UnofficialOS': {
+                status: '测试支持',
+                description: 'UnofficialOS系统在此设备上运行稳定',
+                tutorial: 'UnofficialOS使用教程：\n1. 下载UnofficialOS Clone系统镜像\n2. 使用烧录工具写入TF卡\n3. 打开unofficialos分区创建一个overlays文件夹\n4. UnofficialOS dtbo网页生成工具重新生成dtbo并放到文件夹内\n5. 打开boot.ini文件找到  load mmc 1:1 ${dtb_loadaddr} rk3326-batlexp-g350.dtb\n6. 请在这一行前面加上#，然后把下面一行#  load mmc 1:1 ${dtb_loadaddr} rk3326-k36-clone.dtb的#删掉\n7. 插入设备并启动',
+                notes: ['遇到声音问题请修改load mmc 1:1 ${dtb_loadaddr} rk3326-k36-clone.dtb','为load mmc 1:1 ${dtb_loadaddr} rk3326-k36-clone-v2.dtb', '目前ota更新后需要重新修改boot.ini后续UnofficialOS更新可以在ES的菜单中调整'],
+                pageLink: '../pages/downloads.html'
+            }
+        }
+    },
+    {
+        id: 'r36s_v12_2023_08_18_clone',
+        title: 'R36S V12克隆',
+        model: 'R36S V12克隆',
+        category: '克隆机',
+        description: '该设备无声音功放，使用eMCP(BGA221封装)',
+        features: [
+            'RK3326芯片',
+            '1G运行内存',
+            '8G内置存储',
+        ],
+        gallery: [{
+            title: '主板丝印照片',
+            path: '../images/R36S_V12_2023_08_18_CLONE/mainboard.jpg'
+        },
+        {
+            title: '主板照片',
+            path: '../images/R36S_V12_2023_08_18_CLONE/mainboard.jpg'
+        },
+        {
+            title: '背部贴纸',
+            path: '../images/R36S_V12_2023_08_18_CLONE/back.jpg'
+        },
+        {
+            title: '整体外观',
+            path: '../images/R36S_V12_2023_08_18_CLONE/front.jpg'
+        }
+        ],
+        dtbNames: ['r36s_v12_2023_08_18_clone'],
+        systemInfos: ['Rocknix WIP', 'Rocknix每夜构建', 'UnofficialOS'],
+        systemDetails: {
+            'Rocknix MOD': {
+                status: '完全支持',
+                description: 'Rocknix KK魔改版完美支持',
+                tutorial: 'Rocknix KK魔改版建使用教程：\n1. 下载Rocknix 3326系统镜像\n2. 使用烧录工具写入TF卡\n3. 打开rocknix分区运行dtb_selector.exe选择R36S Pro\n5. 插入设备并启动',
+                notes: ['请自行测试'],
+                pageLink: '../pages/downloads.html'
+            },
+            'Arkos4Clone': {
+                status: '完全支持',
+                description: 'Arkos4Clone基于该设备开发',
+                tutorial: '使用教程：\n1. 下载Arkos4Clone系统镜像\n2. 使用烧录工具写入TF卡\n3. 打开boot运行dtb_selector.exe选择Clone->K36 Panel 1\n4. 插入设备并启动',
+                notes: ['请仔细阅读下载注意事项'],
+                pageLink: '../pages/downloads.html'
+            },
+            'ArkOS K36': {
+                status: '完全支持',
+                description: 'ArkOS K36系统在此设备上运行稳定',
+                tutorial: 'ArkOS K36使用教程：\n1. 下载ArkOS K36系统镜像\n2. 使用烧录工具写入TF卡\n3. 无需更改dtb插入设备即可启动',
+                notes: ['右摇杆识别颠倒'],
+                pageLink: '../pages/downloads.html'
+            },
+            'Rocknix WIP': {
+                status: '测试支持',
+                description: 'Rocknix WIP系统在此设备上运行稳定',
+                tutorial: 'Rocknix WIP使用教程：\n1. 下载Rocknix WIP系统镜像\n2. 使用烧录工具写入TF卡\n3. 打开rocknix分区创建一个stock文件夹\n4. 把该设备dtb放到该文件夹内\n5. 插入设备并启动',
+                notes: ['该项目为WIP构建，如果需要设备摇杆 声音问题，请打开Rocknix dtbo网页生成工具重新生成dtbo放到rocknix分区的overlays文件夹内'],
+                pageLink: '../pages/downloads.html'
+            },
+            'Rocknix每夜构建': {
+                status: '测试支持',
+                description: 'Rocknix每夜构建系统在此设备上运行稳定',
+                tutorial: 'Rocknix每夜构建使用教程：\n1. 下载Rocknix B系统镜像\n2. 使用烧录工具写入TF卡\n3. 打开rocknix分区创建一个overlays文件夹\n4. Rocknix dtbo网页生成工具重新生成dtbo并放到文件夹内\n5. 插入设备并启动',
+                notes: ['请自行测试'],
+                pageLink: '../pages/downloads.html'
+            },
+            'UnofficialOS': {
+                status: '测试支持',
+                description: 'UnofficialOS系统在此设备上运行稳定',
+                tutorial: 'UnofficialOS使用教程：\n1. 下载UnofficialOS Clone系统镜像\n2. 使用烧录工具写入TF卡\n3. 打开unofficialos分区创建一个overlays文件夹\n4. UnofficialOS dtbo网页生成工具重新生成dtbo并放到文件夹内\n5. 打开boot.ini文件找到  load mmc 1:1 ${dtb_loadaddr} rk3326-batlexp-g350.dtb\n6. 请在这一行前面加上#，然后把下面一行#  load mmc 1:1 ${dtb_loadaddr} rk3326-k36-clone.dtb的#删掉\n7. 插入设备并启动',
+                notes: ['遇到声音问题请修改load mmc 1:1 ${dtb_loadaddr} rk3326-k36-clone.dtb','为load mmc 1:1 ${dtb_loadaddr} rk3326-k36-clone-v2.dtb', '目前ota更新后需要重新修改boot.ini后续UnofficialOS更新可以在ES的菜单中调整'],
+                pageLink: '../pages/downloads.html'
+            }
+        }
+    },
+    {
+        id: 'R36S_R36S_2025_05_21',
+        title: 'R36S',
+        model: 'R36S',
+        category: '克隆机',
+        description: '该设备无声音功放，使用eMCP(使用BGA221封装)',
+        features: [
+            'RK3326芯片',
+            '1G运行内存',
+            '8G内置存储',
+        ],
+        gallery: [{
+            title: '主板丝印照片',
+            path: '../images/R36S_R36S_2025_05_21/mainboard.jpg'
+        },
+        {
+            title: '主板照片',
+            path: '../images/R36S_R36S_2025_05_21/mainboard.jpg'
+        },
+        {
+            title: '背部贴纸',
+            path: '../images/R36S_R36S_2025_05_21/back.jpg'
+        },
+        {
+            title: '整体外观',
+            path: '../images/R36S_R36S_2025_05_21/front.jpg'
+        }
+        ],
+        dtbNames: ['r36s_r36s_2025_05_21', 'K36 Panel 8', 'K36 Panel 9'],
+        systemInfos: ['Rocknix MOD', 'Arkos4Clone', 'ArkOS K36', 'Rocknix WIP', 'Rocknix每夜构建', 'UnofficialOS'],
+        systemDetails: {
+            'Rocknix MOD': {
+                status: '测试支持',
+                description: 'Rocknix KK魔改版完美支持',
+                tutorial: 'Rocknix KK魔改版建使用教程：\n1. 下载Rocknix 3326系统镜像\n2. 使用烧录工具写入TF卡\n3. 打开rocknix分区运行dtb_selector.exe选择G80C\n5. 插入设备并启动',
+                notes: ['请自行测试，我没有测试过'],
+                pageLink: '../pages/downloads.html'
+            },
+            'Arkos4Clone': {
+                status: '完全支持',
+                description: 'Arkos4Clone基于该设备开发',
+                tutorial: '使用教程：\n1. 下载Arkos4Clone系统镜像\n2. 使用烧录工具写入TF卡\n3. 打开boot运行dtb_selector.exe选择Clone->K36 Panel 8\n4. 插入设备并启动',
+                notes: ['请仔细阅读下载注意事项'],
+                pageLink: '../pages/downloads.html'
+            },
+            'ArkOS K36': {
+                status: '完全支持',
+                description: 'ArkOS K36系统在此设备上运行稳定',
+                tutorial: 'ArkOS K36使用教程：\n1. 下载ArkOS K36系统镜像\n2. 使用烧录工具写入TF卡\n3. 打开boot分区的的ScreenFiles->Panel8或者Panel9复制全部文件\n4. 粘贴到boot的根目录\n5. 插入设备即可启动',
                 notes: ['右摇杆识别颠倒'],
                 pageLink: '../pages/downloads.html'
             },
@@ -772,6 +922,14 @@ const DTB_DATABASE = [{
 {
     name: "r36s_v12_2023_08_18_5",
     md5: "bd1a9f3182d6d681e4e83eb3a85b91eb"
+},
+{
+    name: "r36s_v12_2023_08_18_clone",
+    md5: "6655a1e7fafa4630373cccedecb5b6ae"
+},
+{
+    name: "r36s_r36s_2025_05_21",
+    md5: "bd2e29ab7c1fdf9a40066821b6f61549"
 },
 {
     name: "g80ca_mb_v1.2_2025_04_22",
