@@ -869,24 +869,24 @@ const devicesData = {
         }
         ],
         dtbNames: ['r36s_v12_2023_08_18_clone'],
-        systemInfos: ['Rocknix WIP', 'Rocknix每夜构建', 'UnofficialOS'],
+        systemInfos: ['Rocknix MOD', 'Arkos4Clone', 'Rocknix WIP', 'Rocknix每夜构建', 'UnofficialOS'],
         systemDetails: {
             'Rocknix MOD': {
                 status: '完全支持',
                 description: 'Rocknix KK魔改版完美支持',
-                tutorial: 'Rocknix KK魔改版建使用教程：\n1. 下载Rocknix 3326系统镜像\n2. 使用烧录工具写入TF卡\n3. 打开rocknix分区运行dtb_selector.exe选择R36S Pro\n5. 插入设备并启动',
+                tutorial: 'Rocknix KK魔改版建使用教程：\n1. 下载Rocknix 3326系统镜像\n2. 使用烧录工具写入TF卡\n3. 打开rocknix分区运行dtb_selector.exe选择"R36S克隆 种类3"\n5. 插入设备并启动',
                 notes: ['请自行测试'],
                 pageLink: '../pages/downloads.html'
             },
             'Arkos4Clone': {
                 status: '完全支持',
                 description: 'Arkos4Clone基于该设备开发',
-                tutorial: '使用教程：\n1. 下载Arkos4Clone系统镜像\n2. 使用烧录工具写入TF卡\n3. 打开boot运行dtb_selector.exe选择Clone->K36 Panel 1\n4. 插入设备并启动',
+                tutorial: '使用教程：\n1. 下载Arkos4Clone系统镜像\n2. 使用烧录工具写入TF卡\n3. 打开boot运行dtb_selector.exe选择Clone->Clone TypeC\n4. 插入设备并启动',
                 notes: ['请仔细阅读下载注意事项'],
                 pageLink: '../pages/downloads.html'
             },
             'ArkOS K36': {
-                status: '完全支持',
+                status: '暂不支持',
                 description: 'ArkOS K36系统在此设备上运行稳定',
                 tutorial: 'ArkOS K36使用教程：\n1. 下载ArkOS K36系统镜像\n2. 使用烧录工具写入TF卡\n3. 无需更改dtb插入设备即可启动',
                 notes: ['右摇杆识别颠倒'],
