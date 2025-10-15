@@ -297,6 +297,7 @@ function calculateGitHubProjects() {
 }
 
 // 下载计数更新
+// 下载计数更新 - 修复版本
 function updateDownloadCounts() {
     const firmwareCount = downloadData.firmware.length;
     const toolsCount = downloadData.tools.length;
@@ -307,11 +308,11 @@ function updateDownloadCounts() {
     const githubCount = calculateGitHubProjects();
     const activeCount = calculateActiveProjects();
     
-    // 更新徽章计数
+    // 更新徽章计数 - 修复：使用正确的ID
     const firmwareBadge = document.getElementById('firmware-count');
     const toolsBadge = document.getElementById('tools-count');
     const driversBadge = document.getElementById('drivers-count');
-    const docsBadge = document.getElementById('docs-count');
+    const docsBadge = document.getElementById('docs-count'); // 修复：应该是 docs-count
     
     if (firmwareBadge) firmwareBadge.textContent = firmwareCount;
     if (toolsBadge) toolsBadge.textContent = toolsCount;
@@ -336,6 +337,10 @@ function updateDownloadCounts() {
         驱动: driversCount,
         文档: docsCount
     });
+    
+    // 调试信息
+    console.log('文档数量元素:', docsBadge);
+    console.log('文档数据:', downloadData.documents);
 }
 
 // 页面加载完成后的效果

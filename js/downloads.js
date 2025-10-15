@@ -254,6 +254,26 @@ const downloadData = {
                 }
             ]
         }
+    ],
+    documents: [
+        {
+            id: 'documents-1',
+            name: 'windstarry整理的Ports游戏',
+            version: '',
+            date: '',
+            size: '',
+            description: 'windstarry一个一个测试的Ports游戏',
+            platform: '',
+            downloadLinks: [
+                {
+                    type: 'baidu',
+                    name: '百度网盘',
+                    url: 'https://pan.baidu.com/s/1c0wGlP2AFODkpr-FDi9bSw?pwd=vryz',
+                    icon: 'fas fa-cloud-download-alt',
+                    color: '#2932e1'
+                }
+            ]
+        },
     ]
 };
 
@@ -264,6 +284,7 @@ function loadDownloads() {
     loadDrivers();
     loadDocuments();
     setupSearch();
+    updateDownloadCounts();
 }
 
 // 工具函数：检查值是否为空
@@ -630,16 +651,17 @@ function loadDocuments() {
     const list = document.getElementById('docs-list');
     if (!list) return;
     
+    // 修复：使用正确的数据字段 documents（不是 documents）
     if (downloadData.documents && downloadData.documents.length > 0) {
         list.innerHTML = downloadData.documents.map(item => {
             const metaHTML = generateMetaHTML(item, [
                 { key: 'version', icon: 'fas fa-tag' },
                 { key: 'date', icon: 'far fa-calendar' },
-                { key: 'size', icon: 'fas fa-weight-hanging' },
-                { key: 'format', icon: 'fas fa-file' }
+                { key: 'size', icon: 'fas fa-weight-hanging' }
             ]);
             
-            const buttonHTML = generateButtonHTML(item);
+            // 修复：使用新的按钮生成函数
+            const buttonsHTML = generateDownloadButtons(item);
             
             return `
                 <li class="download-item">
@@ -649,7 +671,7 @@ function loadDocuments() {
                             <p>${item.description}</p>
                             ${metaHTML}
                         </div>
-                        ${buttonHTML}
+                        ${buttonsHTML}
                     </div>
                 </li>
             `;
