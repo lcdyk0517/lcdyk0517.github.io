@@ -42,7 +42,7 @@ const devicesData = {
             'Arkos4Clone': {
                 status: '完全支持',
                 description: 'Arkos4Clone基于该设备开发',
-                tutorial: '使用教程：\n1. 下载Arkos4Clone系统镜像\n2. 使用烧录工具写入TF卡\n3. 打开boot运行dtb_selector.exe选择Clone->K36 Panel 1\n4. 插入设备并启动',
+                tutorial: '使用教程：\n1. 下载Arkos4Clone系统镜像\n2. 使用烧录工具写入TF卡\n3. 打开boot运行dtb_selector.exe选择Clone->Clone Type 1 With Amplifier\n4. 插入设备并启动',
                 notes: ['请仔细阅读下载注意事项'],
                 pageLink: '../pages/downloads.html'
             },
@@ -119,7 +119,7 @@ const devicesData = {
             'Arkos4Clone': {
                 status: '完全支持',
                 description: 'Arkos4Clone基于该设备开发',
-                tutorial: '使用教程：\n1. 下载Arkos4Clone系统镜像\n2. 使用烧录工具写入TF卡\n3. 打开boot运行dtb_selector.exe选择Clone->K36 Panel 8\n4. 插入设备并启动',
+                tutorial: '使用教程：\n1. 下载Arkos4Clone系统镜像\n2. 使用烧录工具写入TF卡\n3. 打开boot运行dtb_selector.exe选择Clone->Clone Type 2\n4. 插入设备并启动',
                 notes: ['请仔细阅读下载注意事项'],
                 pageLink: '../pages/downloads.html'
             },
@@ -195,7 +195,7 @@ const devicesData = {
             'Arkos4Clone': {
                 status: '完全支持',
                 description: 'Arkos4Clone基于该设备开发',
-                tutorial: '使用教程：\n1. 下载Arkos4Clone系统镜像\n2. 使用烧录工具写入TF卡\n3. 打开boot运行dtb_selector.exe选择Clone->K36 Panel 4\n4. 插入设备并启动',
+                tutorial: '使用教程：\n1. 下载Arkos4Clone系统镜像\n2. 使用烧录工具写入TF卡\n3. 打开boot运行dtb_selector.exe选择Clone Type 3\n4. 插入设备并启动',
                 notes: ['请仔细阅读下载注意事项'],
                 pageLink: '../pages/downloads.html'
             },
@@ -579,9 +579,9 @@ const devicesData = {
                 pageLink: '../pages/downloads.html'
             },
             'Arkos4Clone': {
-                status: '完全支持',
+                status: '测试支持',
                 description: 'Arkos4Clone基于该设备开发',
-                tutorial: '使用教程：\n1. 下载Arkos4Clone系统镜像\n2. 使用烧录工具写入TF卡\n3. 打开boot运行dtb_selector.exe选择Clone->K36 Panel 8\n4. 插入设备并启动',
+                tutorial: '使用教程：\n1. 下载Arkos4Clone系统镜像\n2. 使用烧录工具写入TF卡\n3. 打开boot运行dtb_selector.exe选择Clone->Clone Type 2\n4. 插入设备并启动',
                 notes: ['请仔细阅读下载注意事项'],
                 pageLink: '../pages/downloads.html'
             },
@@ -656,7 +656,7 @@ const devicesData = {
             'Arkos4Clone': {
                 status: '完全支持',
                 description: 'Arkos4Clone基于该设备开发',
-                tutorial: '使用教程：\n1. 下载Arkos4Clone系统镜像\n2. 使用烧录工具写入TF卡\n3. 打开boot运行dtb_selector.exe选择Clone->K36 Panel 8\n4. 插入设备并启动',
+                tutorial: '使用教程：\n1. 下载Arkos4Clone系统镜像\n2. 使用烧录工具写入TF卡\n3. 打开boot运行dtb_selector.exe选择Clone->Clone Type 4\n4. 插入设备并启动',
                 notes: ['请仔细阅读下载注意事项'],
                 pageLink: '../pages/downloads.html'
             },
@@ -731,7 +731,7 @@ const devicesData = {
             'Arkos4Clone': {
                 status: '完全支持',
                 description: 'Arkos4Clone基于该设备开发',
-                tutorial: '使用教程：\n1. 下载Arkos4Clone系统镜像\n2. 使用烧录工具写入TF卡\n3. 打开boot运行dtb_selector.exe选择Clone->K36 Panel 8\n4. 插入设备并启动',
+                tutorial: '使用教程：\n1. 下载Arkos4Clone系统镜像\n2. 使用烧录工具写入TF卡\n3. 打开boot运行dtb_selector.exe选择Clone Type 4\n4. 插入设备并启动',
                 notes: ['请仔细阅读下载注意事项'],
                 pageLink: '../pages/downloads.html'
             },
@@ -806,7 +806,7 @@ const devicesData = {
             'Arkos4Clone': {
                 status: '完全支持',
                 description: 'Arkos4Clone基于该设备开发',
-                tutorial: '使用教程：\n1. 下载Arkos4Clone系统镜像\n2. 使用烧录工具写入TF卡\n3. 打开boot运行dtb_selector.exe选择Clone->K36 Panel 1\n4. 插入设备并启动',
+                tutorial: '使用教程：\n1. 下载Arkos4Clone系统镜像\n2. 使用烧录工具写入TF卡\n3. 打开boot运行dtb_selector.exe选择Clone->Clone Type 1 With Amplifier\n4. 插入设备并启动',
                 notes: ['请仔细阅读下载注意事项'],
                 pageLink: '../pages/downloads.html'
             },
@@ -881,7 +881,7 @@ const devicesData = {
             'Arkos4Clone': {
                 status: '完全支持',
                 description: 'Arkos4Clone基于该设备开发',
-                tutorial: '使用教程：\n1. 下载Arkos4Clone系统镜像\n2. 使用烧录工具写入TF卡\n3. 打开boot运行dtb_selector.exe选择Clone->Clone TypeC\n4. 插入设备并启动',
+                tutorial: '使用教程：\n1. 下载Arkos4Clone系统镜像\n2. 使用烧录工具写入TF卡\n3. 打开boot运行dtb_selector.exe选择Clone->Clone Type 4\n4. 插入设备并启动',
                 notes: ['请仔细阅读下载注意事项'],
                 pageLink: '../pages/downloads.html'
             },
@@ -956,7 +956,82 @@ const devicesData = {
             'Arkos4Clone': {
                 status: '完全支持',
                 description: 'Arkos4Clone基于该设备开发',
-                tutorial: '使用教程：\n1. 下载Arkos4Clone系统镜像\n2. 使用烧录工具写入TF卡\n3. 打开boot运行dtb_selector.exe选择Clone->K36 Panel 8\n4. 插入设备并启动',
+                tutorial: '使用教程：\n1. 下载Arkos4Clone系统镜像\n2. 使用烧录工具写入TF卡\n3. 打开boot运行dtb_selector.exe选择Clone->Clone Type 2\n4. 插入设备并启动',
+                notes: ['请仔细阅读下载注意事项'],
+                pageLink: '../pages/downloads.html'
+            },
+            'ArkOS K36': {
+                status: '完全支持',
+                description: 'ArkOS K36系统在此设备上运行稳定',
+                tutorial: 'ArkOS K36使用教程：\n1. 下载ArkOS K36系统镜像\n2. 使用烧录工具写入TF卡\n3. 打开boot分区的的ScreenFiles->Panel8或者Panel9复制全部文件\n4. 粘贴到boot的根目录\n5. 插入设备即可启动',
+                notes: ['右摇杆识别颠倒'],
+                pageLink: '../pages/downloads.html'
+            },
+            'Rocknix WIP': {
+                status: '测试支持',
+                description: 'Rocknix WIP系统在此设备上运行稳定',
+                tutorial: 'Rocknix WIP使用教程：\n1. 下载Rocknix WIP系统镜像\n2. 使用烧录工具写入TF卡\n3. 打开rocknix分区创建一个stock文件夹\n4. 把该设备dtb放到该文件夹内\n5. 插入设备并启动',
+                notes: ['该项目为WIP构建，如果需要设备摇杆 声音问题，请打开Rocknix dtbo网页生成工具重新生成dtbo放到rocknix分区的overlays文件夹内'],
+                pageLink: '../pages/downloads.html'
+            },
+            'Rocknix每夜构建': {
+                status: '测试支持',
+                description: 'Rocknix每夜构建系统在此设备上运行稳定',
+                tutorial: 'Rocknix每夜构建使用教程：\n1. 下载Rocknix B系统镜像\n2. 使用烧录工具写入TF卡\n3. 打开rocknix分区创建一个overlays文件夹\n4. Rocknix dtbo网页生成工具重新生成dtbo并放到文件夹内\n5. 插入设备并启动',
+                notes: ['请自行测试'],
+                pageLink: '../pages/downloads.html'
+            },
+            'UnofficialOS': {
+                status: '测试支持',
+                description: 'UnofficialOS系统在此设备上运行稳定',
+                tutorial: 'UnofficialOS使用教程：\n1. 下载UnofficialOS Clone系统镜像\n2. 使用烧录工具写入TF卡\n3. 打开unofficialos分区创建一个overlays文件夹\n4. UnofficialOS dtbo网页生成工具重新生成dtbo并放到文件夹内\n5. 打开boot.ini文件找到  load mmc 1:1 ${dtb_loadaddr} rk3326-batlexp-g350.dtb\n6. 请在这一行前面加上#，然后把下面一行#  load mmc 1:1 ${dtb_loadaddr} rk3326-k36-clone.dtb的#删掉\n7. 插入设备并启动',
+                notes: ['遇到声音问题请修改load mmc 1:1 ${dtb_loadaddr} rk3326-k36-clone.dtb','为load mmc 1:1 ${dtb_loadaddr} rk3326-k36-clone-v2.dtb', '目前ota更新后需要重新修改boot.ini后续UnofficialOS更新可以在ES的菜单中调整'],
+                pageLink: '../pages/downloads.html'
+            }
+        }
+    },
+    {
+        id: 'R36S_POWER_MB_V01_06_06_25',
+        title: 'R36S Power',
+        model: 'R36S Power',
+        category: '克隆机',
+        description: '该设备无声音功放，使用lpddr3(使用BGA178封装)',
+        features: [
+            'RK3326芯片',
+            '1G运行内存',
+            '无内置存储',
+        ],
+        gallery: [{
+            title: '主板丝印照片',
+            path: '../images/R36S_POWER_MB_V01_06_06_25/mainboard.jpg'
+        },
+        {
+            title: '主板照片',
+            path: '../images/R36S_POWER_MB_V01_06_06_25/mainboard.jpg'
+        },
+        {
+            title: '背部贴纸',
+            path: '../images/R36S_POWER_MB_V01_06_06_25/back.jpg'
+        },
+        {
+            title: '整体外观',
+            path: '../images/R36S_POWER_MB_V01_06_06_25/front.jpg'
+        }
+        ],
+        dtbNames: ['r36s_power_mb_v01_06_06_25', 'K36 Panel 8', 'K36 Panel 9'],
+        systemInfos: ['Rocknix WIP', 'Rocknix每夜构建', 'UnofficialOS'],
+        systemDetails: {
+            'Rocknix MOD': {
+                status: '测试支持',
+                description: 'Rocknix KK魔改版完美支持',
+                tutorial: 'Rocknix KK魔改版建使用教程：\n1. 下载Rocknix 3326系统镜像\n2. 使用烧录工具写入TF卡\n3. 打开rocknix分区运行dtb_selector.exe选择G80C\n5. 插入设备并启动',
+                notes: ['请自行测试，我没有测试过'],
+                pageLink: '../pages/downloads.html'
+            },
+            'Arkos4Clone': {
+                status: '完全支持',
+                description: 'Arkos4Clone基于该设备开发',
+                tutorial: '使用教程：\n1. 下载Arkos4Clone系统镜像\n2. 使用烧录工具写入TF卡\n3. 打开boot运行dtb_selector.exe选择Clone->Clone Type 2\n4. 插入设备并启动',
                 notes: ['请仔细阅读下载注意事项'],
                 pageLink: '../pages/downloads.html'
             },
@@ -1030,6 +1105,10 @@ const DTB_DATABASE = [{
     md5: "eaa316c532c147354ec5cb69dd4409b5"
 },
 {
+    name: "r36s_power_mb_v01_06_06_25",
+    md5: "5c295b222d0ec114a4fda02d40f3411b"
+},
+{
     name: "y3506_v03_20241210",
     md5: "8467c8e69a8b49806c7e32d4b1e7b851",
     panelInitSequence: "39 00 04 b9 f1 12 83 39 00 1c ba 33 81 05 f9 0e 0e 20 00 00 00 00 00 00 00 44 25 00 91 0a 00 00 02 4f d1 00 00 37 15 00 02 b8 25 39 00 04 bf 02 11 00 39 00 0b b3 0c 10 0a 50 03 ff 00 00 00 00 39 00 0a c0 73 73 50 50 00 00 08 70 00 15 00 02 bc 46 15 00 02 cc 0b 15 00 02 b4 80 39 00 04 b2 00 13 f0 39 00 0f e3 07 07 0b 0b 03 0b 00 00 00 00 ff 00 c0 10 39 00 0d c1 53 00 1e 1e 77 e1 cc dd 67 77 33 33 39 00 03 b5 10 10 39 00 03 b6 6c 7c 39 00 40 e9 08 00 0e 00 00 b0 b1 11 31 23 28 10 b0 b1 27 08 00 04 02 00 00 00 00 04 02 00 00 00 88 88 ba 60 24 08 88 88 88 88 88 88 88 ba 71 35 18 88 88 88 88 88 00 00 00 01 00 00 00 00 00 00 00 00 00 39 00 3e ea 97 0a 82 02 13 07 00 00 00 00 00 00 80 88 ba 17 53 88 88 88 88 88 88 81 88 ba 06 42 88 88 88 88 88 88 23 10 00 02 80 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 39 00 23 e0 00 07 0b 27 2d 3f 3b 37 05 0a 0b 0f 11 0f 12 12 18 00 07 0b 27 2d 3f 3b 37 05 0a 0b 0f 11 0f 12 12 18 05 96 01 11 05 32 01 29",
@@ -1071,7 +1150,7 @@ const DTB_DATABASE = [{
 },
 {
     name: "origin panel 0",
-    md5: "bfc6068ef7d80575bef04b36ef881619",
+    md5: ["bfc6068ef7d80575bef04b36ef881619", "c4e52ba41966561258f123e997837591"],
     panelInitSequence: "39 00 04 b9 f1 12 83 39 00 06 b1 00 00 00 da 80 39 00 04 b2 00 13 70 39 00 0b b3 10 10 28 28 03 ff 00 00 00 00 15 00 02 b4 80 15 00 03 b5 0a 0a 15 00 03 b6 7f 7f 39 00 05 b8 26 62 f0 63 39 00 1c ba 33 81 05 f9 0e 0e 20 00 00 00 00 00 00 00 44 25 00 90 0a 00 00 01 4f 01 00 00 37 15 00 02 bc 47 39 00 04 bf 02 11 00 39 00 0a c0 73 73 50 50 00 00 12 50 00 39 00 0d c1 53 c0 32 32 77 e1 dd dd 77 77 33 33 39 00 07 c6 82 00 bf ff 00 ff 39 00 07 c7 b8 00 0a 00 00 00 39 00 05 c8 10 40 1e 02 15 00 02 cc 0b 39 00 23 e0 00 07 0d 37 35 3f 41 44 06 0c 0d 0f 11 10 12 14 1a 00 07 0d 37 35 3f 41 44 06 0c 0d 0f 11 10 12 14 1a 39 00 0f e3 07 07 0b 0b 0b 0b 00 00 00 00 ff 00 c0 10 39 00 40 e9 c8 10 02 00 00 b0 b1 11 31 23 28 80 b0 b1 27 08 00 04 02 00 00 00 00 04 02 00 00 00 88 88 ba 60 24 08 88 88 88 88 88 88 88 ba 71 35 18 88 88 88 88 88 00 00 00 01 00 00 00 00 00 00 00 00 00 39 00 3e ea 97 0a 82 02 03 07 00 00 00 00 00 00 81 88 ba 17 53 88 88 88 88 88 88 80 88 ba 06 42 88 88 88 88 88 88 23 00 00 02 80 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 39 00 04 ef ff ff 01 05 c8 01 11 05 32 01 29",
     resetGpios: "&gpio3 RK_PC0 GPIO_ACTIVE_LOW",
     enableGpios: null,
