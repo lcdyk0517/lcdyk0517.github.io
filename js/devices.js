@@ -29,7 +29,7 @@ const devicesData = {
             path: '../images/R36S_V12_2023_08_18_PANEL1/front.jpg'
         }
         ],
-        dtbNames: ['r36s_v12_2023_08_18_1',"K36 Panel 1","K36 Panel 2"],
+        dtbNames: ['r36s_v12_2023_08_18_1',"K36 Panel 1","K36 Panel 2","type_1_with_amplifier"],
         systemInfos: ['Rocknix MOD', 'Arkos4Clone', 'ArkOS K36', 'Rocknix WIP', 'Rocknix每夜构建', 'UnofficialOS'],
         systemDetails: {
             'Rocknix MOD': {
@@ -105,7 +105,7 @@ const devicesData = {
             path: '../images/G80C_V1.0_2025_02_02/front.jpg'
         }
         ],
-        dtbNames: ['K36 Panel 8', 'g80c_v1.0_2025_02_22'],
+        dtbNames: ['K36 Panel 8', 'g80c_v1.0_2025_02_22', "type_2"],
         systemInfos: ['Rocknix MOD', 'Arkos4Clone', 'ArkOS K36', 'Rocknix WIP', 'Rocknix每夜构建', 'UnofficialOS'],
 
         systemDetails: {
@@ -183,7 +183,7 @@ const devicesData = {
         }
         ],
         systemInfos: ['Rocknix MOD', 'Arkos4Clone', 'ArkOS K36', 'Rocknix WIP', 'Rocknix每夜构建', 'UnofficialOS'],
-        dtbNames: ['K36 Panel 4', 'r36s_v20_2025_05_18_970'],
+        dtbNames: ['K36 Panel 4', 'r36s_v20_2025_05_18_970', "type_3"],
         systemDetails: {
             'Rocknix MOD': {
                 status: '完全支持',
@@ -643,7 +643,7 @@ const devicesData = {
             path: '../images/G80CA_MB_V1.2_2025_04_22/front.jpg'
         }
         ],
-        dtbNames: ['g80ca_mb_v1.2_2025_04_22', 'K36 Panel 8', 'K36 Panel 9'],
+        dtbNames: ['g80ca_mb_v1.2_2025_04_22', 'K36 Panel 8', 'K36 Panel 9', "type_2"],
         systemInfos: ['Rocknix MOD', 'Arkos4Clone', 'ArkOS K36', 'Rocknix WIP', 'Rocknix每夜构建', 'UnofficialOS'],
         systemDetails: {
             'Rocknix MOD': {
@@ -656,7 +656,7 @@ const devicesData = {
             'Arkos4Clone': {
                 status: '完全支持',
                 description: 'Arkos4Clone基于该设备开发',
-                tutorial: '使用教程：\n1. 下载Arkos4Clone系统镜像\n2. 使用烧录工具写入TF卡\n3. 打开boot运行dtb_selector.exe选择Clone->Clone Type 4\n4. 插入设备并启动',
+                tutorial: '使用教程：\n1. 下载Arkos4Clone系统镜像\n2. 使用烧录工具写入TF卡\n3. 打开boot运行dtb_selector.exe选择Clone->Clone Type 2\n4. 插入设备并启动',
                 notes: ['请仔细阅读下载注意事项'],
                 pageLink: '../pages/downloads.html'
             },
@@ -718,7 +718,7 @@ const devicesData = {
             path: '../images/G80CA_MB_V1.2_2025_04_23/front.jpg'
         }
         ],
-        dtbNames: ['g80ca_mb_v1.2_2025_04_23', 'K36 Panel 8', 'K36 Panel 9'],
+        dtbNames: ['g80ca_mb_v1.2_2025_04_23', 'K36 Panel 8', 'K36 Panel 9', "type_2"],
         systemInfos: ['Rocknix MOD', 'Arkos4Clone', 'ArkOS K36', 'Rocknix WIP', 'Rocknix每夜构建', 'UnofficialOS'],
         systemDetails: {
             'Rocknix MOD': {
@@ -731,7 +731,7 @@ const devicesData = {
             'Arkos4Clone': {
                 status: '完全支持',
                 description: 'Arkos4Clone基于该设备开发',
-                tutorial: '使用教程：\n1. 下载Arkos4Clone系统镜像\n2. 使用烧录工具写入TF卡\n3. 打开boot运行dtb_selector.exe选择Clone Type 4\n4. 插入设备并启动',
+                tutorial: '使用教程：\n1. 下载Arkos4Clone系统镜像\n2. 使用烧录工具写入TF卡\n3. 打开boot运行dtb_selector.exe选择Clone Type 2\n4. 插入设备并启动',
                 notes: ['请仔细阅读下载注意事项'],
                 pageLink: '../pages/downloads.html'
             },
@@ -793,7 +793,7 @@ const devicesData = {
             path: '../images/R36S_V12_2023_08_18_PANEL1_2/front.jpg'
         }
         ],
-        dtbNames: ['r36s_v12_2023_08_18_1_2', 'K36 Panel 1', 'K36 Panel 2'],
+        dtbNames: ['r36s_v12_2023_08_18_1_2', 'K36 Panel 1', 'K36 Panel 2', "type_1_with_amplifier"],
         systemInfos: ['Rocknix MOD', 'Arkos4Clone', 'ArkOS K36', 'Rocknix WIP', 'Rocknix每夜构建', 'UnofficialOS'],
         systemDetails: {
             'Rocknix MOD': {
@@ -868,7 +868,7 @@ const devicesData = {
             path: '../images/R36S_V12_2023_08_18_CLONE/front.jpg'
         }
         ],
-        dtbNames: ['r36s_v12_2023_08_18_clone'],
+        dtbNames: ['r36s_v12_2023_08_18_clone', "type_4"],
         systemInfos: ['Rocknix MOD', 'Arkos4Clone', 'Rocknix WIP', 'Rocknix每夜构建', 'UnofficialOS'],
         systemDetails: {
             'Rocknix MOD': {
@@ -943,7 +943,7 @@ const devicesData = {
             path: '../images/R36S_R36S_2025_05_21/front.jpg'
         }
         ],
-        dtbNames: ['r36s_r36s_2025_05_21', 'K36 Panel 8', 'K36 Panel 9'],
+        dtbNames: ['r36s_r36s_2025_05_21', 'K36 Panel 8', 'K36 Panel 9', "type_2"],
         systemInfos: ['Rocknix MOD', 'Arkos4Clone', 'ArkOS K36', 'Rocknix WIP', 'Rocknix每夜构建', 'UnofficialOS'],
         systemDetails: {
             'Rocknix MOD': {
@@ -1018,7 +1018,7 @@ const devicesData = {
             path: '../images/R36S_POWER_MB_V01_06_06_25/front.jpg'
         }
         ],
-        dtbNames: ['r36s_power_mb_v01_06_06_25', 'K36 Panel 8', 'K36 Panel 9'],
+        dtbNames: ['r36s_power_mb_v01_06_06_25', 'K36 Panel 8', 'K36 Panel 9', "type_2"],
         systemInfos: ['Rocknix WIP', 'Rocknix每夜构建', 'UnofficialOS'],
         systemDetails: {
             'Rocknix MOD': {
@@ -1115,6 +1115,50 @@ const DTB_DATABASE = [{
     resetGpios: "&gpio3 RK_PC0 GPIO_ACTIVE_LOW",
     enableGpios: "&gpio1 RK_PC2 GPIO_ACTIVE_LOW",
     useExtAmplifier: true
+},
+{
+    name: "type_1_with_amplifier",
+    md5: null,
+    panelInitSequence: "39 00 04 b9 f1 12 83 39 00 06 b1 00 00 00 da 80 39 00 04 b2 00 13 70 39 00 0b b3 10 10 28 28 03 ff 00 00 00 00 15 00 02 b4 80 15 00 03 b5 0a 0a 15 00 03 b6 82 82 39 00 05 b8 26 62 f0 63 39 00 1c ba 33 81 05 f9 0e 0e 20 00 00 00 00 00 00 00 44 25 00 90 0a 00 00 01 4f 01 00 00 37 15 00 02 bc 47 39 00 04 bf 02 11 00 39 00 0a c0 73 73 50 50 00 00 12 50 00 39 00 0d c1 53 00 32 32 77 d1 cc cc 77 77 33 33 39 00 07 c6 82 00 bf ff 00 ff 39 00 07 c7 b8 00 0a 00 00 00 39 00 05 c8 10 40 1e 02 15 00 02 cc 0b 39 00 23 e0 00 07 0d 37 35 3f 41 44 06 0c 0d 0f 11 10 12 14 1a 00 07 0d 37 35 3f 41 44 06 0c 0d 0f 11 10 12 14 1a 39 00 0f e3 07 07 0b 0b 0b 0b 00 00 00 00 ff 00 c0 10 39 00 40 e9 c8 10 02 00 00 b0 b1 11 31 23 28 80 b0 b1 27 08 00 04 02 00 00 00 00 04 02 00 00 00 88 88 ba 60 24 08 88 88 88 88 88 88 88 ba 71 35 18 88 88 88 88 88 00 00 00 01 00 00 00 00 00 00 00 00 00 39 00 3e ea 97 0a 82 02 03 07 00 00 00 00 00 00 81 88 ba 17 53 88 88 88 88 88 88 80 88 ba 06 42 88 88 88 88 88 88 23 00 00 02 80 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 39 00 04 ef ff ff 01 05 c8 01 11 05 14 01 29",
+    resetGpios: "&gpio3 RK_PB7 GPIO_ACTIVE_LOW",
+    enableGpios: "&gpio0 RK_PB5 GPIO_ACTIVE_HIGH",
+    useExtAmplifier: true,
+},
+{
+    name: "type_1_without_amplifier",
+    md5: null,
+    panelInitSequence: "39 00 04 b9 f1 12 83 39 00 06 b1 00 00 00 da 80 39 00 04 b2 00 13 70 39 00 0b b3 10 10 28 28 03 ff 00 00 00 00 15 00 02 b4 80 15 00 03 b5 0a 0a 15 00 03 b6 82 82 39 00 05 b8 26 62 f0 63 39 00 1c ba 33 81 05 f9 0e 0e 20 00 00 00 00 00 00 00 44 25 00 90 0a 00 00 01 4f 01 00 00 37 15 00 02 bc 47 39 00 04 bf 02 11 00 39 00 0a c0 73 73 50 50 00 00 12 50 00 39 00 0d c1 53 00 32 32 77 d1 cc cc 77 77 33 33 39 00 07 c6 82 00 bf ff 00 ff 39 00 07 c7 b8 00 0a 00 00 00 39 00 05 c8 10 40 1e 02 15 00 02 cc 0b 39 00 23 e0 00 07 0d 37 35 3f 41 44 06 0c 0d 0f 11 10 12 14 1a 00 07 0d 37 35 3f 41 44 06 0c 0d 0f 11 10 12 14 1a 39 00 0f e3 07 07 0b 0b 0b 0b 00 00 00 00 ff 00 c0 10 39 00 40 e9 c8 10 02 00 00 b0 b1 11 31 23 28 80 b0 b1 27 08 00 04 02 00 00 00 00 04 02 00 00 00 88 88 ba 60 24 08 88 88 88 88 88 88 88 ba 71 35 18 88 88 88 88 88 00 00 00 01 00 00 00 00 00 00 00 00 00 39 00 3e ea 97 0a 82 02 03 07 00 00 00 00 00 00 81 88 ba 17 53 88 88 88 88 88 88 80 88 ba 06 42 88 88 88 88 88 88 23 00 00 02 80 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 39 00 04 ef ff ff 01 05 c8 01 11 05 14 01 29",
+    resetGpios: "&gpio3 RK_PB7 GPIO_ACTIVE_LOW",
+    enableGpios: "&gpio0 RK_PB5 GPIO_ACTIVE_HIGH",
+    sdio: "false",
+    useExtAmplifier: false,
+},
+{
+    name: "type_2",
+    md5: "eaa316c532c147354ec5cb69dd4409b5",
+    panelInitSequence: "39 00 04 b9 f1 12 83 39 00 06 b1 00 00 00 da 80 39 00 04 b2 00 13 70 39 00 0b b3 10 10 28 28 03 ff 00 00 00 00 15 00 02 b4 80 15 00 03 b5 0a 0a 15 00 03 b6 82 82 39 00 05 b8 26 62 f0 63 39 00 1c ba 33 81 05 f9 0e 0e 20 00 00 00 00 00 00 00 44 25 00 90 0a 00 00 01 4f 01 00 00 37 15 00 02 bc 47 39 00 04 bf 02 11 00 39 00 0a c0 73 73 50 50 00 00 12 50 00 39 00 0d c1 53 00 32 32 77 d1 cc cc 77 77 33 33 39 00 07 c6 82 00 bf ff 00 ff 39 00 07 c7 b8 00 0a 00 00 00 39 00 05 c8 10 40 1e 02 15 00 02 cc 0b 39 00 23 e0 00 07 0d 37 35 3f 41 44 06 0c 0d 0f 11 10 12 14 1a 00 07 0d 37 35 3f 41 44 06 0c 0d 0f 11 10 12 14 1a 39 00 0f e3 07 07 0b 0b 0b 0b 00 00 00 00 ff 00 c0 10 39 00 40 e9 c8 10 02 00 00 b0 b1 11 31 23 28 80 b0 b1 27 08 00 04 02 00 00 00 00 04 02 00 00 00 88 88 ba 60 24 08 88 88 88 88 88 88 88 ba 71 35 18 88 88 88 88 88 00 00 00 01 00 00 00 00 00 00 00 00 00 39 00 3e ea 97 0a 82 02 03 07 00 00 00 00 00 00 81 88 ba 17 53 88 88 88 88 88 88 80 88 ba 06 42 88 88 88 88 88 88 23 00 00 02 80 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 39 00 04 ef ff ff 01 05 c8 01 11 05 14 01 29",
+    resetGpios: "&gpio3 RK_PD3 GPIO_ACTIVE_LOW",
+    enableGpios: "&gpio3 RK_PA3 GPIO_ACTIVE_HIGH",
+    sdio: "false",
+    useExtAmplifier: false,
+},
+{
+    name: "type_3",
+    md5: "059c64824dbf92ed528880dec22a72ac",
+    panelInitSequence: "15 00 02 ff 30 15 00 02 ff 52 15 00 02 ff 01 15 00 02 e3 00 15 00 02 25 10 15 00 02 28 6f 15 00 02 29 01 15 00 02 2a df 15 00 02 2c 22 15 00 02 c3 0f 15 00 02 37 9c 15 00 02 38 a7 15 00 02 39 41 15 00 02 80 20 15 00 02 91 67 15 00 02 92 67 15 00 02 a0 55 15 00 02 a1 50 15 00 02 a3 58 15 00 02 a4 9c 15 00 02 a7 02 15 00 02 a8 01 15 00 02 a9 21 15 00 02 aa fc 15 00 02 ab 28 15 00 02 ac 06 15 00 02 ad 06 15 00 02 ae 06 15 00 02 af 03 15 00 02 b0 08 15 00 02 b1 26 15 00 02 b2 28 15 00 02 b3 28 15 00 02 b4 03 15 00 02 b5 08 15 00 02 b6 26 15 00 02 b7 08 15 00 02 b8 26 15 00 02 c0 00 15 00 02 c1 00 15 00 02 c2 00 15 00 02 ff 30 15 00 02 ff 52 15 00 02 ff 02 15 00 02 b0 02 15 00 02 d0 02 15 00 02 b1 0f 15 00 02 d1 10 15 00 02 b2 11 15 00 02 d2 12 15 00 02 b3 32 15 00 02 d3 33 15 00 02 b4 36 15 00 02 d4 36 15 00 02 b5 3c 15 00 02 d5 3c 15 00 02 b6 20 15 00 02 d6 20 15 00 02 b7 3e 15 00 02 d7 3e 15 00 02 b8 0e 15 00 02 d8 0d 15 00 02 b9 05 15 00 02 d9 05 15 00 02 ba 11 15 00 02 da 12 15 00 02 bb 11 15 00 02 db 11 15 00 02 bc 13 15 00 02 dc 14 15 00 02 bd 14 15 00 02 dd 14 15 00 02 be 16 15 00 02 de 18 15 00 02 bf 0e 15 00 02 df 0f 15 00 02 c0 17 15 00 02 e0 17 15 00 02 c1 07 15 00 02 e1 08 15 00 02 ff 30 15 00 02 ff 52 15 00 02 ff 03 15 00 02 08 8a 15 00 02 09 8b 15 00 02 30 00 15 00 02 31 00 15 00 02 32 00 15 00 02 33 00 15 00 02 34 61 15 00 02 35 d4 15 00 02 36 24 15 00 02 37 03 15 00 02 40 86 15 00 02 41 87 15 00 02 42 84 15 00 02 43 85 15 00 02 44 11 15 00 02 45 de 15 00 02 46 dd 15 00 02 47 11 15 00 02 48 e0 15 00 02 49 df 15 00 02 50 82 15 00 02 51 83 15 00 02 52 80 15 00 02 53 81 15 00 02 54 11 15 00 02 55 e2 15 00 02 56 e1 15 00 02 57 11 15 00 02 58 e4 15 00 02 59 e3 15 00 02 82 0f 15 00 02 83 0f 15 00 02 84 00 15 00 02 85 0f 15 00 02 86 0f 15 00 02 87 0e 15 00 02 88 0e 15 00 02 89 06 15 00 02 8a 06 15 00 02 8b 07 15 00 02 8c 07 15 00 02 8d 04 15 00 02 8e 04 15 00 02 8f 05 15 00 02 90 05 15 00 02 98 0f 15 00 02 99 0f 15 00 02 9a 00 15 00 02 9b 0f 15 00 02 9c 0f 15 00 02 9d 0e 15 00 02 9e 0e 15 00 02 9f 06 15 00 02 a0 06 15 00 02 a1 07 15 00 02 a2 07 15 00 02 a3 04 15 00 02 a4 04 15 00 02 a5 05 15 00 02 a6 05 15 00 02 e0 02 15 00 02 e1 52 15 00 02 ff 30 15 00 02 ff 52 15 00 02 ff 00 15 00 02 36 02 05 c8 01 11 05 64 01 29",
+    resetGpios: "&gpio3 RK_PB7 GPIO_ACTIVE_LOW",
+    enableGpios: "&gpio0 RK_PB5 GPIO_ACTIVE_HIGH",
+    sdio: "false",
+    useExtAmplifier: false,
+},
+{
+    name: "type_4",
+    md5: "6655a1e7fafa4630373cccedecb5b6ae",
+    panelInitSequence: "39 00 04 b9 f1 12 87 39 00 04 b2 78 04 70 39 00 0b b3 10 10 fc fc 03 ff 00 00 00 00 15 00 02 b4 80 15 00 03 b5 06 06 15 00 03 b6 a9 a9 39 00 05 b8 26 22 f0 13 39 00 1c ba 33 81 05 f9 0e 0e 20 00 00 00 00 00 00 00 44 25 00 91 0a 00 00 01 4f 01 00 00 37 39 00 02 bc 47 39 00 06 bf 02 10 00 80 04 39 00 0a c0 73 73 50 50 00 00 12 73 00 39 00 12 c1 25 c0 32 32 99 e4 77 77 cc cc ff ff 11 11 00 00 32 39 00 0d c7 10 00 0a 00 00 00 00 00 ed c5 00 a5 39 00 05 c8 10 40 1e 03 39 00 02 cc 0b 39 00 23 e0 00 0a 0f 29 3c 3f 41 38 08 0c 0f 12 14 12 13 12 19 00 0a 0f 29 3c 3f 41 38 08 0c 0f 12 14 12 13 12 19 39 00 08 e1 11 11 91 00 00 00 00 39 00 0f e3 07 07 0b 0b 0b 0b 00 00 00 00 ff 04 c0 10 39 00 40 e9 c8 10 0a 00 00 f0 81 12 31 23 4f 86 f0 81 47 08 00 00 10 00 00 00 00 00 10 00 00 00 88 88 08 f8 f4 46 60 02 28 88 88 88 88 18 f8 f5 57 71 13 38 88 88 00 00 00 01 00 00 00 00 00 00 00 00 00 39 00 3e ea 00 1a 00 00 00 00 00 00 00 00 00 00 88 f8 18 f8 83 31 17 75 58 88 88 88 f8 08 f8 82 20 06 64 48 88 88 23 00 00 02 fe 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 39 00 04 ef ff ff 01 05 fa 01 11 05 32 01 29",
+    resetGpios: "&gpio3 RK_PB7 GPIO_ACTIVE_LOW",
+    enableGpios: "&gpio0 RK_PB5 GPIO_ACTIVE_HIGH",
+    sdio: "false",
+    useExtAmplifier: false,
 },
 {
     name: "origin panel 4",
