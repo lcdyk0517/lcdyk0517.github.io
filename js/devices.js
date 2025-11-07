@@ -2051,827 +2051,814 @@ class DTBIdentifier {
         return parts[parts.length - 1] || nodePath;
     }
 }
+// ===== 全局占位图（供所有 <img> data-placeholder 使用）=====
+const PLACEHOLDER_IMG = '../images/placeholder.jpg';
 
 // 加载设备数据并显示
 function loadDevices() {
-    console.log('加载所有设备数据');
-    displayDevices(devicesData.devices);
-    setupSearch(devicesData.devices);
+  console.log('加载所有设备数据');
+  displayDevices(devicesData.devices);
+  setupSearch(devicesData.devices);
 }
 
 // 显示设备列表
 function displayDevices(devices) {
-    const grid = document.getElementById('device-grid');
-    if (!grid) {
-        console.error('设备网格容器未找到');
-        return;
-    }
+  const grid = document.getElementById('device-grid');
+  if (!grid) {
+    console.error('设备网格容器未找到');
+    return;
+  }
 
-    if (!devices || devices.length === 0) {
-        grid.innerHTML = '<div class="error-message">暂无设备数据</div>';
-        return;
-    }
+  if (!devices || devices.length === 0) {
+    grid.innerHTML = '<div class="error-message">暂无设备数据</div>';
+    return;
+  }
 
-    grid.innerHTML = devices.map(device => {
-        // 获取首页显示的图片（gallery中的第一张图片）
-        const mainImage = device.gallery && device.gallery.length > 0 ? device.gallery[0] : null;
-        const imagePath = mainImage ? mainImage.path : '../images/placeholder.jpg';
+  grid.innerHTML = devices.map(device => {
+    // 获取首页显示的图片（gallery中的第一张图片）
+    const mainImage = device.gallery && device.gallery.length > 0 ? device.gallery[0] : null;
+    const imagePath = mainImage ? mainImage.path : PLACEHOLDER_IMG;
 
-        return `
-        <div class="device-card" data-device="${device.id}" onclick="showDeviceDetails('${device.id}', devicesData.devices)">
-            <div class="device-header">
-                <div class="device-model">${device.model}</div>
-                <div class="device-category">${device.category}</div>
-                <div class="device-description">${device.description || '暂无描述'}</div>
-            </div>
-            <div class="device-image">
-                <img src="${imagePath}" 
-                     alt="${device.model}" 
-                     onerror="this.src='../images/placeholder.jpg'">
-            </div>
-            <button class="view-details" data-device="${device.id}">查看详情</button>
+    return `
+      <div class="device-card" data-device="${device.id}" onclick="showDeviceDetails('${device.id}', devicesData.devices)">
+        <div class="device-header">
+          <div class="device-model">${device.model}</div>
+          <div class="device-category">${device.category}</div>
+          <div class="device-description">${device.description || '暂无描述'}</div>
         </div>
-        `;
-    }).join('');
+        <div class="device-image">
+          <img
+            src="${imagePath}"
+            alt="${device.model}"
+            loading="lazy"
+            decoding="async"
+            data-placeholder="${PLACEHOLDER_IMG}">
+        </div>
+        <button class="view-details" data-device="${device.id}">查看详情</button>
+      </div>
+    `;
+  }).join('');
 
-    // 添加点击事件 - 现在整个卡片都可以点击
-    document.querySelectorAll('.device-card').forEach(card => {
-        card.addEventListener('click', (e) => {
-            // 如果点击的是按钮，不触发卡片点击（避免重复触发）
-            if (!e.target.closest('.view-details')) {
-                const deviceId = card.getAttribute('data-device');
-                showDeviceDetails(deviceId, devicesData.devices);
-            }
-        });
+  // 添加点击事件 - 现在整个卡片都可以点击
+  document.querySelectorAll('.device-card').forEach(card => {
+    card.addEventListener('click', (e) => {
+      // 如果点击的是按钮，不触发卡片点击（避免重复触发）
+      if (!e.target.closest('.view-details')) {
+        const deviceId = card.getAttribute('data-device');
+        showDeviceDetails(deviceId, devicesData.devices);
+      }
     });
+  });
 
-    // 保持按钮点击事件（作为备用）
-    document.querySelectorAll('.view-details').forEach(button => {
-        button.addEventListener('click', (e) => {
-            e.stopPropagation(); // 阻止事件冒泡到卡片
-            const deviceId = button.getAttribute('data-device');
-            showDeviceDetails(deviceId, devicesData.devices);
-        });
+  // 保持按钮点击事件（作为备用）
+  document.querySelectorAll('.view-details').forEach(button => {
+    button.addEventListener('click', (e) => {
+      e.stopPropagation(); // 阻止事件冒泡到卡片
+      const deviceId = button.getAttribute('data-device');
+      showDeviceDetails(deviceId, devicesData.devices);
     });
+  });
 
-    console.log(`成功显示 ${devices.length} 个设备`);
+  console.log(`成功显示 ${devices.length} 个设备`);
 }
 
 // 处理系统链接点击事件
 function setupSystemLinks() {
-    const systemLinks = document.querySelectorAll('.page-link-btn');
-    systemLinks.forEach(link => {
-        link.addEventListener('click', function (e) {
-            e.preventDefault();
-            const systemName = this.getAttribute('data-system');
-            const pageUrl = this.getAttribute('href');
+  const systemLinks = document.querySelectorAll('.page-link-btn');
+  systemLinks.forEach(link => {
+    link.addEventListener('click', function (e) {
+      e.preventDefault();
+      const systemName = this.getAttribute('data-system');
+      const pageUrl = this.getAttribute('href');
 
-            // 存储要定位的系统名称到sessionStorage
-            sessionStorage.setItem('targetSystem', systemName);
+      // 存储要定位的系统名称到sessionStorage
+      sessionStorage.setItem('targetSystem', systemName);
 
-            // 跳转到系统页面
-            window.location.href = pageUrl;
-        });
+      // 跳转到系统页面
+      window.location.href = pageUrl;
     });
+  });
 }
 
 // 获取系统配置信息的函数
 function getSystemConfig(systemName) {
-    const systemConfigs = {
-        'Rocknix MOD': {
-            isRecommended: true,
-            theme: 'gold'
-        },
-        'Arkos4Clone': {
-            isRecommended: true,
-            theme: 'gold'
-        },
-        'ArkOS K36': {
-            isRecommended: false,
-            theme: 'blue'
-        },
-        'ArkOS R3XS': {
-            isRecommended: true,
-            theme: 'gold'
-        },
-        'Rocknix WIP': {
-            isRecommended: false,
-            theme: 'blue'
-        },
-        'Rocknix每夜构建': {
-            isRecommended: false,
-            theme: 'blue'
-        },
-        'Rocknix': {
-            isRecommended: true,
-            theme: 'gold'
-        },
-        'UnofficialOS': {
-            isRecommended: true,
-            theme: 'gold'
-        },
-        'Amberelec': {
-            isRecommended: false,
-            theme: 'blue'
-        },
-        'PAN4elec': {
-            isRecommended: false,
-            theme: 'blue'
-        }
-    };
-    
-    return systemConfigs[systemName] || { isRecommended: false, theme: 'default' };
+  const systemConfigs = {
+    'Rocknix MOD': { isRecommended: true, theme: 'gold' },
+    'Arkos4Clone': { isRecommended: true, theme: 'gold' },
+    'ArkOS K36': { isRecommended: false, theme: 'blue' },
+    'ArkOS R3XS': { isRecommended: true, theme: 'gold' },
+    'Rocknix WIP': { isRecommended: false, theme: 'blue' },
+    'Rocknix每夜构建': { isRecommended: false, theme: 'blue' },
+    'Rocknix': { isRecommended: true, theme: 'gold' },
+    'UnofficialOS': { isRecommended: true, theme: 'gold' },
+    'Amberelec': { isRecommended: false, theme: 'blue' },
+    'PAN4elec': { isRecommended: false, theme: 'blue' }
+  };
+  return systemConfigs[systemName] || { isRecommended: false, theme: 'default' };
 }
+
 // 获取分类图标的函数
 function getCategoryIcon(category) {
-    const iconMap = {
-        '克隆机': 'fas fa-clone',
-        '原版机': 'fas fa-star',
-        '酱油机': 'fas fa-flask',
-        '改进版本': 'fas fa-rocket',
-        '旗舰版本': 'fas fa-crown'
-    };
-    return iconMap[category] || 'fas fa-gamepad';
+  const iconMap = {
+    '克隆机': 'fas fa-clone',
+    '原版机': 'fas fa-star',
+    '酱油机': 'fas fa-flask',
+    '改进版本': 'fas fa-rocket',
+    '旗舰版本': 'fas fa-crown'
+  };
+  return iconMap[category] || 'fas fa-gamepad';
 }
 
 // 获取设备年份的辅助函数
 function getDeviceYear(deviceId) {
-    const yearMatch = deviceId.match(/20(\d{2})/);
-    return yearMatch ? `20${yearMatch[1]}` : null;
+  const yearMatch = deviceId.match(/20(\d{2})/);
+  return yearMatch ? `20${yearMatch[1]}` : null;
 }
 
 // 显示设备详情
 function showDeviceDetails(deviceId, devices) {
-    const device = devices.find(d => d.id === deviceId);
-    if (!device) {
-        console.error('未找到设备:', deviceId);
-        return;
-    }
+  const device = devices.find(d => d.id === deviceId);
+  if (!device) {
+    console.error('未找到设备:', deviceId);
+    return;
+  }
 
-    const modal = document.getElementById('device-modal');
-    const modalContent = document.getElementById('modal-content');
+  const modal = document.getElementById('device-modal');
+  const modalContent = document.getElementById('modal-content');
 
-    if (!modal || !modalContent) {
-        console.error('模态框元素未找到');
-        return;
-    }
+  if (!modal || !modalContent) {
+    console.error('模态框元素未找到');
+    return;
+  }
 
-    // 安全地转义 gallery 数据
-    const galleryJson = JSON.stringify(device.gallery || [])
-        .replace(/'/g, "\\'")
-        .replace(/"/g, '&quot;');
+  // 安全地转义 gallery 数据
+  const galleryJson = JSON.stringify(device.gallery || [])
+    .replace(/'/g, "\\'")
+    .replace(/"/g, '&quot;');
 
-    modalContent.innerHTML = `
-        <div class="device-detail">
-            <div class="detail-header">
-                <div class="detail-image">
-                    <div class="device-category-display">
-                        <div class="category-icon">
-                            <i class="${getCategoryIcon(device.category)}"></i>
-                        </div>
-                        <div class="category-text">${device.category}</div>
-                    </div>
-                </div>
-                <div class="detail-content">
-                    <h2>${device.title}</h2>
-                    <div class="detail-meta">
-                        <span><i class="fas fa-tag"></i> ${device.category}</span>
-                        ${device.dtbNames && device.dtbNames.length > 0 ? 
-                            `<span><i class="fas fa-microchip"></i> ${device.dtbNames.length}个DTB</span>` : ''}
-                        ${getDeviceYear(device.id) ? 
-                            `<span><i class="fas fa-calendar"></i> ${getDeviceYear(device.id)}</span>` : ''}
-                    </div>
-                    <p>${device.description || '暂无描述'}</p>
-                </div>
+  modalContent.innerHTML = `
+    <div class="device-detail">
+      <div class="detail-header">
+        <div class="detail-image">
+          <div class="device-category-display">
+            <div class="category-icon">
+              <i class="${getCategoryIcon(device.category)}"></i>
             </div>
-            
-            <div class="detail-tabs">
-                <button class="detail-tab active" data-tab="features">产品特性</button>
-                <button class="detail-tab" data-tab="gallery">硬件照片</button>
-                <button class="detail-tab" data-tab="system">系统支持</button>
-            </div>
-            
-            <div class="tab-content active" id="features-content">
-                <div class="features-grid">
-                    ${(device.features || []).map(feature => `
-                        <div class="feature-item">
-                            <i class="fas fa-check"></i>
-                            <span>${feature}</span>
-                        </div>
-                    `).join('')}
-                </div>
-            </div>
-            
-            <div class="tab-content" id="gallery-content">
-                <div class="gallery-grid">
-                    ${(device.gallery || []).map(item => {
-        const safePath = item.path.replace(/'/g, "\\'");
-        const safeTitle = item.title.replace(/'/g, "\\'");
-        return `
-                        <div class="gallery-item">
-                            <div class="image-container">
-                                <img src="${item.path}" alt="${item.title}" 
-                                    onclick="event.stopPropagation(); openImageModal('${safePath}', '${safeTitle}', '${galleryJson}')"
-                                    onerror="this.src='../images/placeholder.jpg'">
-                                <div class="image-title">${item.title}</div>
-                            </div>
-                        </div>
-                        `;
-    }).join('')}
-                </div>
-            </div>
-            
-            <div class="tab-content" id="system-content">
-                <div class="system-support">
-                    <h4><i class="fas fa-desktop"></i> 系统支持情况</h4>
-                    <div class="system-list">
-                        ${(device.systemInfos || []).map(systemName => {
-        const system = device.systemDetails ? device.systemDetails[systemName] : null;
-        if (!system) return '';
-
-        // 获取系统推荐状态和主题颜色
-        const systemConfig = getSystemConfig(systemName);
-        const isRecommended = systemConfig.isRecommended || false;
-        const theme = systemConfig.theme || 'default';
-        const statusClass = system.status === '完全支持' ? 'status-full' :
-            system.status === '测试支持' ? 'status-test' : 'status-partial';
-
-        return `
-                            <div class="system-item ${isRecommended ? 'recommended' : ''} ${theme}">
-                                ${isRecommended ? `
-                                <div class="recommendation-badge">
-                                    <i class="fas fa-star"></i>推荐
-                                </div>
-                                ` : ''}
-                                <div class="system-header">
-                                    <h5>${systemName}</h5>
-                                    <span class="system-status ${statusClass}">${system.status}</span>
-                                </div>
-                                <p class="system-description">${system.description || '暂无描述'}</p>
-                                <div class="system-tutorial">
-                                    <strong>安装教程：</strong>
-                                    <pre>${system.tutorial || '暂无教程'}</pre>
-                                </div>
-                                <div class="system-notes">
-                                    <strong>注意事项：</strong>
-                                    <ul>
-                                        ${(system.notes || []).map(note => `<li>${note}</li>`).join('')}
-                                    </ul>
-                                </div>
-                                ${system.pageLink ? `
-                                <div class="system-download">
-                                    <a href="${system.pageLink}" class="page-link-btn" data-system="${systemName}">
-                                        <i class="fas fa-external-link-alt"></i> 查看系统详情
-                                    </a>
-                                </div>
-                                ` : ''}
-                            </div>
-                            `;
-    }).join('')}
-                    </div>
-                </div>
-            </div>
+            <div class="category-text">${device.category}</div>
+          </div>
         </div>
-    `;
+        <div class="detail-content">
+          <h2>${device.title}</h2>
+          <div class="detail-meta">
+            <span><i class="fas fa-tag"></i> ${device.category}</span>
+            ${device.dtbNames && device.dtbNames.length > 0 ?
+              `<span><i class="fas fa-microchip"></i> ${device.dtbNames.length}个DTB</span>` : ''}
+            ${getDeviceYear(device.id) ?
+              `<span><i class="fas fa-calendar"></i> ${getDeviceYear(device.id)}</span>` : ''}
+          </div>
+          <p>${device.description || '暂无描述'}</p>
+        </div>
+      </div>
+      
+      <div class="detail-tabs">
+        <button class="detail-tab active" data-tab="features">产品特性</button>
+        <button class="detail-tab" data-tab="gallery">硬件照片</button>
+        <button class="detail-tab" data-tab="system">系统支持</button>
+      </div>
+      
+      <div class="tab-content active" id="features-content">
+        <div class="features-grid">
+          ${(device.features || []).map(feature => `
+            <div class="feature-item">
+              <i class="fas fa-check"></i>
+              <span>${feature}</span>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+      
+      <div class="tab-content" id="gallery-content">
+        <div class="gallery-grid">
+          ${(device.gallery || []).map(item => {
+            const safePath = item.path.replace(/'/g, "\\'");
+            const safeTitle = item.title.replace(/'/g, "\\'");
+            return `
+              <div class="gallery-item">
+                <div class="image-container">
+                  <img
+                    src="${item.path}"
+                    alt="${item.title}"
+                    loading="lazy"
+                    decoding="async"
+                    data-placeholder="${PLACEHOLDER_IMG}"
+                    onclick="event.stopPropagation(); openImageModal('${safePath}', '${safeTitle}', '${galleryJson}')">
+                  <div class="image-title">${item.title}</div>
+                </div>
+              </div>
+            `;
+          }).join('')}
+        </div>
+      </div>
+      
+      <div class="tab-content" id="system-content">
+        <div class="system-support">
+          <h4><i class="fas fa-desktop"></i> 系统支持情况</h4>
+          <div class="system-list">
+            ${(device.systemInfos || []).map(systemName => {
+              const system = device.systemDetails ? device.systemDetails[systemName] : null;
+              if (!system) return '';
 
-    // 标签页切换
-    setupTabs();
+              // 获取系统推荐状态和主题颜色
+              const systemConfig = getSystemConfig(systemName);
+              const isRecommended = systemConfig.isRecommended || false;
+              const theme = systemConfig.theme || 'default';
+              const statusClass = system.status === '完全支持' ? 'status-full' :
+                                  system.status === '测试支持' ? 'status-test' : 'status-partial';
 
-    // 添加系统链接点击事件处理
-    setupSystemLinks();
+              return `
+                <div class="system-item ${isRecommended ? 'recommended' : ''} ${theme}">
+                  ${isRecommended ? `
+                    <div class="recommendation-badge">
+                      <i class="fas fa-star"></i>推荐
+                    </div>
+                  ` : ''}
+                  <div class="system-header">
+                    <h5>${systemName}</h5>
+                    <span class="system-status ${statusClass}">${system.status}</span>
+                  </div>
+                  <p class="system-description">${system.description || '暂无描述'}</p>
+                  <div class="system-tutorial">
+                    <strong>安装教程：</strong>
+                    <pre>${system.tutorial || '暂无教程'}</pre>
+                  </div>
+                  <div class="system-notes">
+                    <strong>注意事项：</strong>
+                    <ul>
+                      ${(system.notes || []).map(note => `<li>${note}</li>`).join('')}
+                    </ul>
+                  </div>
+                  ${system.pageLink ? `
+                    <div class="system-download">
+                      <a href="${system.pageLink}" class="page-link-btn" data-system="${systemName}">
+                        <i class="fas fa-external-link-alt"></i> 查看系统详情
+                      </a>
+                    </div>
+                  ` : ''}
+                </div>
+              `;
+            }).join('')}
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
 
-    modal.style.display = 'block';
+  // 标签页切换
+  setupTabs();
+
+  // 添加系统链接点击事件处理
+  setupSystemLinks();
+
+  modal.style.display = 'block';
 }
+
 // 设置搜索功能
 function setupSearch(devices) {
-    const searchInput = document.getElementById('search-input');
-    if (!searchInput) return;
+  const searchInput = document.getElementById('search-input');
+  if (!searchInput) return;
 
-    searchInput.addEventListener('input', (e) => {
-        const searchTerm = e.target.value.toLowerCase();
-        const filteredDevices = devices.filter(device =>
-            device.title.toLowerCase().includes(searchTerm) ||
-            device.description.toLowerCase().includes(searchTerm) ||
-            device.features.some(feature => feature.toLowerCase().includes(searchTerm)) ||
-            device.category.toLowerCase().includes(searchTerm)
-        );
-        displayDevices(filteredDevices);
-    });
+  searchInput.addEventListener('input', (e) => {
+    const searchTerm = e.target.value.toLowerCase();
+    const filteredDevices = devices.filter(device =>
+      device.title.toLowerCase().includes(searchTerm) ||
+      device.description.toLowerCase().includes(searchTerm) ||
+      device.features.some(feature => feature.toLowerCase().includes(searchTerm)) ||
+      device.category.toLowerCase().includes(searchTerm)
+    );
+    displayDevices(filteredDevices);
+  });
 }
 
 // 工具函数
 function getSpecName(key) {
-    const specNames = {
-        'cpu': '处理器',
-        'ram': '内存',
-        'storage': '存储',
-        'screen': '屏幕',
-        'wifi': 'WiFi',
-        'bluetooth': '蓝牙',
-        'battery': '电池',
-        'color': '颜色'
-    };
-    return specNames[key] || key;
+  const specNames = {
+    'cpu': '处理器',
+    'ram': '内存',
+    'storage': '存储',
+    'screen': '屏幕',
+    'wifi': 'WiFi',
+    'bluetooth': '蓝牙',
+    'battery': '电池',
+    'color': '颜色'
+  };
+  return specNames[key] || key;
 }
 
 function setupTabs() {
-    document.querySelectorAll('.detail-tab').forEach(tab => {
-        tab.addEventListener('click', function () {
-            const tabId = this.getAttribute('data-tab');
+  document.querySelectorAll('.detail-tab').forEach(tab => {
+    tab.addEventListener('click', function () {
+      const tabId = this.getAttribute('data-tab');
 
-            // 更新活动标签
-            document.querySelectorAll('.detail-tab').forEach(t => t.classList.remove('active'));
-            this.classList.add('active');
+      // 更新活动标签
+      document.querySelectorAll('.detail-tab').forEach(t => t.classList.remove('active'));
+      this.classList.add('active');
 
-            // 显示对应内容
-            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
-            document.getElementById(`${tabId}-content`).classList.add('active');
-        });
+      // 显示对应内容
+      document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+      document.getElementById(`${tabId}-content`).classList.add('active');
     });
+  });
 }
 
 // 新增：处理DTB文件的函数
 async function processDtbFile(file, identifier, statusElement) {
-    try {
-        const arrayBuffer = await file.arrayBuffer();
-        const md5 = MD5.md5(arrayBuffer);
+  try {
+    const arrayBuffer = await file.arrayBuffer();
+    const md5 = MD5.md5(arrayBuffer);
 
-        // 更新状态
-        statusElement.textContent = `🔍 识别中: ${file.name}`;
+    // 更新状态
+    statusElement.textContent = `🔍 识别中: ${file.name}`;
 
-        // 构建节点树
-        identifier.buildNodeTree(arrayBuffer);
+    // 构建节点树
+    identifier.buildNodeTree(arrayBuffer);
 
-        // 提取 Panel 相关信息
-        const panelInfo = identifier.extractPanelInfo(arrayBuffer);
-        const codecInfo = identifier.extractCodecInfo(arrayBuffer);
+    // 提取 Panel 相关信息
+    const panelInfo = identifier.extractPanelInfo(arrayBuffer);
+    const codecInfo = identifier.extractCodecInfo(arrayBuffer);
 
-        console.log('提取的面板信息:', panelInfo);
-        console.log('提取的编解码器信息:', codecInfo);
+    console.log('提取的面板信息:', panelInfo);
+    console.log('提取的编解码器信息:', codecInfo);
 
-        // 在DTB数据库中查找匹配
-        const dtbMatches = identifier.findMatchingDtb(md5, panelInfo, codecInfo);
+    // 在DTB数据库中查找匹配
+    const dtbMatches = identifier.findMatchingDtb(md5, panelInfo, codecInfo);
 
-        console.log('DTB匹配结果:', dtbMatches);
+    console.log('DTB匹配结果:', dtbMatches);
 
-        // 根据匹配的DTB名称查找对应的设备
-        let matchedDevicesInfo = [];
-        let matchType = 'none';
-        let exactMatchedDtbNames = []; // 精确匹配的DTB名称
-        let screenMatchedDtbNames = []; // 屏幕参数匹配的DTB名称
+    // 根据匹配的DTB名称查找对应的设备
+    let matchedDevicesInfo = [];
+    let matchType = 'none';
+    let exactMatchedDtbNames = []; // 精确匹配的DTB名称
+    let screenMatchedDtbNames = []; // 屏幕参数匹配的DTB名称
 
-        if (dtbMatches.hasExactMatch) {
-            matchType = 'exact';
-            const result = identifier.findDevicesByDtbNames(dtbMatches.exactMatches);
-            matchedDevicesInfo = result.devicesInfo;
-            exactMatchedDtbNames = dtbMatches.exactMatches.map(match => match.dbItem.name);
-            console.log('精确匹配设备:', matchedDevicesInfo);
-            console.log('精确匹配DTB名称:', exactMatchedDtbNames);
-        }
-
-        // 屏幕参数匹配
-        if (dtbMatches.hasScreenMatch) {
-            const screenResult = identifier.findDevicesByDtbNames(dtbMatches.screenMatches);
-            screenMatchedDtbNames = dtbMatches.screenMatches.map(match => match.dbItem.name);
-
-            if (matchType === 'none') {
-                matchType = 'screen';
-                matchedDevicesInfo = screenResult.devicesInfo;
-            } else {
-                // 合并结果，去除重复
-                const allDevices = [...matchedDevicesInfo, ...screenResult.devicesInfo];
-                const uniqueDevices = [];
-                const seenIds = new Set();
-
-                for (const deviceInfo of allDevices) {
-                    if (!seenIds.has(deviceInfo.device.id)) {
-                        seenIds.add(deviceInfo.device.id);
-                        uniqueDevices.push(deviceInfo);
-                    }
-                }
-                matchedDevicesInfo = uniqueDevices;
-            }
-            console.log('屏幕参数匹配设备:', screenResult.devicesInfo);
-            console.log('屏幕参数匹配DTB名称:', screenMatchedDtbNames);
-        }
-
-        // 更新状态为完成
-        statusElement.textContent = `✅ 识别完成: ${file.name}`;
-
-        // 显示结果
-        displayDtbSearchResults(matchedDevicesInfo, md5, arrayBuffer, matchType, dtbMatches, exactMatchedDtbNames, screenMatchedDtbNames);
-
-    } catch (error) {
-        console.error('DTB识别错误:', error);
-        statusElement.textContent = `❌ 识别失败: ${file.name}`;
-        statusElement.style.color = '#ff6b6b';
-        alert('识别错误: ' + error.message);
+    if (dtbMatches.hasExactMatch) {
+      matchType = 'exact';
+      const result = identifier.findDevicesByDtbNames(dtbMatches.exactMatches);
+      matchedDevicesInfo = result.devicesInfo;
+      exactMatchedDtbNames = dtbMatches.exactMatches.map(match => match.dbItem.name);
+      console.log('精确匹配设备:', matchedDevicesInfo);
+      console.log('精确匹配DTB名称:', exactMatchedDtbNames);
     }
+
+    // 屏幕参数匹配
+    if (dtbMatches.hasScreenMatch) {
+      const screenResult = identifier.findDevicesByDtbNames(dtbMatches.screenMatches);
+      screenMatchedDtbNames = dtbMatches.screenMatches.map(match => match.dbItem.name);
+
+      if (matchType === 'none') {
+        matchType = 'screen';
+        matchedDevicesInfo = screenResult.devicesInfo;
+      } else {
+        // 合并结果，去除重复
+        const allDevices = [...matchedDevicesInfo, ...screenResult.devicesInfo];
+        const uniqueDevices = [];
+        const seenIds = new Set();
+
+        for (const deviceInfo of allDevices) {
+          if (!seenIds.has(deviceInfo.device.id)) {
+            seenIds.add(deviceInfo.device.id);
+            uniqueDevices.push(deviceInfo);
+          }
+        }
+        matchedDevicesInfo = uniqueDevices;
+      }
+      console.log('屏幕参数匹配设备:', screenResult.devicesInfo);
+      console.log('屏幕参数匹配DTB名称:', screenMatchedDtbNames);
+    }
+
+    // 更新状态为完成
+    statusElement.textContent = `✅ 识别完成: ${file.name}`;
+
+    // 显示结果
+    displayDtbSearchResults(matchedDevicesInfo, md5, arrayBuffer, matchType, dtbMatches, exactMatchedDtbNames, screenMatchedDtbNames);
+
+  } catch (error) {
+    console.error('DTB识别错误:', error);
+    statusElement.textContent = `❌ 识别失败: ${file.name}`;
+    statusElement.style.color = '#ff6b6b';
+    alert('识别错误: ' + error.message);
+  }
 }
 
 // 设置悬浮DTB上传功能
 function setupFloatingDtbUpload() {
-    const floatingUpload = document.getElementById('floatingDtbUpload');
-    const floatingFileInput = document.getElementById('floatingDtbFileInput');
-    const floatingUploadArea = document.getElementById('floatingUploadArea');
-    const floatingSelectedFile = document.getElementById('floatingSelectedFile');
-    const floatingProcessBtn = document.getElementById('floatingProcessBtn'); // 这个按钮将被移除
-    const floatingCloseBtn = document.querySelector('.floating-dtb-close');
+  const floatingUpload = document.getElementById('floatingDtbUpload');
+  const floatingFileInput = document.getElementById('floatingDtbFileInput');
+  const floatingUploadArea = document.getElementById('floatingUploadArea');
+  const floatingSelectedFile = document.getElementById('floatingSelectedFile');
+  const floatingProcessBtn = document.getElementById('floatingProcessBtn'); // 这个按钮将被移除
+  const floatingCloseBtn = document.querySelector('.floating-dtb-close');
 
-    if (!floatingUpload || !floatingFileInput) {
-        console.log('悬浮DTB上传元素未找到，跳过初始化');
-        return;
+  if (!floatingUpload || !floatingFileInput) {
+    console.log('悬浮DTB上传元素未找到，跳过初始化');
+    return;
+  }
+
+  let currentFile = null;
+  const identifier = new DTBIdentifier();
+
+  // 文件选择事件 - 自动识别
+  floatingFileInput.addEventListener('change', async function (e) {
+    console.log('文件选择事件触发', e.target.files);
+    if (e.target.files.length > 0) {
+      currentFile = e.target.files[0];
+      console.log('选择的文件:', currentFile.name, currentFile.size);
+      floatingSelectedFile.textContent = `⏳ 正在识别: ${currentFile.name} (${(currentFile.size / 1024).toFixed(1)} KB)`;
+      floatingSelectedFile.style.display = 'block';
+
+      // 自动开始识别
+      await processDtbFile(currentFile, identifier, floatingSelectedFile);
+    } else {
+      console.log('没有选择文件');
+      floatingSelectedFile.style.display = 'none';
     }
+  });
 
-    let currentFile = null;
-    const identifier = new DTBIdentifier();
+  // 拖放事件
+  function preventDefaults(e) {
+    e.preventDefault();
+    e.stopPropagation();
+  }
 
-    // 文件选择事件 - 自动识别
-    floatingFileInput.addEventListener('change', async function (e) {
-        console.log('文件选择事件触发', e.target.files);
-        if (e.target.files.length > 0) {
-            currentFile = e.target.files[0];
-            console.log('选择的文件:', currentFile.name, currentFile.size);
-            floatingSelectedFile.textContent = `⏳ 正在识别: ${currentFile.name} (${(currentFile.size / 1024).toFixed(1)} KB)`;
-            floatingSelectedFile.style.display = 'block';
+  ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+    floatingUploadArea.addEventListener(eventName, preventDefaults, false);
+  });
 
-            // 自动开始识别
-            await processDtbFile(currentFile, identifier, floatingSelectedFile);
-        } else {
-            console.log('没有选择文件');
-            floatingSelectedFile.style.display = 'none';
-        }
-    });
+  ['dragenter', 'dragover'].forEach(eventName => {
+    floatingUploadArea.addEventListener(eventName, () => floatingUploadArea.classList.add('dragover'), false);
+  });
 
-    // 拖放事件
-    function preventDefaults(e) {
-        e.preventDefault();
-        e.stopPropagation();
+  ['dragleave', 'drop'].forEach(eventName => {
+    floatingUploadArea.addEventListener(eventName, () => floatingUploadArea.classList.remove('dragover'), false);
+  });
+
+  floatingUploadArea.addEventListener('drop', async function (e) {
+    const files = e.dataTransfer.files;
+    if (files.length > 0 && (files[0].name.endsWith('.dtb') || files[0].name.endsWith('.dtbo'))) {
+      floatingFileInput.files = files;
+      currentFile = files[0];
+      floatingSelectedFile.textContent = `⏳ 正在识别: ${currentFile.name} (${(currentFile.size / 1024).toFixed(1)} KB)`;
+      floatingSelectedFile.style.display = 'block';
+
+      // 自动开始识别
+      await processDtbFile(currentFile, identifier, floatingSelectedFile);
     }
+  });
 
-    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
-        floatingUploadArea.addEventListener(eventName, preventDefaults, false);
+  // 移除处理按钮的相关代码
+  if (floatingProcessBtn) {
+    floatingProcessBtn.style.display = 'none'; // 隐藏按钮
+  }
+
+  // 关闭按钮事件
+  if (floatingCloseBtn) {
+    floatingCloseBtn.addEventListener('click', function (e) {
+      e.stopPropagation();
+      floatingUpload.style.display = 'none';
+      // 重置状态
+      floatingFileInput.value = '';
+      floatingSelectedFile.style.display = 'none';
     });
+  }
 
-    ['dragenter', 'dragover'].forEach(eventName => {
-        floatingUploadArea.addEventListener(eventName, () => floatingUploadArea.classList.add('dragover'), false);
-    });
-
-    ['dragleave', 'drop'].forEach(eventName => {
-        floatingUploadArea.addEventListener(eventName, () => floatingUploadArea.classList.remove('dragover'), false);
-    });
-
-    floatingUploadArea.addEventListener('drop', async function (e) {
-        const files = e.dataTransfer.files;
-        if (files.length > 0 && (files[0].name.endsWith('.dtb') || files[0].name.endsWith('.dtbo'))) {
-            floatingFileInput.files = files;
-            currentFile = files[0];
-            floatingSelectedFile.textContent = `⏳ 正在识别: ${currentFile.name} (${(currentFile.size / 1024).toFixed(1)} KB)`;
-            floatingSelectedFile.style.display = 'block';
-
-            // 自动开始识别
-            await processDtbFile(currentFile, identifier, floatingSelectedFile);
-        }
-    });
-
-    // 移除处理按钮的相关代码
-    if (floatingProcessBtn) {
-        floatingProcessBtn.style.display = 'none'; // 隐藏按钮
-    }
-
-    // 关闭按钮事件
-    if (floatingCloseBtn) {
-        floatingCloseBtn.addEventListener('click', function (e) {
-            e.stopPropagation();
-            floatingUpload.style.display = 'none';
-            // 重置状态
-            floatingFileInput.value = '';
-            floatingSelectedFile.style.display = 'none';
-        });
-    }
-
-    console.log('悬浮DTB上传功能初始化完成');
+  console.log('悬浮DTB上传功能初始化完成');
 }
 
 // 显示DTB搜索结果的函数
 function displayDtbSearchResults(matchedDevicesInfo, md5, arrayBuffer, matchType, dtbMatches, exactMatchedDtbNames = [], screenMatchedDtbNames = []) {
-    const grid = document.getElementById('device-grid');
-    const searchInput = document.getElementById('search-input');
+  const grid = document.getElementById('device-grid');
+  const searchInput = document.getElementById('search-input');
 
-    if (!grid) return;
+  if (!grid) return;
 
-    let resultsHtml = '';
+  let resultsHtml = '';
 
-    // 添加DTB识别信息头部
+  // 添加DTB识别信息头部
+  resultsHtml += `
+    <div class="search-results-header" style="grid-column: 1 / -1; margin-bottom: 2rem;">
+      <div style="background: var(--glass); border-radius: 15px; padding: 2rem; border: 1px solid var(--glass-border);">
+        <h3 style="color: var(--secondary); margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;">
+          <i class="fas fa-microchip"></i> DTB识别结果
+        </h3>
+        <div style="color: #ccc; line-height: 1.6;">
+          <div><strong>文件MD5:</strong> <code>${md5}</code></div>
+          <div><strong>文件大小:</strong> ${arrayBuffer.byteLength} 字节</div>
+        </div>
+  `;
+
+  // 检查是否有任何匹配（设备匹配或DTB匹配）
+  const hasAnyMatch = matchedDevicesInfo.length > 0 || exactMatchedDtbNames.length > 0 || screenMatchedDtbNames.length > 0;
+
+  if (hasAnyMatch) {
+    let matchText = '';
+    let matchClass = '';
+
+    if (matchType === 'exact') {
+      matchText = `✅ <strong>精确匹配！</strong>`;
+      matchClass = 'match-success';
+    } else {
+      matchText = `⚠️ <strong>屏幕参数匹配</strong>`;
+      matchClass = 'match-warning';
+    }
+
     resultsHtml += `
-        <div class="search-results-header" style="grid-column: 1 / -1; margin-bottom: 2rem;">
-            <div style="background: var(--glass); border-radius: 15px; padding: 2rem; border: 1px solid var(--glass-border);">
-                <h3 style="color: var(--secondary); margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;">
-                    <i class="fas fa-microchip"></i> DTB识别结果
-                </h3>
-                <div style="color: #ccc; line-height: 1.6;">
-                    <div><strong>文件MD5:</strong> <code>${md5}</code></div>
-                    <div><strong>文件大小:</strong> ${arrayBuffer.byteLength} 字节</div>
-                </div>
+      <div class="${matchClass}" style="margin-top: 1rem;">
+        ${matchText}
+      </div>
     `;
 
-    // 检查是否有任何匹配（设备匹配或DTB匹配）
-    const hasAnyMatch = matchedDevicesInfo.length > 0 || exactMatchedDtbNames.length > 0 || screenMatchedDtbNames.length > 0;
-
-    if (hasAnyMatch) {
-        let matchText = '';
-        let matchClass = '';
-
-        if (matchType === 'exact') {
-            matchText = `✅ <strong>精确匹配！</strong>`;
-            matchClass = 'match-success';
-        } else {
-            matchText = `⚠️ <strong>屏幕参数匹配</strong>`;
-            matchClass = 'match-warning';
-        }
-
-        resultsHtml += `
-            <div class="${matchClass}" style="margin-top: 1rem;">
-                ${matchText}
-            </div>
-        `;
-
-        // 只在有精确匹配时才显示"精确匹配DTB"
-        if (exactMatchedDtbNames.length > 0) {
-            resultsHtml += `
-                <div style="margin-top: 0.5rem; font-size: 0.9rem; color: #4EC9B0;">
-                    <strong>精确匹配DTB:</strong> ${exactMatchedDtbNames.join(', ')}
-                </div>
-            `;
-        }
-
-        // 显示屏幕参数匹配的DTB信息
-        if (screenMatchedDtbNames.length > 0) {
-            resultsHtml += `
-                <div style="margin-top: 0.5rem; font-size: 0.9rem; color: #FFD700;">
-                    <strong>屏幕参数匹配DTB:</strong> ${screenMatchedDtbNames.join(', ')}
-                </div>
-            `;
-        }
-    } else {
-        resultsHtml += `
-            <div class="match-info" style="margin-top: 1rem;">
-                ❓ <strong>未找到匹配设备</strong> 该DTB文件不在当前设备数据库中
-            </div>
-        `;
-    }
-
-    resultsHtml += `</div></div>`;
-
-    // 显示匹配的设备卡片 - 使用新的卡片结构
-    if (matchedDevicesInfo.length > 0) {
-        const uniqueDevices = [];
-        const seenDeviceIds = new Set();
-
-        for (const info of matchedDevicesInfo) {
-            if (!seenDeviceIds.has(info.device.id)) {
-                seenDeviceIds.add(info.device.id);
-                uniqueDevices.push(info.device);
-            }
-        }
-
-        // 使用新的卡片结构，但添加匹配徽章
-        resultsHtml += uniqueDevices.map(device => {
-            // 获取首页显示的图片（gallery中的第一张图片）
-            const mainImage = device.gallery && device.gallery.length > 0 ? device.gallery[0] : null;
-            const imagePath = mainImage ? mainImage.path : '../images/placeholder.jpg';
-
-            // 判断设备是精确匹配还是屏幕参数匹配
-            let deviceMatchType = 'screen'; // 默认屏幕参数匹配
-            if (matchType === 'exact') {
-                // 检查这个设备是否在精确匹配的DTB中
-                const deviceDtbNames = device.dtbNames || [];
-                const isExactMatch = deviceDtbNames.some(dtbName => exactMatchedDtbNames.includes(dtbName));
-                deviceMatchType = isExactMatch ? 'exact' : 'screen';
-            }
-
-            // 匹配徽章的样式
-            const badgeStyle = deviceMatchType === 'exact'
-                ? 'background: var(--primary);'
-                : 'background: #FFA500;';
-
-            // 在显示匹配的设备卡片部分修改：
-            return `
-<div class="device-card" data-device="${device.id}" onclick="showDeviceDetails('${device.id}', devicesData.devices)">
-    <div class="device-header" style="position: relative;">
-        <div class="device-model">${device.model}</div>
-        <div class="device-category">${device.category}</div>
-        <div class="device-description">${device.description || '暂无描述'}</div>
-        <!-- 添加匹配徽章到设备型号右上角 -->
-        <div class="match-badge" style="position: absolute; top: 10px; right: 10px; ${badgeStyle} color: white; padding: 0.3rem 0.6rem; border-radius: 15px; font-size: 0.7rem; font-weight: 600; z-index: 10;">
-            <i class="fas fa-check"></i> ${deviceMatchType === 'exact' ? '精确匹配' : '参数匹配'}
+    // 只在有精确匹配时才显示"精确匹配DTB"
+    if (exactMatchedDtbNames.length > 0) {
+      resultsHtml += `
+        <div style="margin-top: 0.5rem; font-size: 0.9rem; color: #4EC9B0;">
+          <strong>精确匹配DTB:</strong> ${exactMatchedDtbNames.join(', ')}
         </div>
-    </div>
-    <div class="device-image">
-        <img src="${imagePath}" 
-             alt="${device.model}" 
-             onerror="this.src='../images/placeholder.jpg'">
-    </div>
-    <button class="view-details" data-device="${device.id}">查看详情</button>
-</div>
-`;
-        }).join('');
-    } else if (hasAnyMatch) {
-        // 没有设备信息，但有DTB匹配 - 显示DTB匹配信息
-        let matchIcon = '';
-        let matchTitle = '';
-        let matchDescription = '';
+      `;
+    }
 
-        if (matchType === 'exact') {
-            matchIcon = '✅';
-            matchTitle = 'DTB匹配成功';
-            matchDescription = '成功匹配到以下DTB配置：';
-        } else {
-            matchIcon = '⚠️';
-            matchTitle = '屏幕参数匹配成功';
-            matchDescription = '仅屏幕参数匹配成功：';
-        }
+    // 显示屏幕参数匹配的DTB信息
+    if (screenMatchedDtbNames.length > 0) {
+      resultsHtml += `
+        <div style="margin-top: 0.5rem; font-size: 0.9rem; color: #FFD700;">
+          <strong>屏幕参数匹配DTB:</strong> ${screenMatchedDtbNames.join(', ')}
+        </div>
+      `;
+    }
+  } else {
+    resultsHtml += `
+      <div class="match-info" style="margin-top: 1rem;">
+        ❓ <strong>未找到匹配设备</strong> 该DTB文件不在当前设备数据库中
+      </div>
+    `;
+  }
 
-        // 合并所有DTB名称用于显示
-        const allDtbNames = [...exactMatchedDtbNames, ...screenMatchedDtbNames];
+  resultsHtml += `</div></div>`;
 
-        resultsHtml += `
-            <div class="no-device-info" style="grid-column: 1 / -1; text-align: center; padding: 3rem;">
-                <div style="font-size: 4rem; color: var(--accent); margin-bottom: 1rem;">
-                    <i class="fas fa-microchip"></i>
-                </div>
-                <h3 style="color: var(--light); margin-bottom: 1rem;">${matchTitle}</h3>
-                <p style="color: #ccc; margin-bottom: 1rem;">
-                    ${matchIcon} ${matchDescription}<br>
-                    <strong style="color: var(--secondary); font-size: 1.2rem;">${allDtbNames.join(', ')}</strong>
-                </p>
-                <p style="color: #888; margin-bottom: 2rem; font-size: 0.9rem;">
-                    ${matchType === 'exact'
-                ? '该DTB文件已成功识别，但设备详细信息暂未收录到数据库中。'
-                : '该DTB文件通过屏幕参数匹配成功，但设备详细信息暂未收录到数据库中。'}
-                    <br>
-                    <small>MD5: ${md5}</small>
-                </p>
-                <button onclick="loadDevices()" class="view-details" style="width: auto; padding: 0.8rem 2rem;">
-                    <i class="fas fa-arrow-left"></i> 返回所有设备
-                </button>
+  // 显示匹配的设备卡片 - 使用新的卡片结构
+  if (matchedDevicesInfo.length > 0) {
+    const uniqueDevices = [];
+    const seenDeviceIds = new Set();
+
+    for (const info of matchedDevicesInfo) {
+      if (!seenDeviceIds.has(info.device.id)) {
+        seenDeviceIds.add(info.device.id);
+        uniqueDevices.push(info.device);
+      }
+    }
+
+    // 使用新的卡片结构，但添加匹配徽章
+    resultsHtml += uniqueDevices.map(device => {
+      // 获取首页显示的图片（gallery中的第一张图片）
+      const mainImage = device.gallery && device.gallery.length > 0 ? device.gallery[0] : null;
+      const imagePath = mainImage ? mainImage.path : PLACEHOLDER_IMG;
+
+      // 判断设备是精确匹配还是屏幕参数匹配
+      let deviceMatchType = 'screen'; // 默认屏幕参数匹配
+      if (matchType === 'exact') {
+        // 检查这个设备是否在精确匹配的DTB中
+        const deviceDtbNames = device.dtbNames || [];
+        const isExactMatch = deviceDtbNames.some(dtbName => exactMatchedDtbNames.includes(dtbName));
+        deviceMatchType = isExactMatch ? 'exact' : 'screen';
+      }
+
+      // 匹配徽章的样式
+      const badgeStyle = deviceMatchType === 'exact'
+        ? 'background: var(--primary);'
+        : 'background: #FFA500;';
+
+      return `
+        <div class="device-card" data-device="${device.id}" onclick="showDeviceDetails('${device.id}', devicesData.devices)">
+          <div class="device-header" style="position: relative;">
+            <div class="device-model">${device.model}</div>
+            <div class="device-category">${device.category}</div>
+            <div class="device-description">${device.description || '暂无描述'}</div>
+            <div class="match-badge" style="position: absolute; top: 10px; right: 10px; ${badgeStyle} color: white; padding: 0.3rem 0.6rem; border-radius: 15px; font-size: 0.7rem; font-weight: 600; z-index: 10;">
+              <i class="fas fa-check"></i> ${deviceMatchType === 'exact' ? '精确匹配' : '参数匹配'}
             </div>
-        `;
+          </div>
+          <div class="device-image">
+            <img
+              src="${imagePath}"
+              alt="${device.model}"
+              loading="lazy"
+              decoding="async"
+              data-placeholder="${PLACEHOLDER_IMG}">
+          </div>
+          <button class="view-details" data-device="${device.id}">查看详情</button>
+        </div>
+      `;
+    }).join('');
+  } else if (hasAnyMatch) {
+    // 没有设备信息，但有DTB匹配 - 显示DTB匹配信息
+    let matchIcon = '';
+    let matchTitle = '';
+    let matchDescription = '';
+
+    if (matchType === 'exact') {
+      matchIcon = '✅';
+      matchTitle = 'DTB匹配成功';
+      matchDescription = '成功匹配到以下DTB配置：';
     } else {
-        // 完全没有匹配
-        resultsHtml += `
-            <div class="no-results" style="grid-column: 1 / -1; text-align: center; padding: 3rem;">
-                <div style="font-size: 4rem; color: var(--accent); margin-bottom: 1rem;">
-                    <i class="fas fa-search"></i>
-                </div>
-                <h3 style="color: var(--light); margin-bottom: 1rem;">未找到匹配设备</h3>
-                <p style="color: #ccc; margin-bottom: 2rem;">
-                    当前DTB文件未在设备数据库中找到匹配项<br>
-                    <small style="color: #888;">MD5: ${md5}</small>
-                </p>
-                <button onclick="loadDevices()" class="view-details" style="width: auto; padding: 0.8rem 2rem;">
-                    <i class="fas fa-arrow-left"></i> 返回所有设备
-                </button>
-            </div>
-        `;
+      matchIcon = '⚠️';
+      matchTitle = '屏幕参数匹配成功';
+      matchDescription = '仅屏幕参数匹配成功：';
     }
 
-    grid.innerHTML = resultsHtml;
+    // 合并所有DTB名称用于显示
+    const allDtbNames = [...exactMatchedDtbNames, ...screenMatchedDtbNames];
 
-    // 重新绑定查看详情按钮事件
-    document.querySelectorAll('.view-details').forEach(button => {
-        button.addEventListener('click', (e) => {
-            e.stopPropagation();
-            const deviceId = button.getAttribute('data-device');
-            showDeviceDetails(deviceId, devicesData.devices);
-        });
+    resultsHtml += `
+      <div class="no-device-info" style="grid-column: 1 / -1; text-align: center; padding: 3rem;">
+        <div style="font-size: 4rem; color: var(--accent); margin-bottom: 1rem;">
+          <i class="fas fa-microchip"></i>
+        </div>
+        <h3 style="color: var(--light); margin-bottom: 1rem;">${matchTitle}</h3>
+        <p style="color: #ccc; margin-bottom: 1rem;">
+          ${matchIcon} ${matchDescription}<br>
+          <strong style="color: var(--secondary); font-size: 1.2rem;">${allDtbNames.join(', ')}</strong>
+        </p>
+        <p style="color: #888; margin-bottom: 2rem; font-size: 0.9rem;">
+          ${matchType === 'exact'
+            ? '该DTB文件已成功识别，但设备详细信息暂未收录到数据库中。'
+            : '该DTB文件通过屏幕参数匹配成功，但设备详细信息暂未收录到数据库中。'}
+          <br>
+          <small>MD5: ${md5}</small>
+        </p>
+        <button onclick="loadDevices()" class="view-details" style="width: auto; padding: 0.8rem 2rem;">
+          <i class="fas fa-arrow-left"></i> 返回所有设备
+        </button>
+      </div>
+    `;
+  } else {
+    // 完全没有匹配
+    resultsHtml += `
+      <div class="no-results" style="grid-column: 1 / -1; text-align: center; padding: 3rem;">
+        <div style="font-size: 4rem; color: var(--accent); margin-bottom: 1rem;">
+          <i class="fas fa-search"></i>
+        </div>
+        <h3 style="color: var(--light); margin-bottom: 1rem;">未找到匹配设备</h3>
+        <p style="color: #ccc; margin-bottom: 2rem;">
+          当前DTB文件未在设备数据库中找到匹配项<br>
+          <small style="color: #888;">MD5: ${md5}</small>
+        </p>
+        <button onclick="loadDevices()" class="view-details" style="width: auto; padding: 0.8rem 2rem;">
+          <i class="fas fa-arrow-left"></i> 返回所有设备
+        </button>
+      </div>
+    `;
+  }
+
+  grid.innerHTML = resultsHtml;
+
+  // 重新绑定查看详情按钮事件
+  document.querySelectorAll('.view-details').forEach(button => {
+    button.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const deviceId = button.getAttribute('data-device');
+      showDeviceDetails(deviceId, devicesData.devices);
     });
+  });
 
-    // 清空搜索框
-    if (searchInput) {
-        searchInput.value = '';
-    }
+  // 清空搜索框
+  if (searchInput) {
+    searchInput.value = '';
+  }
 
-    // 滚动到设备网格区域
-    grid.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  // 滚动到设备网格区域
+  grid.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
 // 图片查看功能
 let currentGallery = [];
 let currentImageIndex = 0;
 
-// 打开图片模态框
+// 打开图片模态框（给 modalImage 也加占位兜底，交给 cdn-accelerate 处理）
 function openImageModal(imageSrc, imageTitle, galleryJson = null) {
-    const modal = document.getElementById('imageModal');
-    const modalImage = document.getElementById('modalImage');
-    const modalTitle = document.getElementById('modalImageTitle');
+  const modal = document.getElementById('imageModal');
+  const modalImage = document.getElementById('modalImage');
+  const modalTitle = document.getElementById('modalImageTitle');
 
-    // 设置当前图片
-    modalImage.src = imageSrc;
-    modalTitle.textContent = imageTitle;
+  // 先设置占位兜底
+  modalImage.setAttribute('data-placeholder', PLACEHOLDER_IMG);
 
-    // 设置当前图库和索引
-    if (galleryJson) {
-        try {
-            currentGallery = JSON.parse(galleryJson);
-            currentImageIndex = currentGallery.findIndex(item => item.path === imageSrc);
-        } catch (e) {
-            console.error('解析图库数据失败:', e);
-            currentGallery = [];
-            currentImageIndex = 0;
-        }
-    } else {
-        // 如果没有提供图库，从当前设备详情中获取
-        const galleryItems = document.querySelectorAll('.gallery-item img');
-        currentGallery = Array.from(galleryItems).map(img => ({
-            path: img.src,
-            title: img.alt
-        }));
-        currentImageIndex = Array.from(galleryItems).findIndex(img => img.src === imageSrc);
+  // 设置当前图片
+  modalImage.src = imageSrc;
+  modalTitle.textContent = imageTitle;
+
+  // 设置当前图库和索引
+  if (galleryJson) {
+    try {
+      currentGallery = JSON.parse(galleryJson);
+      currentImageIndex = currentGallery.findIndex(item => item.path === imageSrc);
+    } catch (e) {
+      console.error('解析图库数据失败:', e);
+      currentGallery = [];
+      currentImageIndex = 0;
     }
+  } else {
+    // 如果没有提供图库，从当前设备详情中获取
+    const galleryItems = document.querySelectorAll('.gallery-item img');
+    currentGallery = Array.from(galleryItems).map(img => ({
+      path: img.src,
+      title: img.alt
+    }));
+    currentImageIndex = Array.from(galleryItems).findIndex(img => img.src === imageSrc);
+  }
 
-    modal.style.display = 'block';
-    document.body.style.overflow = 'hidden'; // 禁止背景滚动
+  modal.style.display = 'block';
+  document.body.style.overflow = 'hidden'; // 禁止背景滚动
 }
 
 // 关闭图片模态框
 function closeImageModal() {
-    const modal = document.getElementById('imageModal');
-    modal.style.display = 'none';
-    document.body.style.overflow = ''; // 恢复背景滚动
-    currentGallery = [];
-    currentImageIndex = 0;
+  const modal = document.getElementById('imageModal');
+  modal.style.display = 'none';
+  document.body.style.overflow = ''; // 恢复背景滚动
+  currentGallery = [];
+  currentImageIndex = 0;
 }
 
 // 导航图片
 function navigateImage(direction) {
-    if (currentGallery.length === 0) return;
+  if (currentGallery.length === 0) return;
 
-    currentImageIndex += direction;
+  currentImageIndex += direction;
 
-    // 循环导航
-    if (currentImageIndex < 0) {
-        currentImageIndex = currentGallery.length - 1;
-    } else if (currentImageIndex >= currentGallery.length) {
-        currentImageIndex = 0;
-    }
+  // 循环导航
+  if (currentImageIndex < 0) {
+    currentImageIndex = currentGallery.length - 1;
+  } else if (currentImageIndex >= currentGallery.length) {
+    currentImageIndex = 0;
+  }
 
-    const image = currentGallery[currentImageIndex];
-    const modalImage = document.getElementById('modalImage');
-    const modalTitle = document.getElementById('modalImageTitle');
+  const image = currentGallery[currentImageIndex];
+  const modalImage = document.getElementById('modalImage');
+  const modalTitle = document.getElementById('modalImageTitle');
 
-    modalImage.src = image.path;
-    modalTitle.textContent = image.title;
+  // 确保 modalImage 也有占位兜底
+  modalImage.setAttribute('data-placeholder', PLACEHOLDER_IMG);
+  modalImage.src = image.path;
+  modalTitle.textContent = image.title;
 }
 
 // 键盘导航支持
 document.addEventListener('keydown', function (e) {
-    const modal = document.getElementById('imageModal');
-    if (modal.style.display === 'block') {
-        switch (e.key) {
-            case 'Escape':
-                closeImageModal();
-                break;
-            case 'ArrowLeft':
-                navigateImage(-1);
-                break;
-            case 'ArrowRight':
-                navigateImage(1);
-                break;
-        }
+  const modal = document.getElementById('imageModal');
+  if (modal.style.display === 'block') {
+    switch (e.key) {
+      case 'Escape':
+        closeImageModal();
+        break;
+      case 'ArrowLeft':
+        navigateImage(-1);
+        break;
+      case 'ArrowRight':
+        navigateImage(1);
+        break;
     }
+  }
 });
 
 // 点击模态框背景关闭
 document.getElementById('imageModal').addEventListener('click', function (e) {
-    if (e.target === this) {
-        closeImageModal();
-    }
+  if (e.target === this) {
+    closeImageModal();
+  }
 });
+
 // 页面加载完成后初始化
 document.addEventListener('DOMContentLoaded', function () {
-    const modal = document.getElementById('device-modal');
-    const closeBtn = document.querySelector('.close');
+  const modal = document.getElementById('device-modal');
+  const closeBtn = document.querySelector('.close');
 
-    if (closeBtn) {
-        closeBtn.addEventListener('click', () => {
-            if (modal) modal.style.display = 'none';
-        });
-    }
+  if (closeBtn) {
+    closeBtn.addEventListener('click', () => {
+      if (modal) modal.style.display = 'none';
+    });
+  }
 
-    if (modal) {
-        window.addEventListener('click', (e) => {
-            if (e.target === modal) {
-                modal.style.display = 'none';
-            }
-        });
-    }
+  if (modal) {
+    window.addEventListener('click', (e) => {
+      if (e.target === modal) {
+        modal.style.display = 'none';
+      }
+    });
+  }
 
-    // 初始化悬浮DTB上传
-    setupFloatingDtbUpload();
+  // 初始化悬浮DTB上传
+  setupFloatingDtbUpload();
 
-    // 加载设备数据
-    loadDevices();
+  // 加载设备数据
+  loadDevices();
 });
 
 console.log('设备识别脚本加载完成');
