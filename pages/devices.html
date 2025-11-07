@@ -1,130 +1,180 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
-
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>设备识别 - R36S中文Wiki</title>
-    <link rel="stylesheet" href="../css/base.css">
-    <link rel="stylesheet" href="../css/layout.css">
-    <link rel="stylesheet" href="../css/components.css">
-    <link rel="stylesheet" href="../css/animations.css">
-    <link rel="stylesheet" href="../css/devices.css">
-    <link rel="stylesheet" href="../css/responsive.css">
-    <link rel="stylesheet" href="../css/foot.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script src="../js/footer-loader.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>设备识别 - R36S中文Wiki</title>
+  <meta name="description" content="识别您的 R36S / 近似机型的主板与版本，查看图片与规格，并可结合 DTB 文件进行快速判定。">
+  <meta property="og:title" content="设备识别 - R36S中文Wiki">
+  <meta property="og:description" content="识别您的 R36S / 近似机型的主板与版本，查看图片与规格，并可上传 DTB 文件进行判定。">
+  <meta property="og:type" content="website">
+  <meta name="theme-color" content="#0084b4">
+
+  <!-- 样式 -->
+  <link rel="stylesheet" href="../css/base.css">
+  <link rel="stylesheet" href="../css/layout.css">
+  <link rel="stylesheet" href="../css/components.css">
+  <link rel="stylesheet" href="../css/animations.css">
+  <link rel="stylesheet" href="../css/devices.css">
+  <link rel="stylesheet" href="../css/responsive.css">
+  <link rel="stylesheet" href="../css/foot.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <!-- 脚本（defer 不阻塞首屏） -->
+  <script defer src="../js/footer-loader.js"></script>
+  <script defer src="../js/devices.js"></script>
+  <!-- 可选：更快建立连接 -->
+  <link rel="preconnect" href="https://fastly.jsdelivr.net">
+  <link rel="dns-prefetch" href="https://fastly.jsdelivr.net">
+
+  <!-- 1 行开启：全站图片自动走 CDN（失败回源） -->
+  <script>window.ASSET_CDN_BASE="https://fastly.jsdelivr.net/gh/you/repo@main/images/";</script>
+  <script defer src="../js/cdn-accelerate.js"></script>
+
 </head>
 
 <body>
-    <header>
-        <div class="container">
-            <div class="header-content">
-                <div class="logo">
-                    <i class="fas fa-microchip"></i>
-                    <span>类R36S中文百科</span>
-                </div>
-                <nav>
-                    <ul>
-                        <li><a href="../index.html" class="nav-link"><i class="fas fa-home"></i> 首页</a></li>
-                        <li><a href="devices.html" class="nav-link active"><i class="fas fa-fingerprint"></i> 设备识别</a>
-                        </li>
-                        <li><a href="guides.html" class="nav-link"><i class="fas fa-book"></i> 快速指南</a></li>
-                        <li><a href="downloads.html" class="nav-link"><i class="fas fa-download"></i> 开源系统</a></li>
-                        <li><a href="faq.html" class="nav-link"><i class="fas fa-question-circle"></i> 常见问题</a></li>
-                    </ul>
-                </nav>
-            </div>
-        </div>
-    </header>
-
+  <header>
     <div class="container">
-        <div class="page-header">
-            <h1><i class="fas fa-fingerprint"></i> 设备识别</h1>
-            <p>识别您的R36S设备版本，查看详细规格和图片</p>
+      <div class="header-content">
+        <div class="logo">
+          <i class="fas fa-microchip" aria-hidden="true"></i>
+          <span>类R36S中文百科</span>
         </div>
+        <nav>
+          <ul>
+            <li><a href="../index.html" class="nav-link"><i class="fas fa-home" aria-hidden="true"></i> 首页</a></li>
+            <li><a href="devices.html" class="nav-link active"><i class="fas fa-fingerprint" aria-hidden="true"></i> 设备识别</a></li>
+            <li><a href="guides.html" class="nav-link"><i class="fas fa-book" aria-hidden="true"></i> 快速指南</a></li>
+            <!-- <li><a href="handhelds.html" class="nav-link"><i class="fas fa-building"  aria-hidden="true"></i> 其他设备</a></li> -->
+            <li><a href="downloads.html" class="nav-link"><i class="fas fa-download" aria-hidden="true"></i> 开源系统</a></li>
+            <li><a href="faq.html" class="nav-link"><i class="fas fa-question-circle" aria-hidden="true"></i> 常见问题</a></li>
+          </ul>
+        </nav>
+      </div>
+    </div>
+  </header>
 
-        <!-- 侧边悬浮DTB识别区域 -->
-        <div class="floating-dtb-upload" id="floatingDtbUpload">
-            <div class="floating-dtb-trigger">
-                <i class="fas fa-microchip"></i>
-                <span>DTB识别</span>
-            </div>
-            <div class="floating-dtb-content">
-                <div class="floating-dtb-header">
-                    <i class="fas fa-upload"></i>
-                    <h3>DTB文件识别</h3>
-                    <span class="floating-dtb-close">&times;</span>
-                </div>
-                <p class="floating-dtb-description">上传DTB文件识别设备型号</p>
-
-                <div class="floating-upload-area" id="floatingUploadArea">
-                    <div class="floating-upload-icon">
-                        <i class="fas fa-file-code"></i>
-                    </div>
-                    <h4>拖放DTB文件到此处</h4>
-                    <p>或点击按钮选择文件</p>
-                    <input type="file" id="floatingDtbFileInput" class="file-input" accept=".dtb">
-                    <label for="floatingDtbFileInput" class="floating-upload-btn">
-                        <i class="fas fa-folder-open"></i> 选择文件
-                    </label>
-                    <div class="floating-selected-file" id="floatingSelectedFile"></div>
-                </div>
-
-                <!-- <button class="floating-process-btn" id="floatingProcessBtn" disabled>
-                    <i class="fas fa-search"></i> 识别DTB文件
-                </button> -->
-
-                <div class="floating-upload-info">
-                    <i class="fas fa-info-circle"></i>
-                    <span>支持 .dtb 格式文件</span>
-                </div>
-            </div>
-        </div>
-
-        <!-- 搜索和设备网格 -->
-        <div class="search-container">
-            <div class="search-box">
-                <i class="fas fa-search"></i>
-                <input type="text" id="search-input" placeholder="搜索设备型号或特征...">
-            </div>
-        </div>
-
-        <div class="device-grid" id="device-grid">
-            <!-- 设备卡片将通过JavaScript动态加载 -->
-        </div>
+  <main class="container">
+    <div class="page-header">
+      <h1><i class="fas fa-fingerprint" aria-hidden="true"></i> 设备识别</h1>
+      <p>识别您的 R36S 设备版本，查看详细规格和图片</p>
     </div>
 
-    <!-- 设备详情模态框 -->
-    <div class="modal" id="device-modal">
-        <div class="modal-content">
-            <span class="close">&times;</span>
-            <div class="device-detail-container" id="modal-content">
-                <!-- 设备详情内容将通过JavaScript动态加载 -->
-            </div>
+    <!-- 侧边悬浮 DTB 识别区域 -->
+    <aside class="floating-dtb-upload" id="floatingDtbUpload" aria-label="DTB 文件识别">
+      <button class="floating-dtb-trigger" type="button" aria-expanded="false" aria-controls="floatingDtbPanel">
+        <i class="fas fa-microchip" aria-hidden="true"></i>
+        <span>DTB识别</span>
+      </button>
+
+      <div class="floating-dtb-content" id="floatingDtbPanel" role="region" aria-labelledby="floatingDtbTitle" hidden>
+        <div class="floating-dtb-header">
+          <i class="fas fa-upload" aria-hidden="true"></i>
+          <h3 id="floatingDtbTitle">DTB文件识别</h3>
+          <button class="floating-dtb-close" type="button" aria-label="关闭识别面板">&times;</button>
         </div>
+
+        <p class="floating-dtb-description">上传 DTB 文件识别设备型号</p>
+
+        <div class="floating-upload-area" id="floatingUploadArea" role="group" aria-label="DTB 上传区域">
+          <div class="floating-upload-icon">
+            <i class="fas fa-file-code" aria-hidden="true"></i>
+          </div>
+          <h4>拖放 DTB 文件到此处</h4>
+          <p>或点击按钮选择文件</p>
+
+          <input type="file" id="floatingDtbFileInput" class="file-input" accept=".dtb" aria-label="选择 DTB 文件">
+          <label for="floatingDtbFileInput" class="floating-upload-btn" role="button" tabindex="0">
+            <i class="fas fa-folder-open" aria-hidden="true"></i> 选择文件
+          </label>
+
+          <div class="floating-selected-file" id="floatingSelectedFile" aria-live="polite"></div>
+        </div>
+
+        <div class="floating-upload-info">
+          <i class="fas fa-info-circle" aria-hidden="true"></i>
+          <span>支持 .dtb 格式文件</span>
+        </div>
+      </div>
+    </aside>
+
+    <!-- 搜索和设备网格 -->
+    <section class="search-container" role="search">
+      <div class="search-box">
+        <i class="fas fa-search" aria-hidden="true"></i>
+        <input
+          type="text"
+          id="search-input"
+          placeholder="搜索设备型号或特征..."
+          aria-label="搜索设备型号或特征">
+      </div>
+    </section>
+
+    <section class="device-grid" id="device-grid" aria-live="polite" aria-busy="true">
+      <!-- 设备卡片将通过 JavaScript 动态加载 -->
+    </section>
+  </main>
+
+  <!-- 设备详情模态框 -->
+  <div class="modal" id="device-modal" role="dialog" aria-modal="true" aria-labelledby="deviceModalTitle" hidden>
+    <div class="modal-content">
+      <button class="close" type="button" aria-label="关闭详情">&times;</button>
+      <div class="device-detail-container" id="modal-content">
+        <!-- 设备详情内容将通过 JavaScript 动态加载 -->
+      </div>
+    </div>
+  </div>
+
+  <!-- 图片查看模态框 -->
+  <div id="imageModal" class="image-modal" role="dialog" aria-modal="true" aria-labelledby="modalImageTitle" hidden>
+    <button class="image-modal-close" type="button" aria-label="关闭图片预览" onclick="closeImageModal()">&times;</button>
+
+    <div class="image-modal-content">
+      <img id="modalImage" src="" alt="" loading="lazy" decoding="async">
+      <div class="image-modal-caption">
+        <h3 id="modalImageTitle"></h3>
+      </div>
     </div>
 
-    <!-- 图片查看模态框 - 新增部分 -->
-    <div id="imageModal" class="image-modal">
-        <span class="image-modal-close" onclick="closeImageModal()">&times;</span>
-        <div class="image-modal-content">
-            <img id="modalImage" src="" alt="">
-            <div class="image-modal-caption">
-                <h3 id="modalImageTitle"></h3>
-            </div>
-        </div>
-        <div class="image-modal-nav">
-            <button class="nav-btn prev-btn" onclick="navigateImage(-1)">
-                <i class="fas fa-chevron-left"></i>
-            </button>
-            <button class="nav-btn next-btn" onclick="navigateImage(1)">
-                <i class="fas fa-chevron-right"></i>
-            </button>
-        </div>
+    <div class="image-modal-nav" aria-label="图片导航">
+      <button class="nav-btn prev-btn" type="button" aria-label="上一张" onclick="navigateImage(-1)">
+        <i class="fas fa-chevron-left" aria-hidden="true"></i>
+      </button>
+      <button class="nav-btn next-btn" type="button" aria-label="下一张" onclick="navigateImage(1)">
+        <i class="fas fa-chevron-right" aria-hidden="true"></i>
+      </button>
     </div>
+  </div>
 
-    <script src="../js/devices.js"></script>
+  <!-- 页脚占位：footer-loader.js 会注入内容 -->
+  <footer id="site-footer"></footer>
+
+  <script>
+    // 轻量可用性增强：处理浮动面板的展开/收起（不依赖外部 JS）
+    (function(){
+      const panel = document.getElementById('floatingDtbPanel');
+      const trigger = document.querySelector('.floating-dtb-trigger');
+      const closeBtn = document.querySelector('.floating-dtb-close');
+      if (!panel || !trigger || !closeBtn) return;
+
+      function openPanel() {
+        panel.hidden = false;
+        trigger.setAttribute('aria-expanded', 'true');
+      }
+      function closePanel() {
+        panel.hidden = true;
+        trigger.setAttribute('aria-expanded', 'false');
+      }
+      trigger.addEventListener('click', () => {
+        if (panel.hidden) openPanel(); else closePanel();
+      });
+      closeBtn.addEventListener('click', closePanel);
+      // Esc 关闭
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && !panel.hidden) closePanel();
+      });
+    })();
+  </script>
 </body>
-
 </html>
