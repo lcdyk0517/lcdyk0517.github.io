@@ -585,6 +585,7 @@
                 enableGpios: "&gpio0 RK_PB5 GPIO_ACTIVE_HIGH",
                 sdio: "false",
                 useExtAmplifier: true,
+                adcKey: "true",
             },
             {
                 name: "Clone R36s -> Clone Type 1 Without Amplifier",
@@ -594,6 +595,17 @@
                 enableGpios: "&gpio0 RK_PB5 GPIO_ACTIVE_HIGH",
                 sdio: "false",
                 useExtAmplifier: false,
+                adcKey: "true",
+            },
+            {
+                name: "Clone Type 1 Without Amplifier And Invert Right Joystick",
+                md5: null,
+                panelInitSequence: "39 00 04 b9 f1 12 83 39 00 06 b1 00 00 00 da 80 39 00 04 b2 00 13 70 39 00 0b b3 10 10 28 28 03 ff 00 00 00 00 15 00 02 b4 80 15 00 03 b5 0a 0a 15 00 03 b6 82 82 39 00 05 b8 26 62 f0 63 39 00 1c ba 33 81 05 f9 0e 0e 20 00 00 00 00 00 00 00 44 25 00 90 0a 00 00 01 4f 01 00 00 37 15 00 02 bc 47 39 00 04 bf 02 11 00 39 00 0a c0 73 73 50 50 00 00 12 50 00 39 00 0d c1 53 00 32 32 77 d1 cc cc 77 77 33 33 39 00 07 c6 82 00 bf ff 00 ff 39 00 07 c7 b8 00 0a 00 00 00 39 00 05 c8 10 40 1e 02 15 00 02 cc 0b 39 00 23 e0 00 07 0d 37 35 3f 41 44 06 0c 0d 0f 11 10 12 14 1a 00 07 0d 37 35 3f 41 44 06 0c 0d 0f 11 10 12 14 1a 39 00 0f e3 07 07 0b 0b 0b 0b 00 00 00 00 ff 00 c0 10 39 00 40 e9 c8 10 02 00 00 b0 b1 11 31 23 28 80 b0 b1 27 08 00 04 02 00 00 00 00 04 02 00 00 00 88 88 ba 60 24 08 88 88 88 88 88 88 88 ba 71 35 18 88 88 88 88 88 00 00 00 01 00 00 00 00 00 00 00 00 00 39 00 3e ea 97 0a 82 02 03 07 00 00 00 00 00 00 81 88 ba 17 53 88 88 88 88 88 88 80 88 ba 06 42 88 88 88 88 88 88 23 00 00 02 80 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 39 00 04 ef ff ff 01 05 c8 01 11 05 14 01 29",
+                resetGpios: "&gpio3 RK_PB7 GPIO_ACTIVE_LOW",
+                enableGpios: "&gpio0 RK_PB5 GPIO_ACTIVE_HIGH",
+                sdio: "false",
+                useExtAmplifier: false,
+                adcKey: "true",
             },
             {
                 name: "Clone R36s -> Clone Type 2",
@@ -603,6 +615,7 @@
                 enableGpios: "&gpio3 RK_PA3 GPIO_ACTIVE_HIGH",
                 sdio: "false",
                 useExtAmplifier: false,
+                adcKey: "true",
             },
             {
                 name: "Clone R36s -> Clone Type 3",
@@ -612,6 +625,7 @@
                 enableGpios: "&gpio0 RK_PB5 GPIO_ACTIVE_HIGH",
                 sdio: "false",
                 useExtAmplifier: false,
+                adcKey: "true",
             },
             {
                 name: "Clone R36s -> Clone Type 4",
@@ -621,6 +635,7 @@
                 enableGpios: "&gpio0 RK_PB5 GPIO_ACTIVE_HIGH",
                 sdio: "false",
                 useExtAmplifier: false,
+                adcKey: "true",
             },
             {
                 name: "Clone R36s -> Clone Type 5",
@@ -629,7 +644,8 @@
                 resetGpios: "&gpio3 RK_PD3 GPIO_ACTIVE_LOW",
                 enableGpios: "&gpio3 RK_PA3 GPIO_ACTIVE_HIGH",
                 sdio: "false",
-                useExtAmplifier : true,
+                useExtAmplifier: false,
+                adcKey: "true",
             },
             {
                 name: "XiFan HandHelds -> XiFan R36Pro",
@@ -639,6 +655,7 @@
                 enableGpios: "&gpio0 RK_PB5 GPIO_ACTIVE_HIGH",
                 sdio: "false",
                 useExtAmplifier: true,
+                adcKey: "true",
             },
             {
                 name: "XiFan HandHelds -> XiFan XF40H",
@@ -648,6 +665,7 @@
                 enableGpios: "&gpio0 RK_PB5 GPIO_ACTIVE_HIGH",
                 sdio: "true",
                 useExtAmplifier: true,
+                adcKey: "true",
             },
             {
                 name: "XiFan HandHelds -> XiFan XF35H",
@@ -657,6 +675,27 @@
                 enableGpios: "&gpio0 RK_PB5 GPIO_ACTIVE_HIGH",
                 sdio: "true",
                 useExtAmplifier: true,
+                adcKey: "true",
+            },
+            {
+                name: "XiFan HandHelds -> XiFan DC35V",
+                md5: "",
+                panelInitSequence: "39 00 04 b9 f1 12 83 39 00 06 b1 00 00 00 da 80 39 00 04 b2 00 13 70 39 00 0b b3 10 10 28 28 03 ff 00 00 00 00 15 00 02 b4 80 15 00 03 b5 0a 0a 15 00 03 b6 82 82 39 00 05 b8 26 62 f0 63 39 00 1c ba 33 81 05 f9 0e 0e 20 00 00 00 00 00 00 00 44 25 00 90 0a 00 00 01 4f 01 00 00 37 15 00 02 bc 47 39 00 04 bf 02 11 00 39 00 0a c0 73 73 50 50 00 00 12 50 00 39 00 0d c1 53 00 32 32 77 d1 cc cc 77 77 33 33 39 00 07 c6 82 00 bf ff 00 ff 39 00 07 c7 b8 00 0a 00 00 00 39 00 05 c8 10 40 1e 02 15 00 02 cc 0b 39 00 23 e0 00 07 0d 37 35 3f 41 44 06 0c 0d 0f 11 10 12 14 1a 00 07 0d 37 35 3f 41 44 06 0c 0d 0f 11 10 12 14 1a 39 00 0f e3 07 07 0b 0b 0b 0b 00 00 00 00 ff 00 c0 10 39 00 40 e9 c8 10 02 00 00 b0 b1 11 31 23 28 80 b0 b1 27 08 00 04 02 00 00 00 00 04 02 00 00 00 88 88 ba 60 24 08 88 88 88 88 88 88 88 ba 71 35 18 88 88 88 88 88 00 00 00 01 00 00 00 00 00 00 00 00 00 39 00 3e ea 97 0a 82 02 03 07 00 00 00 00 00 00 81 88 ba 17 53 88 88 88 88 88 88 80 88 ba 06 42 88 88 88 88 88 88 23 00 00 02 80 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 39 00 04 ef ff ff 01 05 c8 01 11 05 14 01 29",
+                resetGpios: "&gpio3 RK_PD3 GPIO_ACTIVE_LOW",
+                enableGpios: "&gpio3 RK_PA3 GPIO_ACTIVE_HIGH",
+                sdio: "true",
+                useExtAmplifier: true,
+                adcKey: "true",
+            },
+            {
+                name: "XiFan HandHelds -> XiFan DC40V | XiFan HandHelds -> XiFan XF40V",
+                md5: "",
+                panelInitSequence: "39 00 04 b9 f1 12 83 39 00 06 b1 00 00 00 da 80 39 00 04 b2 3c 12 30 39 00 0b b3 10 10 28 28 03 ff 00 00 00 00 15 00 02 b4 80 39 00 03 b5 0a 0a 39 00 03 b6 97 97 39 00 05 b8 26 22 f0 13 39 00 1c ba 33 81 05 f9 0e 0e 20 00 00 00 00 00 00 00 44 25 00 90 0a 00 00 01 4f 01 00 00 37 15 00 02 bc 47 39 00 04 bf 02 11 00 39 00 0a c0 73 73 50 50 00 00 12 70 00 39 00 0d c1 25 00 32 32 77 e4 ff ff cc cc 77 77 39 00 07 c6 82 00 bf ff 00 ff 39 00 07 c7 b8 00 0a 00 00 00 39 00 05 c8 10 40 1e 02 15 00 02 cc 0b 39 00 23 e0 00 0b 10 2c 3d 3f 42 3a 07 0d 0f 13 15 13 14 0f 16 00 0b 10 2c 3d 3f 42 3a 07 0d 0f 13 15 13 14 0f 16 39 00 0f e3 07 07 0b 0b 0b 0b 00 00 00 00 ff 00 c0 10 39 00 40 e9 c8 10 0a 00 00 80 81 12 31 23 4f 86 a0 00 47 08 00 00 0c 00 00 00 00 00 0c 00 00 00 98 02 8b af 46 02 88 88 88 88 88 98 13 8b af 57 13 88 88 88 88 88 00 00 00 00 00 00 00 00 00 00 00 00 00 39 00 3e ea 97 0c 09 09 09 78 00 00 00 00 00 00 9f 31 8b a8 31 75 88 88 88 88 88 9f 20 8b a8 20 64 88 88 88 88 88 23 00 00 02 71 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 40 80 81 00 00 00 00 39 00 04 ef ff ff 01 05 fa 01 11 05 32 01 29",
+                resetGpios: "&gpio3 RK_PD3 GPIO_ACTIVE_LOW",
+                enableGpios: "&gpio3 RK_PA3 GPIO_ACTIVE_HIGH",
+                sdio: "true",
+                useExtAmplifier: true,
+                adcKey: "true",
             },
             {
                 name: "XiFan HandHelds -> XiFan R36MAX",
@@ -666,6 +705,7 @@
                 enableGpios: "&gpio0 RK_PB5 GPIO_ACTIVE_HIGH",
                 sdio: "false",
                 useExtAmplifier: true,
+                adcKey: "true",
             },
             {
                 name: "XiFan HandHelds -> XiFan MYMINI",
@@ -684,6 +724,7 @@
                 enableGpios: "&gpio3 RK_PA3 GPIO_ACTIVE_HIGH",
                 sdio: "true",
                 useExtAmplifier: false,
+                adcKey: "true",
             },
             {
                 name: "Other -> GameConsole RX6H",
@@ -693,6 +734,7 @@
                 enableGpios: "&gpio0 RK_PB5 GPIO_ACTIVE_HIGH",
                 sdio: "false",
                 useExtAmplifier: true,
+                adcKey: "true",
             },
             {
                 name: "Other -> GameConsole K36S | Other -> GameConsole R36T",
@@ -702,6 +744,7 @@
                 enableGpios: "&gpio0 RK_PB5 GPIO_ACTIVE_HIGH",
                 sdio: "true",
                 useExtAmplifier: false,
+                adcKey: "true",
             },
             {
                 name: "Other -> GameConsole HG36",
@@ -711,6 +754,7 @@
                 enableGpios: "&gpio0 RK_PB5 GPIO_ACTIVE_HIGH",
                 sdio: "false",
                 useExtAmplifier: false,
+                adcKey: "true",
             },
             {
                 name: "Other -> GameConsole XGB36",
@@ -906,408 +950,516 @@
             // 可以继续添加更多ArkOSK36的设备配置
         ];
 
-     function normalizeDbItem(item) {
-        const md5 = Array.isArray(item.md5) ? item.md5 : (item.md5 ? [item.md5] : []);
-        const sdio = typeof item.sdio === 'string' ? (item.sdio.toLowerCase() === 'true') : !!item.sdio;
-        const useExtAmplifier = typeof item.useExtAmplifier === 'string' ? (item.useExtAmplifier.toLowerCase() === 'true') : !!item.useExtAmplifier;
-        return { ...item, md5, sdio, useExtAmplifier };
-    }
-    const ARKOS4CLONE_DB = ARKOS4CLONE_DATABASE.map(normalizeDbItem);
-    const ARKOSK36_DB = ARKOSK36_DATABASE.map(normalizeDbItem);
-
-    // ==================== 工具函数 ====================
-    function readNullTerminatedStrings(bytes) {
-        const out = []; let cur = [];
-        for (let i = 0; i < bytes.length; i++) {
-            const b = bytes[i];
-            if (b === 0) { if (cur.length) { out.push(new TextDecoder().decode(new Uint8Array(cur))); cur = []; } }
-            else { cur.push(b); }
+        function normalizeDbItem(item) {
+            const md5 = Array.isArray(item.md5) ? item.md5 : (item.md5 ? [item.md5] : []);
+            const sdio = typeof item.sdio === 'string' ? (item.sdio.toLowerCase() === 'true') : !!item.sdio;
+            const useExtAmplifier = typeof item.useExtAmplifier === 'string' ? (item.useExtAmplifier.toLowerCase() === 'true') : !!item.useExtAmplifier;
+            // 关键：把 "false"/"true" 字符串严格转换为布尔
+            const adcKey = typeof item.adcKey === 'string' ? (item.adcKey.toLowerCase() === 'true') : !!item.adcKey;
+            return { ...item, md5, sdio, useExtAmplifier, adcKey };
         }
-        if (cur.length) { out.push(new TextDecoder().decode(new Uint8Array(cur))); }
-        return out;
-    }
+        const ARKOS4CLONE_DB = ARKOS4CLONE_DATABASE.map(normalizeDbItem);
+        const ARKOSK36_DB = ARKOSK36_DATABASE.map(normalizeDbItem);
 
-    // ==================== 主识别类 ====================
-    class DTBIdentifier {
-        constructor() {
-            this.currentSystem = 'arkos4clone';
-            this.phandleMap = new Map();         // phandle -> path
-            this.nodeBeginToPath = new Map();    // begin-node offset -> path
-            this.pathToBegin = new Map();        // path -> begin-node offset
-            this.isDebug = IS_DEBUG_DEFAULT;
-        }
-        setSystem(system) { this.currentSystem = system; }
-        getCurrentDatabase() { return this.currentSystem === 'arkos4clone' ? ARKOS4CLONE_DB : ARKOSK36_DB; }
-        getSystemName() { return this.currentSystem === 'arkos4clone' ? 'ArkOS4Clone' : 'ArkOSK36'; }
-        getSystemTag() { return this.currentSystem === 'arkos4clone' ? 'tag-arkos4clone' : 'tag-arkosk36'; }
-        getSystemUrl() { return this.currentSystem === 'arkos4clone' ? 'https://github.com/lcdyk0517/arkos4clone' : 'https://github.com/AeolusUX/ArkOS-K36'; }
-
-        async identifyDtb(arrayBuffer, precomputedMd5) {
-            const result = [];
-            const database = this.getCurrentDatabase();
-            const systemName = this.getSystemName();
-            const systemTag = this.getSystemTag();
-            const systemUrl = this.getSystemUrl();
-
-            // === 使用外部传入 MD5，未传再计算（同步） ===
-            const md5 = precomputedMd5 || MD5.md5(arrayBuffer);
-
-            result.push(`<span class="comment">${translations[currentLanguage].fileInfo}</span>`);
-            result.push(`<span class="property">${translations[currentLanguage].fileMD5}</span>: <span class="value">${md5}</span>`);
-            result.push(`<span class="property">${translations[currentLanguage].fileSize}</span>: <span class="value">${arrayBuffer.byteLength}</span> ${currentLanguage === 'zh' ? '字节' : 'bytes'}`);
-            result.push(`<span class="property">${translations[currentLanguage].projectUrl}</span>: <a href="${systemUrl}" target="_blank" rel="noopener noreferrer" style="color: var(--secondary); text-decoration: none; border-bottom: 1px solid var(--secondary);">${systemUrl}</a>`);
-            if (currentLanguage === 'zh') { result.push(`<span class="property">💬 寨中寨QQ群聊请加: 324222122</span>`); }
-            result.push(`<span class="property">${translations[currentLanguage].targetSystem}</span>: <span class="system-tag ${systemTag}">${systemName}</span>\n`);
-
-            // 构建节点树（修复 begin-node 偏移记录）
-            this.buildNodeTree(arrayBuffer);
-
-            // 提取 panel 与 codec 信息（SDIO 严格从 dwmmc@ff380000 检出）
-            const panelInfo = this.extractPanelInfo(arrayBuffer);
-            const codecInfo = this.extractCodecInfo(arrayBuffer);
-
-            if (this.isDebug) {
-                result.push(`<span class="comment">${translations[currentLanguage].panelInfo}</span>`);
-                if (panelInfo.initSequence) {
-                    result.push(`<div class="sequence-block"><span class="property">panel-init-sequence</span> = ${this.formatSequence(panelInfo.initSequence)};</div>`);
-                } else {
-                    result.push(`<span class="comment">${translations[currentLanguage].noPanelSequence}</span>`);
-                }
-                if (panelInfo.resetGpios || panelInfo.enableGpios) {
-                    result.push(`<div class="gpio-block">`);
-                    if (panelInfo.resetGpios) {
-                        result.push(`<span class="property">reset-gpios</span> = ${this.formatGpios(panelInfo.resetGpios, arrayBuffer)};`);
-                    } else {
-                        result.push(`<span class="comment">${translations[currentLanguage].noGpioConfig}</span>`);
-                    }
-                    if (panelInfo.enableGpios) {
-                        result.push(`<span class="property">enable-gpios</span> = ${this.formatGpios(panelInfo.enableGpios, arrayBuffer)};`);
-                    } else {
-                        result.push(`<span class="comment">${translations[currentLanguage].noGpioConfig}</span>`);
-                    }
-                    result.push(`</div>`);
-                } else {
-                    result.push(`<span class="comment">${translations[currentLanguage].noGpioConfig}</span>`);
-                }
-
-                // ArkOS4Clone 的 SDIO 信息（严格来自 dwmmc@ff380000）
-                if (this.currentSystem === 'arkos4clone') {
-                    if (panelInfo.sdioSupport !== null) {
-                        result.push(`<span class="comment">=== SDIO 检测（dwmmc@ff380000）===</span>`);
-                        result.push(`<span class="property">supports-sdio</span> = <span class="value">${panelInfo.sdioSupport ? 'true' : 'false'}</span>${panelInfo.sdioHostPath ? ` <span class="comment"> // ${panelInfo.sdioHostPath}</span>` : ''};`);
-                        result.push(``);
-                    } else {
-                        result.push(`<span class="comment">${translations[currentLanguage].noSdioNode}</span>`);
-                    }
-                }
-                result.push(`<span class="comment">${translations[currentLanguage].codecInfo}</span>`);
-                result.push(`<span class="property">use-ext-amplifier</span> = <span class="value">${codecInfo.useExtAmplifier ? 'true' : 'false'}</span>;`);
-                result.push(``);
+        // ==================== 工具函数 ====================
+        function readNullTerminatedStrings(bytes) {
+            const out = []; let cur = [];
+            for (let i = 0; i < bytes.length; i++) {
+                const b = bytes[i];
+                if (b === 0) { if (cur.length) { out.push(new TextDecoder().decode(new Uint8Array(cur))); cur = []; } }
+                else { cur.push(b); }
             }
+            if (cur.length) { out.push(new TextDecoder().decode(new Uint8Array(cur))); }
+            return out;
+        }
 
-            // 识别
-            result.push(`<span class="comment">=== ${systemName}${currentLanguage === 'zh' ? '适配建议' : ' Adaptation Suggestion'} ===</span>`);
-            const identification = this.identify(md5, panelInfo, codecInfo, database);
+        // ==================== 主识别类 ====================
+        class DTBIdentifier {
+            constructor() {
+                this.currentSystem = 'arkos4clone';
+                this.phandleMap = new Map();         // phandle -> path
+                this.nodeBeginToPath = new Map();    // begin-node offset -> path
+                this.pathToBegin = new Map();        // path -> begin-node offset
+                this.isDebug = IS_DEBUG_DEFAULT;
+            }
+            setSystem(system) { this.currentSystem = system; }
+            getCurrentDatabase() { return this.currentSystem === 'arkos4clone' ? ARKOS4CLONE_DB : ARKOSK36_DB; }
+            getSystemName() { return this.currentSystem === 'arkos4clone' ? 'ArkOS4Clone' : 'ArkOSK36'; }
+            getSystemTag() { return this.currentSystem === 'arkos4clone' ? 'tag-arkos4clone' : 'tag-arkosk36'; }
+            getSystemUrl() { return this.currentSystem === 'arkos4clone' ? 'https://github.com/lcdyk0517/arkos4clone' : 'https://github.com/AeolusUX/ArkOS-K36'; }
 
-            if (identification.exactMatch) {
-                result.push(`<div class="match-success">✅ <span class="property">${translations[currentLanguage].exactMatch}</span><br>${identification.matchedName}</div>`);
-            } else if (identification.screenMatch) {
-                result.push(`<div class="match-warning">⚠️ <span class="property">${translations[currentLanguage].screenMatch}</span><br>${translations[currentLanguage].screenMatchDesc}<br>${translations[currentLanguage].screenMatchAdvice}`);
-                if (identification.matchedNames) {
-                    identification.matchedNames.forEach(name => { result.push(`<br>• ${name}`); });
-                } else {
-                    result.push(`<br>• ${identification.matchedName}`);
+
+            async identifyDtb(arrayBuffer, precomputedMd5) {
+                const result = [];
+                const database = this.getCurrentDatabase();
+                const systemName = this.getSystemName();
+                const systemTag = this.getSystemTag();
+                const systemUrl = this.getSystemUrl();
+
+                // === MD5（外部传入优先） ===
+                const md5 = precomputedMd5 || MD5.md5(arrayBuffer);
+
+                // 头部信息
+                result.push(`<span class="comment">${translations[currentLanguage].fileInfo}</span>`);
+                result.push(`<span class="property">${translations[currentLanguage].fileMD5}</span>: <span class="value">${md5}</span>`);
+                result.push(
+                    `<span class="property">${translations[currentLanguage].fileSize}</span>: ` +
+                    `<span class="value">${arrayBuffer.byteLength}</span> ${currentLanguage === 'zh' ? '字节' : 'bytes'}`
+                );
+                result.push(
+                    `<span class="property">${translations[currentLanguage].projectUrl}</span>: ` +
+                    `<a href="${systemUrl}" target="_blank" rel="noopener noreferrer" ` +
+                    `style="color: var(--secondary); text-decoration: none; border-bottom: 1px solid var(--secondary);">${systemUrl}</a>`
+                );
+                if (currentLanguage === 'zh') {
+                    result.push(`<span class="property">💬 寨中寨QQ群聊请加: 324222122</span>`);
                 }
-                result.push(`</div>`);
-            } else {
-                result.push(`<div class="match-info">❓ <span class="property">${translations[currentLanguage].noMatch}</span> ${translations[currentLanguage].noMatchDesc}`);
+                result.push(
+                    `<span class="property">${translations[currentLanguage].targetSystem}</span>: ` +
+                    `<span class="system-tag ${systemTag}">${systemName}</span>\n`
+                );
+
+                // === 构建节点树索引 ===
+                this.buildNodeTree(arrayBuffer);
+                const view = new DataView(arrayBuffer);
+
+                // === 提取关键信息 ===
+                const panelInfo = this.extractPanelInfo(arrayBuffer);
+                const codecInfo = this.extractCodecInfo(arrayBuffer);
+
+                // 新增：adc-keys 状态（仅看 adc-keys 节点自身的 status）
+                const adcKeysEnabled = this.detectAdcKeysFlag(view);
+
+                // 调试输出
                 if (this.isDebug) {
-                    result.push(`<br><span class="comment">${translations[currentLanguage].noMatchDetails}</span>`);
-                    result.push(`<br>${translations[currentLanguage].noMatchReason1}`);
-                    result.push(`<br>${translations[currentLanguage].noMatchReason2}`);
-                    if (this.currentSystem === 'arkosk36') { result.push(`<br>${translations[currentLanguage].noMatchReason3}`); }
+                    result.push(`<span class="comment">${translations[currentLanguage].panelInfo}</span>`);
+                    if (panelInfo.initSequence) {
+                        result.push(
+                            `<div class="sequence-block"><span class="property">panel-init-sequence</span> = ${this.formatSequence(panelInfo.initSequence)};</div>`
+                        );
+                    } else {
+                        result.push(`<span class="comment">${translations[currentLanguage].noPanelSequence}</span>`);
+                    }
+
+                    if (panelInfo.resetGpios || panelInfo.enableGpios) {
+                        result.push(`<div class="gpio-block">`);
+                        if (panelInfo.resetGpios) {
+                            result.push(`<span class="property">reset-gpios</span> = ${this.formatGpios(panelInfo.resetGpios, arrayBuffer)};`);
+                        } else {
+                            result.push(`<span class="comment">${translations[currentLanguage].noGpioConfig}</span>`);
+                        }
+                        if (panelInfo.enableGpios) {
+                            result.push(`<span class="property">enable-gpios</span> = ${this.formatGpios(panelInfo.enableGpios, arrayBuffer)};`);
+                        } else {
+                            result.push(`<span class="comment">${translations[currentLanguage].noGpioConfig}</span>`);
+                        }
+                        result.push(`</div>`);
+                    } else {
+                        result.push(`<span class="comment">${translations[currentLanguage].noGpioConfig}</span>`);
+                    }
+
+                    // ArkOS4Clone 的 SDIO 调试信息（严格来自 dwmmc@ff380000）
+                    if (this.currentSystem === 'arkos4clone') {
+                        if (panelInfo.sdioSupport !== null) {
+                            result.push(`<span class="comment">=== SDIO 检测（dwmmc@ff380000）===</span>`);
+                            result.push(
+                                `<span class="property">supports-sdio</span> = ` +
+                                `<span class="value">${panelInfo.sdioSupport ? 'true' : 'false'}</span>` +
+                                `${panelInfo.sdioHostPath ? ` <span class="comment"> // ${panelInfo.sdioHostPath}</span>` : ''};`
+                            );
+                            result.push(``);
+                        } else {
+                            result.push(`<span class="comment">${translations[currentLanguage].noSdioNode}</span>`);
+                        }
+                    }
+
+                    result.push(`<span class="comment">${translations[currentLanguage].codecInfo}</span>`);
+                    result.push(
+                        `<span class="property">use-ext-amplifier</span> = <span class="value">${codecInfo.useExtAmplifier ? 'true' : 'false'}</span>;`
+                    );
+
+                    // 新增：adc-keys 调试信息
+                    result.push(
+                        `<span class="comment">adc-keys</span> = <span class="value">${adcKeysEnabled ? 'true' : 'false'}</span>;`
+                    );
+                    result.push(``);
                 }
-                result.push(`</div>`);
-            }
-            return result.join('\n');
-        }
 
-        identify(md5, panelInfo, codecInfo, database) {
-            let exactMatch = null;
-            let screenMatches = [];
-            for (const dbItem of database) {
-                // 1) MD5 精确匹配
-                const md5Match = dbItem.md5.includes(md5);
-                if (md5Match) {
-                    exactMatch = { matchedName: dbItem.name, exactMatch: true, screenMatch: true };
-                    break;
+                // === 识别 ===
+                result.push(`<span class="comment">=== ${systemName}${currentLanguage === 'zh' ? '适配建议' : ' Adaptation Suggestion'} ===</span>`);
+
+                // 先看 MD5 精确命中
+                let exactMatch = null;
+                for (const dbItem of database) {
+                    if (dbItem.md5 && dbItem.md5.includes(md5)) {
+                        exactMatch = { matchedName: dbItem.name, exactMatch: true };
+                        break;
+                    }
                 }
-                // 2) 屏幕参数匹配 + SDIO 强一致
-                const isScreenMatch = this.compareScreenParams(dbItem, panelInfo, codecInfo);
-                if (isScreenMatch) {
-                    screenMatches.push({ matchedName: dbItem.name, exactMatch: false, screenMatch: true });
+
+                if (exactMatch) {
+                    result.push(
+                        `<div class="match-success">✅ <span class="property">${translations[currentLanguage].exactMatch}</span><br>${exactMatch.matchedName}</div>`
+                    );
+                    return result.join('\n');
                 }
+
+                // 若 MD5 未命中，进入屏参/特性匹配（含 adc-keys）
+                const screenMatches = [];
+                for (const dbItem of database) {
+                    const ok = this.compareScreenParams(dbItem, panelInfo, codecInfo, adcKeysEnabled); // ← 这里多传了 adc-keys
+                    if (ok) {
+                        screenMatches.push(dbItem.name);
+                    }
+                }
+
+                if (screenMatches.length > 0) {
+                    result.push(
+                        `<div class="match-warning">⚠️ <span class="property">${translations[currentLanguage].screenMatch}</span><br>` +
+                        `${translations[currentLanguage].screenMatchDesc}<br>${translations[currentLanguage].screenMatchAdvice}` +
+                        screenMatches.map(n => `<br>• ${n}`).join('') +
+                        `</div>`
+                    );
+                } else {
+                    result.push(
+                        `<div class="match-info">❓ <span class="property">${translations[currentLanguage].noMatch}</span> ` +
+                        `${translations[currentLanguage].noMatchDesc}` +
+                        (this.isDebug
+                            ? `<br><span class="comment">${translations[currentLanguage].noMatchDetails}</span>` +
+                            `<br>${translations[currentLanguage].noMatchReason1}` +
+                            `<br>${translations[currentLanguage].noMatchReason2}` +
+                            (this.currentSystem === 'arkosk36' ? `<br>${translations[currentLanguage].noMatchReason3}` : ``)
+                            : ``) +
+                        `</div>`
+                    );
+                }
+
+                return result.join('\n');
             }
-            if (exactMatch) return exactMatch;
-            if (screenMatches.length > 0) {
-                return { exactMatch: false, screenMatch: true, matchedNames: screenMatches.map(m => m.matchedName), allMatches: screenMatches };
+
+            identify(md5, panelInfo, codecInfo, database) {
+                let exactMatch = null;
+                let screenMatches = [];
+                for (const dbItem of database) {
+                    // 1) MD5 精确匹配
+                    const md5Match = dbItem.md5.includes(md5);
+                    if (md5Match) {
+                        exactMatch = { matchedName: dbItem.name, exactMatch: true, screenMatch: true };
+                        break;
+                    }
+                    // 2) 屏幕参数匹配 + SDIO 强一致
+                    const isScreenMatch = this.compareScreenParams(dbItem, panelInfo, codecInfo);
+                    if (isScreenMatch) {
+                        screenMatches.push({ matchedName: dbItem.name, exactMatch: false, screenMatch: true });
+                    }
+                }
+                if (exactMatch) return exactMatch;
+                if (screenMatches.length > 0) {
+                    return { exactMatch: false, screenMatch: true, matchedNames: screenMatches.map(m => m.matchedName), allMatches: screenMatches };
+                }
+                return { exactMatch: false, screenMatch: false, matchedName: null };
             }
-            return { exactMatch: false, screenMatch: false, matchedName: null };
-        }
 
-        compareScreenParams(dbItem, panelInfo, codecInfo) {
-            // panel-init-sequence
-            if (!this.compareSequences(dbItem.panelInitSequence, panelInfo.initSequence)) return false;
-            // reset-gpios
-            if (!this.compareGpios(dbItem.resetGpios, panelInfo.resetGpios)) return false;
-            // enable-gpios（两者都为 null 也算匹配）
-            if (!this.compareGpios(dbItem.enableGpios, panelInfo.enableGpios)) return false;
+            compareScreenParams(dbItem, panelInfo, codecInfo, adcKeysEnabled) {
+                // panel-init-sequence
+                if (!this.compareSequences(dbItem.panelInitSequence, panelInfo.initSequence)) return false;
+                // reset-gpios
+                if (!this.compareGpios(dbItem.resetGpios, panelInfo.resetGpios)) return false;
+                // enable-gpios（两者都为 null 也算匹配）
+                if (!this.compareGpios(dbItem.enableGpios, panelInfo.enableGpios)) return false;
 
-            // ArkOS4Clone：SDIO 必须与 DB 匹配（严格，且仅依据 dwmmc@ff380000 的 supports-sdio）
-            if (this.currentSystem === 'arkos4clone' && dbItem.sdio !== undefined) {
-                const dbSdio = !!dbItem.sdio;
-                const extractedSdio = (panelInfo.sdioSupport === true);
-                if (dbSdio !== extractedSdio) return false;
-            }
+                // ArkOS4Clone：SDIO 必须与 DB 匹配（严格，且仅依据 dwmmc@ff380000 的 supports-sdio）
+                if (this.currentSystem === 'arkos4clone' && dbItem.sdio !== undefined) {
+                    const dbSdio = !!dbItem.sdio;
+                    const extractedSdio = (panelInfo.sdioSupport === true);
+                    if (dbSdio !== extractedSdio) return false;
+                }
 
-            // use-ext-amplifier
-            if (dbItem.useExtAmplifier !== undefined) {
-                const dbAmp = !!dbItem.useExtAmplifier;
-                const exAmp = !!codecInfo.useExtAmplifier;
-                if (dbAmp !== exAmp) return false;
-            }
-            return true;
-        }
-
-        compareSequences(dbSequence, extractedSequence) {
-            if (!dbSequence || !extractedSequence) return false;
-            const dbBytes = this.sequenceStringToBytes(dbSequence);
-            const exBytes = extractedSequence;
-            if (dbBytes.length !== exBytes.length) return false;
-            for (let i = 0; i < dbBytes.length; i++) { if (dbBytes[i] !== exBytes[i]) return false; }
-            return true;
-        }
-
-        formatGpiosForCompare(gpioData) {
-            if (!gpioData || gpioData.length < 3) return '';
-            const [phandle, pin, flags] = gpioData;
-            const nodePath = this.phandleMap.get(phandle);
-            let gpioController;
-            if (nodePath) { const nodeName = this.getNodeNameFromPath(nodePath); gpioController = `&${nodeName.split('@')[0]}`; }
-            else { gpioController = `&unknown_${phandle.toString(16)}`; }
-            const pinName = GPIO_MAPPING[pin] || `0x${pin.toString(16)}`;
-            const flagMap = { 0x0: "GPIO_ACTIVE_HIGH", 0x1: "GPIO_ACTIVE_LOW" };
-            const flagStr = flagMap[flags] || `0x${flags.toString(16)}`;
-            return `${gpioController} ${pinName} ${flagStr}`;
-        }
-
-        compareGpios(dbGpios, extractedGpios) {
-            if (dbGpios === null) return extractedGpios === null;
-            if (extractedGpios === null && dbGpios !== null) return false;
-            if (extractedGpios === null && dbGpios === null) return true;
-
-            if (typeof dbGpios === 'string' && Array.isArray(extractedGpios)) {
-                const formatted = this.formatGpiosForCompare(extractedGpios);
-                return dbGpios === formatted;
-            }
-            if (Array.isArray(dbGpios) && Array.isArray(extractedGpios)) {
-                if (dbGpios.length !== extractedGpios.length) return false;
-                for (let i = 0; i < dbGpios.length; i++) { if (dbGpios[i] !== extractedGpios[i]) return false; }
+                // use-ext-amplifier
+                if (dbItem.useExtAmplifier !== undefined) {
+                    const dbAmp = !!dbItem.useExtAmplifier;
+                    const exAmp = !!codecInfo.useExtAmplifier;
+                    if (dbAmp !== exAmp) return false;
+                }
+                // 6) adc-keys（新增的严格条件）
+                if (dbItem.adcKey !== undefined) {
+                    if (!!dbItem.adcKey !== !!adcKeysEnabled) return false;
+                }
                 return true;
             }
-            return false;
-        }
 
-        extractCodecInfo(arrayBuffer) {
-            const view = new DataView(arrayBuffer);
-            let useExtAmplifier = false;
-            const magic = view.getUint32(0, false);
-            if (magic !== 0xd00dfeed) return { useExtAmplifier };
-
-            const off_dt_strings = view.getUint32(12, false);
-            for (let offset = 0; offset < view.byteLength - 100; offset++) {
-                const nodeInfo = this.findCodecNodeAtOffset(view, offset, off_dt_strings);
-                if (nodeInfo && nodeInfo.name) {
-                    const props = this.findPropertiesInNode(view, nodeInfo.offset, off_dt_strings);
-                    if (props.useExtAmplifier) { useExtAmplifier = true; break; }
-                }
+            compareSequences(dbSequence, extractedSequence) {
+                if (!dbSequence || !extractedSequence) return false;
+                const dbBytes = this.sequenceStringToBytes(dbSequence);
+                const exBytes = extractedSequence;
+                if (dbBytes.length !== exBytes.length) return false;
+                for (let i = 0; i < dbBytes.length; i++) { if (dbBytes[i] !== exBytes[i]) return false; }
+                return true;
             }
-            return { useExtAmplifier };
-        }
 
-        findCodecNodeAtOffset(view, offset, stringOffset) {
-            try {
-                const token = view.getUint32(offset, false);
-                if (token === 1) {
-                    const name = this.readString(view, offset + 4);
-                    if (name && (name.includes('codec') || name.includes('sound') || name.includes('audio') || name.includes('es8316') || name.includes('acodec') || name.endsWith('codec'))) {
-                        return { name, offset };
+            formatGpiosForCompare(gpioData) {
+                if (!gpioData || gpioData.length < 3) return '';
+                const [phandle, pin, flags] = gpioData;
+                const nodePath = this.phandleMap.get(phandle);
+                let gpioController;
+                if (nodePath) { const nodeName = this.getNodeNameFromPath(nodePath); gpioController = `&${nodeName.split('@')[0]}`; }
+                else { gpioController = `&unknown_${phandle.toString(16)}`; }
+                const pinName = GPIO_MAPPING[pin] || `0x${pin.toString(16)}`;
+                const flagMap = { 0x0: "GPIO_ACTIVE_HIGH", 0x1: "GPIO_ACTIVE_LOW" };
+                const flagStr = flagMap[flags] || `0x${flags.toString(16)}`;
+                return `${gpioController} ${pinName} ${flagStr}`;
+            }
+
+            compareGpios(dbGpios, extractedGpios) {
+                if (dbGpios === null) return extractedGpios === null;
+                if (extractedGpios === null && dbGpios !== null) return false;
+                if (extractedGpios === null && dbGpios === null) return true;
+
+                if (typeof dbGpios === 'string' && Array.isArray(extractedGpios)) {
+                    const formatted = this.formatGpiosForCompare(extractedGpios);
+                    return dbGpios === formatted;
+                }
+                if (Array.isArray(dbGpios) && Array.isArray(extractedGpios)) {
+                    if (dbGpios.length !== extractedGpios.length) return false;
+                    for (let i = 0; i < dbGpios.length; i++) { if (dbGpios[i] !== extractedGpios[i]) return false; }
+                    return true;
+                }
+                return false;
+            }
+
+            extractCodecInfo(arrayBuffer) {
+                const view = new DataView(arrayBuffer);
+                let useExtAmplifier = false;
+                const magic = view.getUint32(0, false);
+                if (magic !== 0xd00dfeed) return { useExtAmplifier };
+
+                const off_dt_strings = view.getUint32(12, false);
+                for (let offset = 0; offset < view.byteLength - 100; offset++) {
+                    const nodeInfo = this.findCodecNodeAtOffset(view, offset, off_dt_strings);
+                    if (nodeInfo && nodeInfo.name) {
+                        const props = this.findPropertiesInNode(view, nodeInfo.offset, off_dt_strings);
+                        if (props.useExtAmplifier) { useExtAmplifier = true; break; }
                     }
                 }
-            } catch (e) { }
-            return null;
-        }
+                return { useExtAmplifier };
+            }
 
-        buildNodeTree(arrayBuffer) {
-            const view = new DataView(arrayBuffer);
-            this.phandleMap.clear();
-            this.nodeBeginToPath.clear();
-            this.pathToBegin.clear();
-
-            if (view.getUint32(0, false) !== 0xd00dfeed) return;
-            const off_dt_struct = view.getUint32(8, false);
-            const off_dt_strings = view.getUint32(12, false);
-
-            this.parseNodeTree(view, off_dt_struct, off_dt_strings, [], '/');
-        }
-
-        parseNodeTree(view, offset, stringOffset, pathStack, currentPath) {
-            let cur = offset;
-            while (true) {
-                if (cur + 4 > view.byteLength) break;
-                const token = view.getUint32(cur, false); cur += 4;
-                switch (token) {
-                    case 0x1: { // FDT_BEGIN_NODE
-                        const name = this.readString(view, cur);
-                        const beginNodeOffset = cur - 4; // 关键：记录 begin-node 的起始偏移
-                        cur += name.length + 1;
-                        cur = this.align4(cur);
-
-                        const nodePath = currentPath + (currentPath === '/' ? '' : '/') + name;
-                        pathStack.push({ offset: cur, path: nodePath });
-
-                        // 记录映射
-                        this.nodeBeginToPath.set(beginNodeOffset, nodePath);
-                        this.pathToBegin.set(nodePath, beginNodeOffset);
-
-                        // 记录 phandle（需要从属性区开始扫描）
-                        const phandle = this.findPhandleInNode(view, cur, stringOffset);
-                        if (phandle !== null) { this.phandleMap.set(phandle, nodePath); }
-
-                        // 递归子树
-                        cur = this.parseNodeTree(view, cur, stringOffset, pathStack, nodePath);
-                        break;
+            findCodecNodeAtOffset(view, offset, stringOffset) {
+                try {
+                    const token = view.getUint32(offset, false);
+                    if (token === 1) {
+                        const name = this.readString(view, offset + 4);
+                        if (name && (name.includes('codec') || name.includes('sound') || name.includes('audio') || name.includes('es8316') || name.includes('acodec') || name.endsWith('codec'))) {
+                            return { name, offset };
+                        }
                     }
-                    case 0x2: // FDT_END_NODE
-                        pathStack.pop(); return cur;
-                    case 0x3: { // FDT_PROP（跳过）
-                        const len = view.getUint32(cur, false); cur += 4;
+                } catch (e) { }
+                return null;
+            }
+
+            buildNodeTree(arrayBuffer) {
+                const view = new DataView(arrayBuffer);
+                this.phandleMap.clear();
+                this.nodeBeginToPath.clear();
+                this.pathToBegin.clear();
+
+                if (view.getUint32(0, false) !== 0xd00dfeed) return;
+                const off_dt_struct = view.getUint32(8, false);
+                const off_dt_strings = view.getUint32(12, false);
+
+                this.parseNodeTree(view, off_dt_struct, off_dt_strings, [], '/');
+            }
+
+            parseNodeTree(view, offset, stringOffset, pathStack, currentPath) {
+                let cur = offset;
+                while (true) {
+                    if (cur + 4 > view.byteLength) break;
+                    const token = view.getUint32(cur, false); cur += 4;
+                    switch (token) {
+                        case 0x1: { // FDT_BEGIN_NODE
+                            const name = this.readString(view, cur);
+                            const beginNodeOffset = cur - 4; // 关键：记录 begin-node 的起始偏移
+                            cur += name.length + 1;
+                            cur = this.align4(cur);
+
+                            const nodePath = currentPath + (currentPath === '/' ? '' : '/') + name;
+                            pathStack.push({ offset: cur, path: nodePath });
+
+                            // 记录映射
+                            this.nodeBeginToPath.set(beginNodeOffset, nodePath);
+                            this.pathToBegin.set(nodePath, beginNodeOffset);
+
+                            // 记录 phandle（需要从属性区开始扫描）
+                            const phandle = this.findPhandleInNode(view, cur, stringOffset);
+                            if (phandle !== null) { this.phandleMap.set(phandle, nodePath); }
+
+                            // 递归子树
+                            cur = this.parseNodeTree(view, cur, stringOffset, pathStack, nodePath);
+                            break;
+                        }
+                        case 0x2: // FDT_END_NODE
+                            pathStack.pop(); return cur;
+                        case 0x3: { // FDT_PROP（跳过）
+                            const len = view.getUint32(cur, false); cur += 4;
           /* nameoff */ cur += 4;
-                        cur += len; cur = this.align4(cur);
-                        break;
+                            cur += len; cur = this.align4(cur);
+                            break;
+                        }
+                        case 0x9: // FDT_END
+                            return cur;
+                        default: return cur;
                     }
-                    case 0x9: // FDT_END
-                        return cur;
-                    default: return cur;
                 }
+                return cur;
             }
-            return cur;
-        }
 
-        findPhandleInNode(view, nodeOffset, stringOffset) {
-            let off = nodeOffset;
-            while (true) {
-                if (off + 4 > view.byteLength) break;
-                const token = view.getUint32(off, false); off += 4;
-                if (token === 0x2 || token === 0x9) break;
-                if (token === 0x3) {
-                    const len = view.getUint32(off, false); off += 4;
-                    const nameoff = view.getUint32(off, false); off += 4;
-                    const propName = this.readString(view, stringOffset + nameoff);
-                    if (propName === 'phandle') {
-                        const data = new Uint8Array(view.buffer, off, Math.min(len, 4));
-                        return this.parseUint32(data);
+            findPhandleInNode(view, nodeOffset, stringOffset) {
+                let off = nodeOffset;
+                while (true) {
+                    if (off + 4 > view.byteLength) break;
+                    const token = view.getUint32(off, false); off += 4;
+                    if (token === 0x2 || token === 0x9) break;
+                    if (token === 0x3) {
+                        const len = view.getUint32(off, false); off += 4;
+                        const nameoff = view.getUint32(off, false); off += 4;
+                        const propName = this.readString(view, stringOffset + nameoff);
+                        if (propName === 'phandle') {
+                            const data = new Uint8Array(view.buffer, off, Math.min(len, 4));
+                            return this.parseUint32(data);
+                        }
+                        off += len; off = this.align4(off);
                     }
-                    off += len; off = this.align4(off);
                 }
+                return null;
             }
-            return null;
-        }
 
-        extractPanelInfo(arrayBuffer) {
-            const view = new DataView(arrayBuffer);
-            let initSequence = null, resetGpios = null, enableGpios = null;
+            extractPanelInfo(arrayBuffer) {
+                const view = new DataView(arrayBuffer);
+                let initSequence = null, resetGpios = null, enableGpios = null;
 
-            if (view.getUint32(0, false) !== 0xd00dfeed) {
-                return { initSequence: null, resetGpios: null, enableGpios: null, sdioSupport: null, sdioHostPath: null };
-            }
-            const off_dt_strings = view.getUint32(12, false);
-
-            // 找 panel/display/lcd
-            let powerSupplyPhandle = null;
-            for (let off = 0; off < view.byteLength - 100; off++) {
-                const nodeInfo = this.findPanelNodeAtOffset(view, off, off_dt_strings);
-                if (nodeInfo && nodeInfo.name) {
-                    const props = this.findPropertiesInNode(view, nodeInfo.offset, off_dt_strings);
-                    if (props.init) initSequence = props.init;
-                    if (props.resetGpios) resetGpios = props.resetGpios;
-                    if (props.enableGpios) { enableGpios = props.enableGpios; }
-                    else if (props.powerSupply) { powerSupplyPhandle = props.powerSupply[0]; }
-                    if (initSequence || resetGpios || enableGpios || powerSupplyPhandle) { break; }
+                if (view.getUint32(0, false) !== 0xd00dfeed) {
+                    return { initSequence: null, resetGpios: null, enableGpios: null, sdioSupport: null, sdioHostPath: null };
                 }
-            }
+                const off_dt_strings = view.getUint32(12, false);
 
-            // —— 仅检测 dwmmc@ff380000 节点的 supports-sdio ——（严格逻辑）
-            const sdioInfo = this.detectSdioFromDwmmcFF380000(view);
-            let sdioSupport = sdioInfo.sdioSupport;   // true/false
-            let sdioHostPath = sdioInfo.hostPath;     // 记录命中的节点路径，便于调试
-
-            // 若没有 enable-gpios，尝试从 power-supply 节点追溯 gpio
-            if (!enableGpios && powerSupplyPhandle) {
-                enableGpios = this.findGpioFromPowerSupply(view, off_dt_strings, powerSupplyPhandle);
-            }
-
-            return { initSequence, resetGpios, enableGpios, sdioSupport, sdioHostPath };
-        }
-
-        // 严格：只看 dwmmc@ff380000 节点是否存在 supports-sdio 属性
-        detectSdioFromDwmmcFF380000(view) {
-            const off_dt_strings = view.getUint32(12, false);
-            // 先按绝对路径查找
-            let begin = this.pathToBegin.get('/dwmmc@ff380000') ?? null;
-            let hostPath = '/dwmmc@ff380000';
-
-            // 若绝对路径未命中，则在全树里按“节点名”等于 dwmmc@ff380000 搜一次（兼容不同挂载层级）
-            if (begin == null) {
-                for (const [path, b] of this.pathToBegin.entries()) {
-                    if (this.getNodeNameFromPath(path) === 'dwmmc@ff380000') { begin = b; hostPath = path; break; }
+                // 找 panel/display/lcd
+                let powerSupplyPhandle = null;
+                for (let off = 0; off < view.byteLength - 100; off++) {
+                    const nodeInfo = this.findPanelNodeAtOffset(view, off, off_dt_strings);
+                    if (nodeInfo && nodeInfo.name) {
+                        const props = this.findPropertiesInNode(view, nodeInfo.offset, off_dt_strings);
+                        if (props.init) initSequence = props.init;
+                        if (props.resetGpios) resetGpios = props.resetGpios;
+                        if (props.enableGpios) { enableGpios = props.enableGpios; }
+                        else if (props.powerSupply) { powerSupplyPhandle = props.powerSupply[0]; }
+                        if (initSequence || resetGpios || enableGpios || powerSupplyPhandle) { break; }
+                    }
                 }
+
+                // —— 仅检测 dwmmc@ff380000 节点的 supports-sdio ——（严格逻辑）
+                const sdioInfo = this.detectSdioFromDwmmcFF380000(view);
+                let sdioSupport = sdioInfo.sdioSupport;   // true/false
+                let sdioHostPath = sdioInfo.hostPath;     // 记录命中的节点路径，便于调试
+
+                // 若没有 enable-gpios，尝试从 power-supply 节点追溯 gpio
+                if (!enableGpios && powerSupplyPhandle) {
+                    enableGpios = this.findGpioFromPowerSupply(view, off_dt_strings, powerSupplyPhandle);
+                }
+
+                return { initSequence, resetGpios, enableGpios, sdioSupport, sdioHostPath };
             }
 
-            if (begin == null) {
-                if (this.isDebug) console.warn('[SDIO] 未找到节点 dwmmc@ff380000，视为 supports-sdio=false');
-                return { sdioSupport: false, hostPath: null };
+            // 严格：只看 dwmmc@ff380000 节点是否存在 supports-sdio 属性
+            detectSdioFromDwmmcFF380000(view) {
+                const off_dt_strings = view.getUint32(12, false);
+                // 先按绝对路径查找
+                let begin = this.pathToBegin.get('/dwmmc@ff380000') ?? null;
+                let hostPath = '/dwmmc@ff380000';
+
+                // 若绝对路径未命中，则在全树里按“节点名”等于 dwmmc@ff380000 搜一次（兼容不同挂载层级）
+                if (begin == null) {
+                    for (const [path, b] of this.pathToBegin.entries()) {
+                        if (this.getNodeNameFromPath(path) === 'dwmmc@ff380000') { begin = b; hostPath = path; break; }
+                    }
+                }
+
+                if (begin == null) {
+                    if (this.isDebug) console.warn('[SDIO] 未找到节点 dwmmc@ff380000，视为 supports-sdio=false');
+                    return { sdioSupport: false, hostPath: null };
+                }
+
+                const props = this.findPropertiesInNode(view, begin, off_dt_strings);
+                const sdioSupport = !!props.supportsSdio; // 仅看属性是否存在
+                return { sdioSupport, hostPath };
             }
 
-            const props = this.findPropertiesInNode(view, begin, off_dt_strings);
-            const sdioSupport = !!props.supportsSdio; // 仅看属性是否存在
-            return { sdioSupport, hostPath };
-        }
+            // 仅检查 adc-keys 自身的 status
+            detectAdcKeysFlag(view) {
+                if (view.getUint32(0, false) !== 0xd00dfeed) return false;
+                const off_dt_strings = view.getUint32(12, false);
 
-        findGpioFromPowerSupply(view, stringOffset, powerSupplyPhandle) {
-            const path = this.phandleMap.get(powerSupplyPhandle);
-            if (!path) return null;
-            const begin = this.pathToBegin.get(path);
-            if (begin == null) return null;
-            const props = this.findPropertiesInNode(view, begin, stringOffset);
-            return props.gpio || null;
-        }
+                // 小工具：按节点名检测（只看节点自身 status）
+                const checkByNodeName = (nodeName) => {
+                    let found = false;
+                    let enabled = false;
 
-        findPropertiesInNode(view, nodeOffset, stringOffset) {
-            let initSequence = null, resetGpios = null, enableGpios = null, powerSupply = null, gpio = null;
-            let supportsSdio = false, useExtAmplifier = false;
-            let compatibleList = null;
+                    for (const [path, begin] of this.pathToBegin.entries()) {
+                        const name = this.getNodeNameFromPath(path);
+                        if (name !== nodeName) continue;
 
-            // 进入属性区：紧跟在 begin-node token 之后
-            let off = nodeOffset + 4;
-            off += this.readString(view, off).length + 1;
-            off = this.align4(off);
+                        found = true;
+                        const props = this.findPropertiesInNode(view, begin, off_dt_strings);
+                        const st = (props.status || '').trim().toLowerCase();
 
-            while (true) {
-                if (off + 8 >= view.byteLength) break;
-                const token = view.getUint32(off, false);
-                if (token === 2 || token === 9) break; // END_NODE/END
-                if (token === 3) {
+                        if (st === '' || st === 'okay' || st === null) {
+                            enabled = true;
+                            break; // 任一命中即可
+                        }
+                        // 其他值或 "disabled" 继续看是否还有同名节点
+                    }
+
+                    return { found, enabled };
+                };
+
+                // 1) 优先检查 adc-keys
+                const adc = checkByNodeName('adc-keys');
+                if (adc.found) return adc.enabled;
+
+                // 2) 若完全没找到 adc-keys，再检查 rg351-keys
+                const rg = checkByNodeName('rg351-keys');
+                if (rg.found) return rg.enabled;
+
+                // 两者都没找到
+                return false;
+            }
+
+            findGpioFromPowerSupply(view, stringOffset, powerSupplyPhandle) {
+                const path = this.phandleMap.get(powerSupplyPhandle);
+                if (!path) return null;
+                const begin = this.pathToBegin.get(path);
+                if (begin == null) return null;
+                const props = this.findPropertiesInNode(view, begin, stringOffset);
+                return props.gpio || null;
+            }
+
+            findPropertiesInNode(view, nodeOffset, stringOffset) {
+                let initSequence = null, resetGpios = null, enableGpios = null, powerSupply = null, gpio = null;
+                let supportsSdio = false, useExtAmplifier = false;
+                let compatibleList = null;
+                let statusStr = null; // ← 新增
+
+                // 进入属性区（紧跟在 begin-node 名字之后）
+                let off = nodeOffset + 4;
+                off += this.readString(view, off).length + 1;
+                off = this.align4(off);
+
+                while (true) {
+                    if (off + 4 > view.byteLength) break;
+                    const token = view.getUint32(off, false);
+
+                    // 只要不是属性（FDT_PROP = 0x3），就认为属性区结束，避免误扫子节点
+                    if (token !== 0x3) break;
+
                     const len = view.getUint32(off + 4, false);
                     const nameoff = view.getUint32(off + 8, false);
                     const propName = this.readString(view, stringOffset + nameoff);
@@ -1323,191 +1475,203 @@
                     } else if (propName === 'gpio') {
                         const data = new Uint8Array(view.buffer, off + 12, len); gpio = this.parseGpioData(data);
                     } else if (propName === 'supports-sdio') {
-                        supportsSdio = true; // 只在“当前节点”下生效
+                        supportsSdio = true;
                     } else if (propName === 'use-ext-amplifier') {
                         useExtAmplifier = true;
                     } else if (propName === 'compatible') {
                         const data = new Uint8Array(view.buffer, off + 12, len);
                         compatibleList = readNullTerminatedStrings(data);
+                    } else if (propName === 'status') { // ← 新增：只解析当前节点的 status 字符串
+                        const data = new Uint8Array(view.buffer, off + 12, len);
+                        const list = readNullTerminatedStrings(data);
+                        statusStr = (list && list[0]) ? list[0] : null;
                     }
 
-                    off += 12 + len; off = this.align4(off);
-                } else {
-                    off += 4;
+                    off += 12 + len;
+                    off = this.align4(off);
                 }
+
+                return {
+                    init: initSequence, resetGpios, enableGpios, powerSupply, gpio,
+                    supportsSdio, useExtAmplifier, compatible: compatibleList,
+                    status: statusStr // ← 新增
+                };
+            }
+            parseGpioData(data) {
+                const v = []; for (let i = 0; i < data.length; i += 4) { if (i + 4 <= data.length) { v.push((data[i] << 24) | (data[i + 1] << 16) | (data[i + 2] << 8) | data[i + 3]); } }
+                return v;
             }
 
-            return { init: initSequence, resetGpios, enableGpios, powerSupply, gpio, supportsSdio, useExtAmplifier, compatible: compatibleList };
-        }
+            formatGpios(gpioData) {
+                if (!gpioData || gpioData.length < 3) return '<span class="string">""</span>';
+                const [phandle, pin, flags] = gpioData;
+                const nodePath = this.phandleMap.get(phandle);
+                let gpioController;
+                if (nodePath) { const nodeName = this.getNodeNameFromPath(nodePath); gpioController = `&${nodeName.split('@')[0]}`; }
+                else { gpioController = `&unknown_${phandle.toString(16)}`; }
+                const pinName = GPIO_MAPPING[pin] || `0x${pin.toString(16)}`;
+                const flagMap = { 0x0: "GPIO_ACTIVE_HIGH", 0x1: "GPIO_ACTIVE_LOW" };
+                const flagStr = flagMap[flags] || `0x${flags.toString(16)}`;
+                return `&lt;${gpioController} ${pinName} ${flagStr}&gt;`;
+            }
 
-        parseGpioData(data) {
-            const v = []; for (let i = 0; i < data.length; i += 4) { if (i + 4 <= data.length) { v.push((data[i] << 24) | (data[i + 1] << 16) | (data[i + 2] << 8) | data[i + 3]); } }
-            return v;
-        }
+            getNodeNameFromPath(nodePath) {
+                const parts = nodePath.split('/'); return parts[parts.length - 1] || nodePath;
+            }
 
-        formatGpios(gpioData) {
-            if (!gpioData || gpioData.length < 3) return '<span class="string">""</span>';
-            const [phandle, pin, flags] = gpioData;
-            const nodePath = this.phandleMap.get(phandle);
-            let gpioController;
-            if (nodePath) { const nodeName = this.getNodeNameFromPath(nodePath); gpioController = `&${nodeName.split('@')[0]}`; }
-            else { gpioController = `&unknown_${phandle.toString(16)}`; }
-            const pinName = GPIO_MAPPING[pin] || `0x${pin.toString(16)}`;
-            const flagMap = { 0x0: "GPIO_ACTIVE_HIGH", 0x1: "GPIO_ACTIVE_LOW" };
-            const flagStr = flagMap[flags] || `0x${flags.toString(16)}`;
-            return `&lt;${gpioController} ${pinName} ${flagStr}&gt;`;
-        }
+            sequenceStringToBytes(seq) {
+                return seq.trim().split(/\s+/).map(h => parseInt(h, 16));
+            }
 
-        getNodeNameFromPath(nodePath) {
-            const parts = nodePath.split('/'); return parts[parts.length - 1] || nodePath;
-        }
+            parseSequenceData(data) { return Array.from(data); }
 
-        sequenceStringToBytes(seq) {
-            return seq.trim().split(/\s+/).map(h => parseInt(h, 16));
-        }
+            formatSequence(sequence) {
+                if (!sequence || sequence.length === 0) return '<span class="string">""</span>';
+                const hexValues = sequence.map(b => `<span class="hex">${b.toString(16).padStart(2, '0')}</span>`);
+                return `[${hexValues.join(' ')}]`;
+            }
 
-        parseSequenceData(data) { return Array.from(data); }
-
-        formatSequence(sequence) {
-            if (!sequence || sequence.length === 0) return '<span class="string">""</span>';
-            const hexValues = sequence.map(b => `<span class="hex">${b.toString(16).padStart(2, '0')}</span>`);
-            return `[${hexValues.join(' ')}]`;
-        }
-
-        findPanelNodeAtOffset(view, offset, stringOffset) {
-            try {
-                const token = view.getUint32(offset, false);
-                if (token === 1) {
-                    const name = this.readString(view, offset + 4);
-                    if (name && (name.includes('panel') || name.includes('display') || name.includes('lcd'))) {
-                        return { name, offset };
+            findPanelNodeAtOffset(view, offset, stringOffset) {
+                try {
+                    const token = view.getUint32(offset, false);
+                    if (token === 1) {
+                        const name = this.readString(view, offset + 4);
+                        if (name && (name.includes('panel') || name.includes('display') || name.includes('lcd'))) {
+                            return { name, offset };
+                        }
                     }
-                }
-            } catch (e) { }
-            return null;
+                } catch (e) { }
+                return null;
+            }
+
+            parseUint32(data) {
+                if (data.length >= 4) { return (data[0] << 24) | (data[1] << 16) | (data[2] << 8) | data[3]; }
+                return null;
+            }
+
+            readString(view, offset) {
+                let s = ''; for (let i = offset; i < view.byteLength; i++) { const ch = view.getUint8(i); if (ch === 0) break; s += String.fromCharCode(ch); }
+                return s;
+            }
+
+            align4(offset) { return (offset + 3) & ~3; }
         }
 
-        parseUint32(data) {
-            if (data.length >= 4) { return (data[0] << 24) | (data[1] << 16) | (data[2] << 8) | data[3]; }
-            return null;
-        }
+        // ==================== 页面初始化 / 事件绑定 ====================
+        document.addEventListener('DOMContentLoaded', function () {
+            const fileInput = document.getElementById('fileInput');
+            const uploadArea = document.getElementById('uploadArea');
+            const selectedFile = document.getElementById('selectedFile');
+            const processBtn = document.getElementById('processBtn');
+            const loading = document.getElementById('loading');
+            const resultArea = document.getElementById('resultArea');
+            const errorMessage = document.getElementById('errorMessage');
+            const systemBtns = document.querySelectorAll('.system-btn');
+            const langBtns = document.querySelectorAll('.lang-btn');
+            const debugToggle = document.getElementById('debugToggle');
+            // 加载Umami统计
+            const umamiScript = document.createElement('script');
+            umamiScript.defer = true;
+            umamiScript.src = 'https://cloud.umami.is/script.js';
+            umamiScript.setAttribute('data-website-id', 'f2b0e739-03a9-4953-813b-a3324f452ace');
+            document.head.appendChild(umamiScript);
 
-        readString(view, offset) {
-            let s = ''; for (let i = offset; i < view.byteLength; i++) { const ch = view.getUint8(i); if (ch === 0) break; s += String.fromCharCode(ch); }
-            return s;
-        }
+            const identifier = new DTBIdentifier();
+            let currentFile = null;
 
-        align4(offset) { return (offset + 3) & ~3; }
-    }
-
-    // ==================== 页面初始化 / 事件绑定 ====================
-    document.addEventListener('DOMContentLoaded', function () {
-        const fileInput = document.getElementById('fileInput');
-        const uploadArea = document.getElementById('uploadArea');
-        const selectedFile = document.getElementById('selectedFile');
-        const processBtn = document.getElementById('processBtn');
-        const loading = document.getElementById('loading');
-        const resultArea = document.getElementById('resultArea');
-        const errorMessage = document.getElementById('errorMessage');
-        const systemBtns = document.querySelectorAll('.system-btn');
-        const langBtns = document.querySelectorAll('.lang-btn');
-        const debugToggle = document.getElementById('debugToggle');
-
-        const identifier = new DTBIdentifier();
-        let currentFile = null;
-
-        // 语言切换（修复作用域）
-        function switchLanguage(lang) {
-            currentLanguage = lang;
-            document.querySelectorAll('[data-i18n]').forEach(el => {
-                const key = el.getAttribute('data-i18n');
-                if (translations[lang][key]) el.textContent = translations[lang][key];
+            // 语言切换（修复作用域）
+            function switchLanguage(lang) {
+                currentLanguage = lang;
+                document.querySelectorAll('[data-i18n]').forEach(el => {
+                    const key = el.getAttribute('data-i18n');
+                    if (translations[lang][key]) el.textContent = translations[lang][key];
+                });
+                document.querySelectorAll('.lang-btn').forEach(btn => {
+                    btn.classList.toggle('active', btn.dataset.lang === lang);
+                });
+                if (currentFile) { processBtn.click(); }
+            }
+            langBtns.forEach(btn => {
+                btn.addEventListener('click', () => switchLanguage(btn.dataset.lang));
             });
-            document.querySelectorAll('.lang-btn').forEach(btn => {
-                btn.classList.toggle('active', btn.dataset.lang === lang);
-            });
-            if (currentFile) { processBtn.click(); }
-        }
-        langBtns.forEach(btn => {
-            btn.addEventListener('click', () => switchLanguage(btn.dataset.lang));
-        });
 
-        // 系统切换
-        systemBtns.forEach(btn => {
-            btn.addEventListener('click', function () {
-                systemBtns.forEach(b => b.classList.remove('active'));
-                this.classList.add('active');
-                identifier.setSystem(this.dataset.system);
+            // 系统切换
+            systemBtns.forEach(btn => {
+                btn.addEventListener('click', function () {
+                    systemBtns.forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    identifier.setSystem(this.dataset.system);
+                    if (currentFile) { processBtn.click(); }
+                });
+            });
+
+            // Debug 开关
+            debugToggle.addEventListener('change', function () {
+                identifier.isDebug = this.checked;
                 if (currentFile) { processBtn.click(); }
             });
-        });
 
-        // Debug 开关
-        debugToggle.addEventListener('change', function () {
-            identifier.isDebug = this.checked;
-            if (currentFile) { processBtn.click(); }
-        });
+            // 文件选择/拖拽
+            fileInput.addEventListener('change', e => {
+                if (e.target.files.length > 0) {
+                    currentFile = e.target.files[0];
+                    const text = currentLanguage === 'zh' ? `✅ 已选择: ${currentFile.name} (${(currentFile.size / 1024).toFixed(1)} KB)` : `✅ Selected: ${currentFile.name} (${(currentFile.size / 1024).toFixed(1)} KB)`;
+                    selectedFile.textContent = text;
+                    selectedFile.style.display = 'block';
+                    processBtn.disabled = false;
+                    hideError();
+                }
+            });
 
-        // 文件选择/拖拽
-        fileInput.addEventListener('change', e => {
-            if (e.target.files.length > 0) {
-                currentFile = e.target.files[0];
-                const text = currentLanguage === 'zh' ? `✅ 已选择: ${currentFile.name} (${(currentFile.size / 1024).toFixed(1)} KB)` : `✅ Selected: ${currentFile.name} (${(currentFile.size / 1024).toFixed(1)} KB)`;
-                selectedFile.textContent = text;
-                selectedFile.style.display = 'block';
-                processBtn.disabled = false;
-                hideError();
-            }
-        });
+            ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(evt => {
+                uploadArea.addEventListener(evt, preventDefaults, false);
+            });
+            function preventDefaults(e) { e.preventDefault(); e.stopPropagation(); }
+            ['dragenter', 'dragover'].forEach(evt => {
+                uploadArea.addEventListener(evt, () => uploadArea.classList.add('dragover'), false);
+            });
+            ['dragleave', 'drop'].forEach(evt => {
+                uploadArea.addEventListener(evt, () => uploadArea.classList.remove('dragover'), false);
+            });
+            uploadArea.addEventListener('drop', e => {
+                const files = e.dataTransfer.files;
+                if (files.length > 0 && (files[0].name.endsWith('.dtb') || files[0].name.endsWith('.dtbo'))) {
+                    fileInput.files = files; currentFile = files[0];
+                    const text = currentLanguage === 'zh' ? `✅ 已选择: ${currentFile.name} (${(currentFile.size / 1024).toFixed(1)} KB)` : `✅ Selected: ${currentFile.name} (${(currentFile.size / 1024).toFixed(1)} KB)`;
+                    selectedFile.textContent = text;
+                    selectedFile.style.display = 'block';
+                    processBtn.disabled = false;
+                    hideError();
+                }
+            });
 
-        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(evt => {
-            uploadArea.addEventListener(evt, preventDefaults, false);
-        });
-        function preventDefaults(e) { e.preventDefault(); e.stopPropagation(); }
-        ['dragenter', 'dragover'].forEach(evt => {
-            uploadArea.addEventListener(evt, () => uploadArea.classList.add('dragover'), false);
-        });
-        ['dragleave', 'drop'].forEach(evt => {
-            uploadArea.addEventListener(evt, () => uploadArea.classList.remove('dragover'), false);
-        });
-        uploadArea.addEventListener('drop', e => {
-            const files = e.dataTransfer.files;
-            if (files.length > 0 && (files[0].name.endsWith('.dtb') || files[0].name.endsWith('.dtbo'))) {
-                fileInput.files = files; currentFile = files[0];
-                const text = currentLanguage === 'zh' ? `✅ 已选择: ${currentFile.name} (${(currentFile.size / 1024).toFixed(1)} KB)` : `✅ Selected: ${currentFile.name} (${(currentFile.size / 1024).toFixed(1)} KB)`;
-                selectedFile.textContent = text;
-                selectedFile.style.display = 'block';
-                processBtn.disabled = false;
-                hideError();
-            }
-        });
+            // 识别
+            processBtn.addEventListener('click', async function () {
+                if (!currentFile) return;
+                loading.style.display = 'flex';
+                resultArea.innerHTML = currentLanguage === 'zh' ? '<span class="comment">// 正在识别DTB文件...</span>' : '<span class="comment">// Identifying DTB file...</span>';
+                processBtn.disabled = true; hideError();
 
-        // 识别
-        processBtn.addEventListener('click', async function () {
-            if (!currentFile) return;
-            loading.style.display = 'flex';
-            resultArea.innerHTML = currentLanguage === 'zh' ? '<span class="comment">// 正在识别DTB文件...</span>' : '<span class="comment">// Identifying DTB file...</span>';
-            processBtn.disabled = true; hideError();
+                try {
+                    const buf = await currentFile.arrayBuffer();
+                    // 一次性计算 MD5（同步）
+                    const md5 = MD5.md5(buf);
+                    const result = await identifier.identifyDtb(buf, md5);
+                    resultArea.innerHTML = result;
+                } catch (err) {
+                    const msg = currentLanguage === 'zh' ? `识别错误: ${err.message}` : `Identification Error: ${err.message}`;
+                    showError(msg);
+                    resultArea.innerHTML = `<span style="color:#e74c3c">${msg}</span>`;
+                } finally {
+                    loading.style.display = 'none';
+                    processBtn.disabled = false;
+                }
+            });
 
-            try {
-                const buf = await currentFile.arrayBuffer();
-                // 一次性计算 MD5（同步）
-                const md5 = MD5.md5(buf);
-                const result = await identifier.identifyDtb(buf, md5);
-                resultArea.innerHTML = result;
-            } catch (err) {
-                const msg = currentLanguage === 'zh' ? `识别错误: ${err.message}` : `Identification Error: ${err.message}`;
-                showError(msg);
-                resultArea.innerHTML = `<span style="color:#e74c3c">${msg}</span>`;
-            } finally {
-                loading.style.display = 'none';
-                processBtn.disabled = false;
-            }
+            function showError(m) { errorMessage.textContent = m; errorMessage.style.display = 'block'; }
+            function hideError() { errorMessage.style.display = 'none'; }
         });
-
-        function showError(m) { errorMessage.textContent = m; errorMessage.style.display = 'block'; }
-        function hideError() { errorMessage.style.display = 'none'; }
-    });
-</script>
+    </script>
 </body>
+
 </html>
