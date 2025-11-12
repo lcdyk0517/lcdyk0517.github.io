@@ -35,7 +35,7 @@ const devicesData = {
             'Rocknix MOD': {
                 status: '完全支持',
                 description: 'Rocknix KK魔改版完美支持',
-                tutorial: 'Rocknix KK魔改版建使用教程：\n1. 下载Rocknix 3326系统镜像\n2. 使用烧录工具写入TF卡\n3. 打开rocknix分区运行dtb_selector.exe选择R36S Pro\n5. 插入设备并启动',
+                tutorial: 'Rocknix KK魔改版建使用教程：\n1. 下载Rocknix 3326系统镜像\n2. 使用烧录工具写入TF卡\n3. 打开rocknix分区运行dtb_selector.exe选择R36S克隆->R36S克隆 种类1带功放\n5. 插入设备并启动',
                 notes: ['请自行测试'],
                 pageLink: '../pages/downloads.html'
             },
@@ -112,7 +112,7 @@ const devicesData = {
             'Rocknix MOD': {
                 status: '完全支持',
                 description: 'Rocknix KK魔改版完美支持',
-                tutorial: 'Rocknix KK魔改版建使用教程：\n1. 下载Rocknix 3326系统镜像\n2. 使用烧录工具写入TF卡\n3. 打开rocknix分区运行dtb_selector.exe选择R36S克隆 G80C\n4. 插入设备并启动',
+                tutorial: 'Rocknix KK魔改版建使用教程：\n1. 下载Rocknix 3326系统镜像\n2. 使用烧录工具写入TF卡\n3. 打开rocknix分区运行dtb_selector.exe选择R36S克隆->R36S克隆 种类2不带功放\n4. 插入设备并启动',
                 notes: ['请自行测试'],
                 pageLink: '../pages/downloads.html'
             },
@@ -188,7 +188,7 @@ const devicesData = {
             'Rocknix MOD': {
                 status: '完全支持',
                 description: 'Rocknix KK魔改版完美支持',
-                tutorial: 'Rocknix KK魔改版建使用教程：\n1. 下载Rocknix 3326系统镜像\n2. 使用烧录工具写入TF卡\n3. 打开rocknix分区运行dtb_selector.exe选择R36S克隆 V20主板\n4. 插入设备并启动',
+                tutorial: 'Rocknix KK魔改版建使用教程：\n1. 下载Rocknix 3326系统镜像\n2. 使用烧录工具写入TF卡\n3. 打开rocknix分区运行dtb_selector.exe选择R36S克隆->R36S克隆 种类3\n4. 插入设备并启动',
                 notes: ['请自行测试'],
                 pageLink: '../pages/downloads.html'
             },
@@ -574,7 +574,7 @@ const devicesData = {
             'Rocknix MOD': {
                 status: '完全支持',
                 description: 'Rocknix KK魔改版完美支持',
-                tutorial: 'Rocknix KK魔改版建使用教程：\n1. 下载Rocknix 3326系统镜像\n2. 使用烧录工具写入TF卡\n3. 打开rocknix分区运行dtb_selector.exe选择G80XF\n5. 插入设备并启动',
+                tutorial: 'Rocknix KK魔改版建使用教程：\n1. 下载Rocknix 3326系统镜像\n2. 使用烧录工具写入TF卡\n3. 打开rocknix分区选择R36S克隆->R36S克隆 种类2带功放\n5. 插入设备并启动',
                 notes: ['请自行测试'],
                 pageLink: '../pages/downloads.html'
             },
@@ -649,7 +649,7 @@ const devicesData = {
             'Rocknix MOD': {
                 status: '测试支持',
                 description: 'Rocknix KK魔改版完美支持',
-                tutorial: 'Rocknix KK魔改版建使用教程：\n1. 下载Rocknix 3326系统镜像\n2. 使用烧录工具写入TF卡\n3. 打开rocknix分区运行dtb_selector.exe选择G80C\n5. 插入设备并启动',
+                tutorial: 'Rocknix KK魔改版建使用教程：\n1. 下载Rocknix 3326系统镜像\n2. 使用烧录工具写入TF卡\n3. 打开rocknix分区运行dtb_selector.exe选择R36S克隆->R36S克隆 种类2不带功放\n5. 插入设备并启动',
                 notes: ['请自行测试，我没有测试过'],
                 pageLink: '../pages/downloads.html'
             },
@@ -724,7 +724,7 @@ const devicesData = {
             'Rocknix MOD': {
                 status: '测试支持',
                 description: 'Rocknix KK魔改版完美支持',
-                tutorial: 'Rocknix KK魔改版建使用教程：\n1. 下载Rocknix 3326系统镜像\n2. 使用烧录工具写入TF卡\n3. 打开rocknix分区运行dtb_selector.exe选择G80C\n5. 插入设备并启动',
+                tutorial: 'Rocknix KK魔改版建使用教程：\n1. 下载Rocknix 3326系统镜像\n2. 使用烧录工具写入TF卡\n3. 打开rocknix分区运行dtb_selector.exe选择R36S克隆->R36S克隆 种类2不带功放\n5. 插入设备并启动',
                 notes: ['请自行测试，我没有测试过'],
                 pageLink: '../pages/downloads.html'
             },
@@ -799,7 +799,7 @@ const devicesData = {
             'Rocknix MOD': {
                 status: '完全支持',
                 description: 'Rocknix KK魔改版完美支持',
-                tutorial: 'Rocknix KK魔改版建使用教程：\n1. 下载Rocknix 3326系统镜像\n2. 使用烧录工具写入TF卡\n3. 打开rocknix分区运行dtb_selector.exe选择R36S Pro\n5. 插入设备并启动',
+                tutorial: 'Rocknix KK魔改版建使用教程：\n1. 下载Rocknix 3326系统镜像\n2. 使用烧录工具写入TF卡\n3. 打开rocknix分区运行dtb_selector.exe选择R36S克隆->R36S克隆 种类1带功放\n5. 插入设备并启动',
                 notes: ['请自行测试'],
                 pageLink: '../pages/downloads.html'
             },
@@ -874,7 +874,7 @@ const devicesData = {
             'Rocknix MOD': {
                 status: '完全支持',
                 description: 'Rocknix KK魔改版完美支持',
-                tutorial: 'Rocknix KK魔改版建使用教程：\n1. 下载Rocknix 3326系统镜像\n2. 使用烧录工具写入TF卡\n3. 打开rocknix分区运行dtb_selector.exe选择"R36S克隆 种类3"\n5. 插入设备并启动',
+                tutorial: 'Rocknix KK魔改版建使用教程：\n1. 下载Rocknix 3326系统镜像\n2. 使用烧录工具写入TF卡\n3. 打开rocknix分区运行dtb_selector.exe选择R36S克隆->R36S克隆 种类4\n5. 插入设备并启动',
                 notes: ['请自行测试'],
                 pageLink: '../pages/downloads.html'
             },
@@ -925,6 +925,7 @@ const devicesData = {
             'RK3326芯片',
             '1G运行内存',
             '8G内置存储',
+            "189.0g"
         ],
         gallery: [{
             title: '主板丝印照片',
@@ -949,7 +950,7 @@ const devicesData = {
             'Rocknix MOD': {
                 status: '测试支持',
                 description: 'Rocknix KK魔改版完美支持',
-                tutorial: 'Rocknix KK魔改版建使用教程：\n1. 下载Rocknix 3326系统镜像\n2. 使用烧录工具写入TF卡\n3. 打开rocknix分区运行dtb_selector.exe选择G80C\n5. 插入设备并启动',
+                tutorial: 'Rocknix KK魔改版建使用教程：\n1. 下载Rocknix 3326系统镜像\n2. 使用烧录工具写入TF卡\n3. 打开rocknix分区运行dtb_selector.exe选择R36S克隆->R36S克隆 种类2不带功放\n5. 插入设备并启动',
                 notes: ['请自行测试，我没有测试过'],
                 pageLink: '../pages/downloads.html'
             },
@@ -1000,6 +1001,7 @@ const devicesData = {
             'RK3326芯片',
             '1G运行内存',
             '无内置存储',
+            "173.9g"
         ],
         gallery: [{
             title: '主板丝印照片',
@@ -1019,12 +1021,12 @@ const devicesData = {
         }
         ],
         dtbNames: ['r36s_power_mb_v01_06_06_25', 'K36 Panel 8', 'K36 Panel 9', "type_2"],
-        systemInfos: ['Rocknix WIP', 'Rocknix每夜构建', 'UnofficialOS'],
+        systemInfos: ['Rocknix MOD', 'Arkos4Clone', 'Rocknix WIP', 'Rocknix每夜构建', 'UnofficialOS'],
         systemDetails: {
             'Rocknix MOD': {
                 status: '测试支持',
                 description: 'Rocknix KK魔改版完美支持',
-                tutorial: 'Rocknix KK魔改版建使用教程：\n1. 下载Rocknix 3326系统镜像\n2. 使用烧录工具写入TF卡\n3. 打开rocknix分区运行dtb_selector.exe选择G80C\n5. 插入设备并启动',
+                tutorial: 'Rocknix KK魔改版建使用教程：\n1. 下载Rocknix 3326系统镜像\n2. 使用烧录工具写入TF卡\n3. 打开rocknix分区运行dtb_selector.exe选择R36S克隆->R36S克隆 种类2不带功放\n5. 插入设备并启动',
                 notes: ['请自行测试，我没有测试过'],
                 pageLink: '../pages/downloads.html'
             },
