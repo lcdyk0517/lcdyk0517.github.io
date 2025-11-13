@@ -1028,8 +1028,10 @@
                 const codecInfo = this.extractCodecInfo(arrayBuffer);
 
                 // 新增：adc-keys 状态（仅看 adc-keys 节点自身的 status）
-                const adcKeysEnabled = this.detectAdcKeysFlag(view);
-
+                let adcKeysEnabled = null;
+                if (this.currentSystem === 'arkos4clone') {
+                    adcKeysEnabled = this.detectAdcKeysFlag(view);
+                }
                 // 调试输出
                 if (this.isDebug) {
                     result.push(`<span class="comment">${translations[currentLanguage].panelInfo}</span>`);
@@ -1071,18 +1073,17 @@
                         } else {
                             result.push(`<span class="comment">${translations[currentLanguage].noSdioNode}</span>`);
                         }
+                        // 新增：adc-keys 调试信息
+                        result.push(
+                            `<span class="comment">adc-keys</span> = <span class="value">${adcKeysEnabled ? 'true' : 'false'}</span>;`
+                        );
+                        result.push(``);
                     }
 
                     result.push(`<span class="comment">${translations[currentLanguage].codecInfo}</span>`);
                     result.push(
                         `<span class="property">use-ext-amplifier</span> = <span class="value">${codecInfo.useExtAmplifier ? 'true' : 'false'}</span>;`
                     );
-
-                    // 新增：adc-keys 调试信息
-                    result.push(
-                        `<span class="comment">adc-keys</span> = <span class="value">${adcKeysEnabled ? 'true' : 'false'}</span>;`
-                    );
-                    result.push(``);
                 }
 
                 // === 识别 ===
@@ -1181,8 +1182,11 @@
                     const exAmp = !!codecInfo.useExtAmplifier;
                     if (dbAmp !== exAmp) return false;
                 }
-                // 6) adc-keys（新增的严格条件）
-                if (dbItem.adcKey !== undefined) {
+                // 6) adc-keys（只在 ArkOS4Clone 且 adcKeysEnabled 有效时参与匹配）
+                if (this.currentSystem === 'arkos4clone' &&
+                    adcKeysEnabled !== null &&
+                    dbItem.adcKey !== undefined) {
+
                     if (!!dbItem.adcKey !== !!adcKeysEnabled) return false;
                 }
                 return true;
