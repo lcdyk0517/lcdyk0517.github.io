@@ -278,6 +278,54 @@ const devicesData = {
         }
     },
     {
+        id: 'y3506_v04_20250529',
+        title: 'R36S 酱油机v04',
+        model: 'R36S 酱油机v04',
+        category: '酱油机',
+        description: '该设备有声音功放，使用两个lpddr3(使用BGA96封装)',
+        features: [
+            'RK3326芯片',
+            '1G运行内存',
+            '无内置存储',
+            '有声音功放',
+        ],
+        gallery: [{
+            title: '主板丝印照片',
+            path: '../images/Y3506_V04_20250529/mainboard.jpg'
+        },
+        {
+            title: '主板照片',
+            path: '../images/Y3506_V04_20250529/mainboard.jpg'
+        },
+        {
+            title: '背部贴纸',
+            path: '../images/Y3506_V04_20250529/back.jpg'
+        },
+        {
+            title: '整体外观',
+            path: '../images/Y3506_V04_20250529/front.jpg'
+        }
+        ],
+        systemInfos: ['Arkos4Clone', 'ArkOS R3XS'],
+        dtbNames: ['y3506_v04_20250529'],
+        systemDetails: {
+            'Arkos4Clone': {
+                status: '完全支持',
+                description: 'Arkos4Clone基于该设备开发',
+                tutorial: '使用教程：\n1. 下载Arkos4Clone系统镜像\n2. 使用烧录工具写入TF卡\n3. 打开boot运行dtb_selector.exe选择GameConsole->GameConsole R36s Panel 5\n4. 插入设备并启动',
+                notes: ['请仔细阅读下载注意事项'],
+                pageLink: '../pages/downloads.html'
+            },
+            'ArkOS R3XS': {
+                status: '完全支持',
+                description: 'ArkOS R3XS系统在此设备上运行稳定',
+                tutorial: 'ArkOS R3XS使用教程：\n1. 下载ArkOS R3XS系统镜像\n2. 使用烧录工具写入TF卡\n3. 打开boot分区的的ScreenFiles->Panel6复制全部文件\n4. 粘贴到boot的根目录\n5. 插入设备即可启动',
+                notes: ['请自行测试'],
+                pageLink: '../pages/downloads.html'
+            }
+        }
+    },
+    {
         id: 'r36s_v12_2023_08_18',
         title: 'R36S 原版机 P4屏幕',
         model: 'R36S 原版机 P4屏幕',
@@ -1116,7 +1164,15 @@ const DTB_DATABASE = [{
     panelInitSequence: "39 00 04 b9 f1 12 83 39 00 1c ba 33 81 05 f9 0e 0e 20 00 00 00 00 00 00 00 44 25 00 91 0a 00 00 02 4f d1 00 00 37 15 00 02 b8 25 39 00 04 bf 02 11 00 39 00 0b b3 0c 10 0a 50 03 ff 00 00 00 00 39 00 0a c0 73 73 50 50 00 00 08 70 00 15 00 02 bc 46 15 00 02 cc 0b 15 00 02 b4 80 39 00 04 b2 00 13 f0 39 00 0f e3 07 07 0b 0b 03 0b 00 00 00 00 ff 00 c0 10 39 00 0d c1 53 00 1e 1e 77 e1 cc dd 67 77 33 33 39 00 03 b5 10 10 39 00 03 b6 6c 7c 39 00 40 e9 08 00 0e 00 00 b0 b1 11 31 23 28 10 b0 b1 27 08 00 04 02 00 00 00 00 04 02 00 00 00 88 88 ba 60 24 08 88 88 88 88 88 88 88 ba 71 35 18 88 88 88 88 88 00 00 00 01 00 00 00 00 00 00 00 00 00 39 00 3e ea 97 0a 82 02 13 07 00 00 00 00 00 00 80 88 ba 17 53 88 88 88 88 88 88 81 88 ba 06 42 88 88 88 88 88 88 23 10 00 02 80 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 39 00 23 e0 00 07 0b 27 2d 3f 3b 37 05 0a 0b 0f 11 0f 12 12 18 00 07 0b 27 2d 3f 3b 37 05 0a 0b 0f 11 0f 12 12 18 05 96 01 11 05 32 01 29",
     resetGpios: "&gpio3 RK_PC0 GPIO_ACTIVE_LOW",
     enableGpios: "&gpio1 RK_PC2 GPIO_ACTIVE_LOW",
-    useExtAmplifier: true
+    useExtAmplifier: false
+},
+{
+    name: "y3506_v04_20250529",
+    md5: "0276a922c6206a81a67945b53c042c66",
+    panelInitSequence: "05 96 01 11 05 32 01 29",
+    resetGpios: "&gpio3 RK_PC0 GPIO_ACTIVE_LOW",
+    enableGpios: "&gpio1 RK_PC2 GPIO_ACTIVE_LOW",
+    useExtAmplifier: false
 },
 {
     name: "type_1_with_amplifier",
