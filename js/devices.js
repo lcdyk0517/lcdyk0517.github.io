@@ -312,7 +312,7 @@ const devicesData = {
             'Arkos4Clone': {
                 status: '完全支持',
                 description: 'Arkos4Clone基于该设备开发',
-                tutorial: '使用教程：\n1. 下载Arkos4Clone系统镜像\n2. 使用烧录工具写入TF卡\n3. 打开boot运行dtb_selector.exe选择GameConsole->GameConsole R36s Panel 5\n4. 插入设备并启动',
+                tutorial: '使用教程：\n1. 下载Arkos4Clone系统镜像\n2. 使用烧录工具写入TF卡\n3. 打开boot运行dtb_selector.exe选择SaySouce R36s->Soy Sauce V04\n4. 插入设备并启动',
                 notes: ['请仔细阅读下载注意事项'],
                 pageLink: '../pages/downloads.html'
             },
