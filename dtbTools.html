@@ -415,6 +415,106 @@
                 margin-top: 15px
             }
         }
+                .donor-card {
+            margin-top: 20px;
+            padding: 16px;
+            border-radius: 12px;
+            background: #ffffff;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, .06);
+            border: 1px solid #ecf0f1;
+        }
+
+        .donor-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+            gap: 8px;
+        }
+
+        .donor-title-text {
+            font-weight: 700;
+            font-size: 0.95rem;
+            color: var(--primary);
+        }
+
+        .donor-button {
+            padding: 6px 12px;
+            border-radius: 999px;
+            border: none;
+            cursor: pointer;
+            font-size: 0.8rem;
+            font-weight: 600;
+            background: #ff5f5f;
+            color: #fff;
+            white-space: nowrap;
+            transition: .2s;
+        }
+
+        .donor-button:hover {
+            filter: brightness(1.05);
+            transform: translateY(-1px);
+        }
+
+        .donor-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            max-height: 180px;
+            overflow-y: auto;
+        }
+
+        .donor-item {
+            padding: 8px 10px;
+            border-radius: 8px;
+            background: #f8f9fa;
+            border: 1px solid #edf2f7;
+            font-size: 0.8rem;
+        }
+
+        .donor-header {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: baseline;
+            gap: 6px;
+            margin-bottom: 4px;
+        }
+
+        .donor-name {
+            font-weight: 700;
+            color: #2c3e50;
+        }
+
+        .donor-date-label {
+            color: #7f8c8d;
+        }
+
+        .donor-date {
+            color: #34495e;
+            font-family: 'Fira Code','Cascadia Code',monospace;
+            font-size: 0.75rem;
+        }
+
+        .donor-note {
+            color: #555;
+            line-height: 1.35;
+        }
+
+        .donor-note-label {
+            font-weight: 600;
+            margin-right: 4px;
+            color: #7f8c8d;
+        }
+
+        .donor-note-text {
+            word-break: break-word;
+        }
+
+        .donor-empty {
+            font-size: 0.8rem;
+            color: #7f8c8d;
+        }
+
     </style>
 </head>
 
@@ -425,7 +525,7 @@
                 <button class="lang-btn active" data-lang="zh">中文</button>
                 <button class="lang-btn" data-lang="en">English</button>
             </div>
-            <h1 data-i18n="title">🔍 类R36S掌机dtb分析确认</h1>
+            <h1 data-i18n="title">🔍 非官方支持掌机 DTB 分析工具</h1>
             <p class="subtitle" data-i18n="subtitle">基于MD5和Panel参数的DTB文件识别 - 支持ArkOS4Clone和ArkOSK36</p>
         </header>
 
@@ -449,6 +549,25 @@
                         <input type="checkbox" id="debugToggle" style="margin-right:8px;">
                         <span data-i18n="debugToggle">详细数据</span>
                     </label>
+                </div>
+                <!-- ☕ Ko-fi 捐赠信息卡片 -->
+                <div class="donor-card">
+                    <div class="donor-card-header">
+                        <span id="donorTitle"
+                              class="donor-title-text"
+                              data-i18n="donor_title">
+                            ☕ 支持开发者 / 最近捐赠
+                        </span>
+                        <button id="donateButton"
+                                type="button"
+                                class="donor-button"
+                                data-i18n="donor_button">
+                            在 Ko-fi 上请我喝咖啡
+                        </button>
+                    </div>
+                    <div id="donorList" class="donor-list">
+                        <!-- JS 会自动填充捐赠列表 -->
+                    </div>
                 </div>
 
                 <div class="upload-area" id="uploadArea">
@@ -482,7 +601,7 @@
         // ==================== 多语言 ====================
         const translations = {
             zh: {
-                title: "🔍 类R36S掌机dtb分析确认", subtitle: "基于MD5和Panel参数的DTB文件识别 - 支持ArkOS4Clone和ArkOSK36",
+                title: "🔍 非官方支持掌机 DTB 分析工具", subtitle: "基于MD5和Panel参数的DTB文件识别 - 支持ArkOS4Clone和ArkOSK36",
                 "instructions.title": "📋 使用说明", "instructions.step1": "• 上传DTB文件", "instructions.step2": "• 选择目标系统 (ArkOS4Clone 或 ArkOSK36)", "instructions.step3": "• 自动计算MD5并与已知配置比对", "instructions.step4": "• 根据匹配程度提供识别建议",
                 "upload.drag": "拖放DTB文件到此处", "upload.click": "或点击下方按钮选择文件", "upload.button": "选择DTB文件",
                 "processBtn": "识别DTB文件", "result.title": "识别结果", "loading.title": "正在识别DTB文件...", "loading.subtitle": "请稍候", "debugToggle": "详细数据",
@@ -490,10 +609,14 @@
                 "panelInfo": "=== 提取的Panel信息 ===", "noPanelSequence": "// 未找到 panel-init-sequence", "noGpioConfig": "// 未找到GPIO配置", "noSdioNode": "// 未找到SDIO节点", "codecInfo": "=== Codec信息 ===",
                 "adaptationSuggestion": "=== ArkOS4Clone适配建议 ===", "debugInfo": "// 调试信息:", "md5Match": "MD5匹配", "screenParamMatch": "屏幕参数匹配",
                 "exactMatch": "✅ 与开发使用的DTB完全一致，请使用该选项完全兼容你的设备", "screenMatch": "⚠️ 屏幕参数匹配", "screenMatchDesc": "检测到屏幕一致但是MD5不一致", "screenMatchAdvice": "可以进行测试使用，但不保证完全兼容：",
-                "noMatch": "❓ 未找到匹配", "noMatchDesc": "暂时不适配该系统", "noMatchDetails": "未完全匹配节点如下：", "noMatchReason1": "- panel-init-sequence 不匹配", "noMatchReason2": "- GPIO配置 不匹配", "noMatchReason3": "- use-ext-amplifier 不匹配"
+                "noMatch": "❓ 未找到匹配", "noMatchDesc": "暂时不适配该系统", "noMatchDetails": "未完全匹配节点如下：", "noMatchReason1": "- panel-init-sequence 不匹配", "noMatchReason2": "- GPIO配置 不匹配", "noMatchReason3": "- use-ext-amplifier 不匹配", donor_title: "☕ 支持开发者 / 最近捐赠",
+                donor_button: "在 Ko-fi 上请我喝咖啡",
+                donor_empty: "暂时没有捐赠记录。",
+                donor_note_label: "留言",
+                donor_date_label: "日期"
             },
             en: {
-                title: "🔍 R36S-like Handheld DTB Analysis Tool", subtitle: "DTB File Identification Based on MD5 and Panel Parameters - Supports ArkOS4Clone and ArkOSK36",
+                title: "🔍 Unofficial Handheld DTB Analysis Tool", subtitle: "DTB File Identification Based on MD5 and Panel Parameters - Supports ArkOS4Clone and ArkOSK36",
                 "instructions.title": "📋 Instructions", "instructions.step1": "• Upload DTB file", "instructions.step2": "• Select target system (ArkOS4Clone or ArkOSK36)", "instructions.step3": "• Automatically calculate MD5 and compare with known configurations", "instructions.step4": "• Provide identification suggestions based on match level",
                 "upload.drag": "Drag and drop DTB file here", "upload.click": "or click the button below to select file", "upload.button": "Select DTB File",
                 "processBtn": "Identify DTB File", "result.title": "Identification Result", "loading.title": "Identifying DTB file...", "loading.subtitle": "Please wait", "debugToggle": "Detailed Data",
@@ -501,10 +624,14 @@
                 "panelInfo": "=== Extracted Panel Information ===", "noPanelSequence": "// No panel-init-sequence found", "noGpioConfig": "// No GPIO configuration found", "noSdioNode": "// No SDIO node found", "codecInfo": "=== Codec Information ===",
                 "adaptationSuggestion": "=== ArkOS4Clone Adaptation Suggestion ===", "debugInfo": "// Debug Information:", "md5Match": "MD5 Match", "screenParamMatch": "Screen Parameter Match",
                 "exactMatch": "✅ Exact match with development DTB, please use this option for full compatibility with your device", "screenMatch": "⚠️ Screen Parameter Match", "screenMatchDesc": "Screen detected as identical but MD5 differs", "screenMatchAdvice": "Can be used for testing but full compatibility is not guaranteed:",
-                "noMatch": "❓ No Match Found", "noMatchDesc": "It is temporarily not suitable for this system", "noMatchDetails": "Nodes that did not fully match:", "noMatchReason1": "- panel-init-sequence mismatch", "noMatchReason2": "- GPIO configuration mismatch", "noMatchReason3": "- use-ext-amplifier mismatch"
+                "noMatch": "❓ No Match Found", "noMatchDesc": "It is temporarily not suitable for this system", "noMatchDetails": "Nodes that did not fully match:", "noMatchReason1": "- panel-init-sequence mismatch", "noMatchReason2": "- GPIO configuration mismatch", "noMatchReason3": "- use-ext-amplifier mismatch", donor_title: "☕ Support the Developer / Recent Donations",
+                donor_button: "Buy me a coffee on Ko-fi",
+                donor_empty: "No donations yet.",
+                donor_note_label: "Note",
+                donor_date_label: "Date"
             }
         };
-        let currentLanguage = 'zh';
+        let currentLanguage = 'en';
         const IS_DEBUG_DEFAULT = false;
 
         // ==================== MD5（与你原版一致，保持可靠） ====================
@@ -577,6 +704,71 @@
 
         // ArkOS4Clone 数据库 (保持原样)
         const ARKOS4CLONE_DATABASE = [
+            // YMC
+            {
+                name: "YMC -> YMC A10MINI",
+                md5: "f5e765e3d4f05f46276aa44076db5afc",
+                panelInitSequence: "05 78 01 11 15 00 02 36 d0 15 00 02 3a 77 29 00 05 2a 00 00 02 7f 29 00 05 2b 00 00 01 df 05 0a 01 29",
+                resetGpios: "&gpio3 RK_PC0 GPIO_ACTIVE_LOW",
+                enableGpios: null,
+                sdio: "false",
+                useExtAmplifier: null,
+            },
+            // Diium
+            {
+                name: "Diium -> Dr28s",
+                md5: [""],
+                panelInitSequence: "39 00 06 ff 77 01 00 00 13 15 00 02 ef 08 39 00 06 ff 77 01 00 00 10 39 00 03 c0 4f 00 39 00 03 c1 10 0c 39 00 03 c2 01 14 15 00 02 cc 10 39 00 11 b0 0a 18 1e 12 16 0c 0e 0d 0c 29 06 14 13 29 33 1c 39 00 11 b1 0a 19 21 0a 0c 00 0c 03 03 23 01 0e 0c 27 2b 1c 39 00 06 ff 77 01 00 00 11 15 00 02 b0 5d 15 00 02 b1 4f 15 00 02 b2 00 15 00 02 b3 80 15 00 02 b5 0c 15 00 02 b7 85 15 00 02 b8 20 15 00 02 c1 78 15 00 02 c2 78 15 00 02 d0 88 39 00 04 e0 00 00 02 39 00 0c e1 06 a0 08 a0 05 a0 07 a0 00 44 44 39 00 0d e2 20 20 44 44 96 a0 00 00 96 a0 00 00 39 00 05 e3 00 00 22 22 39 00 03 e4 44 44 39 00 11 e5 0d 91 0a a0 0f 93 0a a0 09 8d 0a a0 0b 8f 0a a0 39 00 05 e6 00 00 22 22 39 00 03 e7 44 44 39 00 11 e8 0c 90 0a a0 0e 92 0a a0 08 8c 0a a0 0a 8e 0a a0 39 00 03 e9 36 00 39 00 08 eb 00 01 e4 e4 44 88 40 39 00 11 ed ff 45 67 fa 01 2b cf ff ff fc b2 10 af 76 54 ff 39 00 07 ef 10 0d 04 08 3f 1f 15 00 02 36 00 15 00 02 35 00 05 78 01 11 05 64 01 29",
+                resetGpios: "&gpio3 RK_PB7 GPIO_ACTIVE_LOW",
+                enableGpios: "&gpio0 RK_PB5 GPIO_ACTIVE_HIGH",
+                sdio: "false",
+                useExtAmplifier: false,
+                adcKey: "true",
+            },   
+            // AISLPC
+            {
+                name: "AISLPC -> GameConsole K36S | AISLPC -> GameConsole R36T",
+                md5: ["ccc295fcb58c947bbc3026d153eae978", "320555247f7e911cb5c8e1ef7899776e", "9782673a1f17f559a62ee210d4bbf206"],
+                panelInitSequence: "15 00 02 ff 30 15 00 02 ff 52 15 00 02 ff 01 15 00 02 e3 00 15 00 02 25 10 15 00 02 28 6f 15 00 02 29 01 15 00 02 2a df 15 00 02 2c 22 15 00 02 c3 0f 15 00 02 37 9c 15 00 02 38 a7 15 00 02 39 41 15 00 02 80 20 15 00 02 91 67 15 00 02 92 67 15 00 02 a0 55 15 00 02 a1 50 15 00 02 a3 58 15 00 02 a4 9c 15 00 02 a7 02 15 00 02 a8 01 15 00 02 a9 21 15 00 02 aa fc 15 00 02 ab 28 15 00 02 ac 06 15 00 02 ad 06 15 00 02 ae 06 15 00 02 af 03 15 00 02 b0 08 15 00 02 b1 26 15 00 02 b2 28 15 00 02 b3 28 15 00 02 b4 03 15 00 02 b5 08 15 00 02 b6 26 15 00 02 b7 08 15 00 02 b8 26 15 00 02 c0 00 15 00 02 c1 00 15 00 02 c2 00 15 00 02 ff 30 15 00 02 ff 52 15 00 02 ff 02 15 00 02 b0 02 15 00 02 d0 02 15 00 02 b1 0f 15 00 02 d1 10 15 00 02 b2 11 15 00 02 d2 12 15 00 02 b3 32 15 00 02 d3 33 15 00 02 b4 36 15 00 02 d4 36 15 00 02 b5 3c 15 00 02 d5 3c 15 00 02 b6 20 15 00 02 d6 20 15 00 02 b7 3e 15 00 02 d7 3e 15 00 02 b8 0e 15 00 02 d8 0d 15 00 02 b9 05 15 00 02 d9 05 15 00 02 ba 11 15 00 02 da 12 15 00 02 bb 11 15 00 02 db 11 15 00 02 bc 13 15 00 02 dc 14 15 00 02 bd 14 15 00 02 dd 14 15 00 02 be 16 15 00 02 de 18 15 00 02 bf 0e 15 00 02 df 0f 15 00 02 c0 17 15 00 02 e0 17 15 00 02 c1 07 15 00 02 e1 08 15 00 02 ff 30 15 00 02 ff 52 15 00 02 ff 03 15 00 02 08 8a 15 00 02 09 8b 15 00 02 30 00 15 00 02 31 00 15 00 02 32 00 15 00 02 33 00 15 00 02 34 61 15 00 02 35 d4 15 00 02 36 24 15 00 02 37 03 15 00 02 40 86 15 00 02 41 87 15 00 02 42 84 15 00 02 43 85 15 00 02 44 11 15 00 02 45 de 15 00 02 46 dd 15 00 02 47 11 15 00 02 48 e0 15 00 02 49 df 15 00 02 50 82 15 00 02 51 83 15 00 02 52 80 15 00 02 53 81 15 00 02 54 11 15 00 02 55 e2 15 00 02 56 e1 15 00 02 57 11 15 00 02 58 e4 15 00 02 59 e3 15 00 02 82 0f 15 00 02 83 0f 15 00 02 84 00 15 00 02 85 0f 15 00 02 86 0f 15 00 02 87 0e 15 00 02 88 0e 15 00 02 89 06 15 00 02 8a 06 15 00 02 8b 07 15 00 02 8c 07 15 00 02 8d 04 15 00 02 8e 04 15 00 02 8f 05 15 00 02 90 05 15 00 02 98 0f 15 00 02 99 0f 15 00 02 9a 00 15 00 02 9b 0f 15 00 02 9c 0f 15 00 02 9d 0e 15 00 02 9e 0e 15 00 02 9f 06 15 00 02 a0 06 15 00 02 a1 07 15 00 02 a2 07 15 00 02 a3 04 15 00 02 a4 04 15 00 02 a5 05 15 00 02 a6 05 15 00 02 e0 02 15 00 02 e1 52 15 00 02 ff 30 15 00 02 ff 52 15 00 02 ff 00 15 00 02 36 02 05 c8 01 11 05 64 01 29",
+                resetGpios: "&gpio3 RK_PB7 GPIO_ACTIVE_LOW",
+                enableGpios: "&gpio0 RK_PB5 GPIO_ACTIVE_HIGH",
+                sdio: "true",
+                useExtAmplifier: false,
+                adcKey: "true",
+            },
+            {
+                name: "AISLPC -> GameConsole R36T Max",
+                md5: [],
+                panelInitSequence: "39 00 04 b9 f1 12 83 39 00 06 b1 00 00 00 da 80 39 00 04 b2 3c 12 30 39 00 0b b3 10 10 28 28 03 ff 00 00 00 00 15 00 02 b4 80 39 00 03 b5 0a 0a 39 00 03 b6 97 97 39 00 05 b8 26 22 f0 13 39 00 1c ba 33 81 05 f9 0e 0e 20 00 00 00 00 00 00 00 44 25 00 90 0a 00 00 01 4f 01 00 00 37 15 00 02 bc 47 39 00 04 bf 02 11 00 39 00 0a c0 73 73 50 50 00 00 12 70 00 39 00 0d c1 25 00 32 32 77 e4 ff ff cc cc 77 77 39 00 07 c6 82 00 bf ff 00 ff 39 00 07 c7 b8 00 0a 00 00 00 39 00 05 c8 10 40 1e 02 15 00 02 cc 0b 39 00 23 e0 00 0b 10 2c 3d 3f 42 3a 07 0d 0f 13 15 13 14 0f 16 00 0b 10 2c 3d 3f 42 3a 07 0d 0f 13 15 13 14 0f 16 39 00 0f e3 07 07 0b 0b 0b 0b 00 00 00 00 ff 00 c0 10 39 00 40 e9 c8 10 0a 00 00 80 81 12 31 23 4f 86 a0 00 47 08 00 00 0c 00 00 00 00 00 0c 00 00 00 98 02 8b af 46 02 88 88 88 88 88 98 13 8b af 57 13 88 88 88 88 88 00 00 00 00 00 00 00 00 00 00 00 00 00 39 00 3e ea 97 0c 09 09 09 78 00 00 00 00 00 00 9f 31 8b a8 31 75 88 88 88 88 88 9f 20 8b a8 20 64 88 88 88 88 88 23 00 00 02 71 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 40 80 81 00 00 00 00 39 00 04 ef ff ff 01 05 fa 01 11 05 32 01 29",
+                resetGpios: "&gpio3 RK_PB7 GPIO_ACTIVE_LOW",
+                enableGpios: "&gpio0 RK_PB5 GPIO_ACTIVE_HIGH",
+                sdio: "true",
+                useExtAmplifier: false,
+                adcKey: "true",
+            },
+            // Batlexp
+            {
+                name: "Batlexp -> Batlexp G350",
+                md5: [""],
+                panelInitSequence: "39 00 04 b9 f1 12 83 39 00 06 b1 00 00 00 da 80 39 00 04 b2 00 13 70 39 00 0b b3 10 10 28 28 03 ff 00 00 00 00 15 00 02 b4 80 15 00 03 b5 0a 0a 15 00 03 b6 7f 7f 39 00 05 b8 26 62 f0 63 39 00 1c ba 33 81 05 f9 0e 0e 20 00 00 00 00 00 00 00 44 25 00 90 0a 00 00 01 4f 01 00 00 37 15 00 02 bc 47 39 00 04 bf 02 11 00 39 00 0a c0 73 73 50 50 00 00 12 50 00 39 00 0d c1 53 00 32 32 77 d1 cc cc 77 77 33 33 39 00 07 c6 82 00 bf ff 00 ff 39 00 07 c7 b8 00 0a 00 00 00 39 00 05 c8 10 40 1e 02 15 00 02 cc 0b 39 00 23 e0 00 07 0d 37 35 3f 41 44 06 0c 0d 0f 11 10 12 14 1a 00 07 0d 37 35 3f 41 44 06 0c 0d 0f 11 10 12 14 1a 39 00 0f e3 07 07 0b 0b 0b 0b 00 00 00 00 ff 00 c0 10 39 00 40 e9 c8 10 02 00 00 b0 b1 11 31 23 28 80 b0 b1 27 08 00 04 02 00 00 00 00 04 02 00 00 00 88 88 ba 60 24 08 88 88 88 88 88 88 88 ba 71 35 18 88 88 88 88 88 00 00 00 01 00 00 00 00 00 00 00 00 00 39 00 3e ea 97 0a 82 02 03 07 00 00 00 00 00 00 81 88 ba 17 53 88 88 88 88 88 88 80 88 ba 06 42 88 88 88 88 88 88 23 00 00 02 80 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 39 00 04 ef ff ff 01 05 c8 01 11 05 32 01 29",
+                resetGpios: "&gpio3 RK_PC0 GPIO_ACTIVE_LOW",
+                enableGpios: null,
+                sdio: "false",
+                useExtAmplifier: false,
+                adcKey: "false",
+            },
+            // Kinhank
+            {
+                name: "Kinhank -> K36 Origin Panel",
+                md5: null,
+                panelInitSequence: "39 00 04 b9 f1 12 83 39 00 06 b1 00 00 00 da 80 39 00 04 b2 00 13 70 39 00 0b b3 10 10 28 28 03 ff 00 00 00 00 15 00 02 b4 80 15 00 03 b5 0a 0a 15 00 03 b6 82 82 39 00 05 b8 26 62 f0 63 39 00 1c ba 33 81 05 f9 0e 0e 20 00 00 00 00 00 00 00 44 25 00 90 0a 00 00 01 4f 01 00 00 37 15 00 02 bc 47 39 00 04 bf 02 11 00 39 00 0a c0 73 73 50 50 00 00 12 50 00 39 00 0d c1 53 00 32 32 77 d1 cc cc 77 77 33 33 39 00 07 c6 82 00 bf ff 00 ff 39 00 07 c7 b8 00 0a 00 00 00 39 00 05 c8 10 40 1e 02 15 00 02 cc 0b 39 00 23 e0 00 07 0d 37 35 3f 41 44 06 0c 0d 0f 11 10 12 14 1a 00 07 0d 37 35 3f 41 44 06 0c 0d 0f 11 10 12 14 1a 39 00 0f e3 07 07 0b 0b 0b 0b 00 00 00 00 ff 00 c0 10 39 00 40 e9 c8 10 02 00 00 b0 b1 11 31 23 28 80 b0 b1 27 08 00 04 02 00 00 00 00 04 02 00 00 00 88 88 ba 60 24 08 88 88 88 88 88 88 88 ba 71 35 18 88 88 88 88 88 00 00 00 01 00 00 00 00 00 00 00 00 00 39 00 3e ea 97 0a 82 02 03 07 00 00 00 00 00 00 81 88 ba 17 53 88 88 88 88 88 88 80 88 ba 06 42 88 88 88 88 88 88 23 00 00 02 80 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 39 00 04 ef ff ff 01 05 c8 01 11 05 14 01 29",
+                resetGpios: "&gpio3 RK_PB7 GPIO_ACTIVE_LOW",
+                enableGpios: "&gpio0 RK_PB5 GPIO_ACTIVE_HIGH",
+                sdio: "false",
+                useExtAmplifier: false,
+                adcKey: "true",
+            },
+            // Clone R36S
             {
                 name: "Clone R36s -> Clone Type 1 With Amplifier",
                 md5: null,
@@ -598,7 +790,7 @@
                 adcKey: "true",
             },
             {
-                name: "Clone Type 1 Without Amplifier And Invert Right Joystick",
+                name: "Clone R36s -> Clone Type 1 Without Amplifier And Invert Right Joystick",
                 md5: null,
                 panelInitSequence: "39 00 04 b9 f1 12 83 39 00 06 b1 00 00 00 da 80 39 00 04 b2 00 13 70 39 00 0b b3 10 10 28 28 03 ff 00 00 00 00 15 00 02 b4 80 15 00 03 b5 0a 0a 15 00 03 b6 82 82 39 00 05 b8 26 62 f0 63 39 00 1c ba 33 81 05 f9 0e 0e 20 00 00 00 00 00 00 00 44 25 00 90 0a 00 00 01 4f 01 00 00 37 15 00 02 bc 47 39 00 04 bf 02 11 00 39 00 0a c0 73 73 50 50 00 00 12 50 00 39 00 0d c1 53 00 32 32 77 d1 cc cc 77 77 33 33 39 00 07 c6 82 00 bf ff 00 ff 39 00 07 c7 b8 00 0a 00 00 00 39 00 05 c8 10 40 1e 02 15 00 02 cc 0b 39 00 23 e0 00 07 0d 37 35 3f 41 44 06 0c 0d 0f 11 10 12 14 1a 00 07 0d 37 35 3f 41 44 06 0c 0d 0f 11 10 12 14 1a 39 00 0f e3 07 07 0b 0b 0b 0b 00 00 00 00 ff 00 c0 10 39 00 40 e9 c8 10 02 00 00 b0 b1 11 31 23 28 80 b0 b1 27 08 00 04 02 00 00 00 00 04 02 00 00 00 88 88 ba 60 24 08 88 88 88 88 88 88 88 ba 71 35 18 88 88 88 88 88 00 00 00 01 00 00 00 00 00 00 00 00 00 39 00 3e ea 97 0a 82 02 03 07 00 00 00 00 00 00 81 88 ba 17 53 88 88 88 88 88 88 80 88 ba 06 42 88 88 88 88 88 88 23 00 00 02 80 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 39 00 04 ef ff ff 01 05 c8 01 11 05 14 01 29",
                 resetGpios: "&gpio3 RK_PB7 GPIO_ACTIVE_LOW",
@@ -657,133 +849,33 @@
                 useExtAmplifier: false,
                 adcKey: "true",
             },
+            // GameConsole
             {
-                name: "XiFan HandHelds -> XiFan R36Pro",
-                md5: ["6de588c4eda969c2487402a4823ca60a", "2748ec226bcd9c06095bb94c4637493a"],
-                panelInitSequence: "39 00 04 b9 f1 12 83 39 00 06 b1 00 00 00 da 80 39 00 04 b2 00 13 70 39 00 0b b3 10 10 28 28 03 ff 00 00 00 00 15 00 02 b4 80 15 00 03 b5 0a 0a 15 00 03 b6 82 82 39 00 05 b8 26 62 f0 63 39 00 1c ba 33 81 05 f9 0e 0e 20 00 00 00 00 00 00 00 44 25 00 90 0a 00 00 01 4f 01 00 00 37 15 00 02 bc 47 39 00 04 bf 02 11 00 39 00 0a c0 73 73 50 50 00 00 12 50 00 39 00 0d c1 53 00 32 32 77 d1 cc cc 77 77 33 33 39 00 07 c6 82 00 bf ff 00 ff 39 00 07 c7 b8 00 0a 00 00 00 39 00 05 c8 10 40 1e 02 15 00 02 cc 0b 39 00 23 e0 00 07 0d 37 35 3f 41 44 06 0c 0d 0f 11 10 12 14 1a 00 07 0d 37 35 3f 41 44 06 0c 0d 0f 11 10 12 14 1a 39 00 0f e3 07 07 0b 0b 0b 0b 00 00 00 00 ff 00 c0 10 39 00 40 e9 c8 10 02 00 00 b0 b1 11 31 23 28 80 b0 b1 27 08 00 04 02 00 00 00 00 04 02 00 00 00 88 88 ba 60 24 08 88 88 88 88 88 88 88 ba 71 35 18 88 88 88 88 88 00 00 00 01 00 00 00 00 00 00 00 00 00 39 00 3e ea 97 0a 82 02 03 07 00 00 00 00 00 00 81 88 ba 17 53 88 88 88 88 88 88 80 88 ba 06 42 88 88 88 88 88 88 23 00 00 02 80 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 39 00 04 ef ff ff 01 05 c8 01 11 05 14 01 29",
-                resetGpios: "&gpio3 RK_PB7 GPIO_ACTIVE_LOW",
-                enableGpios: "&gpio0 RK_PB5 GPIO_ACTIVE_HIGH",
-                sdio: "false",
-                useExtAmplifier: true,
-                adcKey: "true",
-            },
-            {
-                name: "XiFan HandHelds -> XiFan XF40H",
-                md5: "f79ac4d535197064da5c2a50bae6f186",
-                panelInitSequence: "39 00 04 b9 f1 12 83 39 00 06 b1 00 00 00 da 80 39 00 04 b2 3c 12 30 39 00 0b b3 10 10 28 28 03 ff 00 00 00 00 15 00 02 b4 80 39 00 03 b5 0a 0a 39 00 03 b6 97 97 39 00 05 b8 26 22 f0 13 39 00 1c ba 33 81 05 f9 0e 0e 20 00 00 00 00 00 00 00 44 25 00 90 0a 00 00 01 4f 01 00 00 37 15 00 02 bc 47 39 00 04 bf 02 11 00 39 00 0a c0 73 73 50 50 00 00 12 70 00 39 00 0d c1 25 00 32 32 77 e4 ff ff cc cc 77 77 39 00 07 c6 82 00 bf ff 00 ff 39 00 07 c7 b8 00 0a 00 00 00 39 00 05 c8 10 40 1e 02 15 00 02 cc 0b 39 00 23 e0 00 0b 10 2c 3d 3f 42 3a 07 0d 0f 13 15 13 14 0f 16 00 0b 10 2c 3d 3f 42 3a 07 0d 0f 13 15 13 14 0f 16 39 00 0f e3 07 07 0b 0b 0b 0b 00 00 00 00 ff 00 c0 10 39 00 40 e9 c8 10 0a 00 00 80 81 12 31 23 4f 86 a0 00 47 08 00 00 0c 00 00 00 00 00 0c 00 00 00 98 02 8b af 46 02 88 88 88 88 88 98 13 8b af 57 13 88 88 88 88 88 00 00 00 00 00 00 00 00 00 00 00 00 00 39 00 3e ea 97 0c 09 09 09 78 00 00 00 00 00 00 9f 31 8b a8 31 75 88 88 88 88 88 9f 20 8b a8 20 64 88 88 88 88 88 23 00 00 02 71 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 40 80 81 00 00 00 00 39 00 04 ef ff ff 01 05 fa 01 11 05 32 01 29",
-                resetGpios: "&gpio3 RK_PB7 GPIO_ACTIVE_LOW",
-                enableGpios: "&gpio0 RK_PB5 GPIO_ACTIVE_HIGH",
-                sdio: "true",
-                useExtAmplifier: true,
-                adcKey: "true",
-            },
-            {
-                name: "XiFan HandHelds -> XiFan XF35H",
-                md5: "97e25f0bb2fbdb2cc89b37bf3fb66ddf",
-                panelInitSequence: "39 00 04 b9 f1 12 83 39 00 06 b1 00 00 00 da 80 39 00 04 b2 00 13 70 39 00 0b b3 10 10 28 28 03 ff 00 00 00 00 15 00 02 b4 80 15 00 03 b5 0a 0a 15 00 03 b6 82 82 39 00 05 b8 26 62 f0 63 39 00 1c ba 33 81 05 f9 0e 0e 20 00 00 00 00 00 00 00 44 25 00 90 0a 00 00 01 4f 01 00 00 37 15 00 02 bc 47 39 00 04 bf 02 11 00 39 00 0a c0 73 73 50 50 00 00 12 50 00 39 00 0d c1 53 00 32 32 77 d1 cc cc 77 77 33 33 39 00 07 c6 82 00 bf ff 00 ff 39 00 07 c7 b8 00 0a 00 00 00 39 00 05 c8 10 40 1e 02 15 00 02 cc 0b 39 00 23 e0 00 07 0d 37 35 3f 41 44 06 0c 0d 0f 11 10 12 14 1a 00 07 0d 37 35 3f 41 44 06 0c 0d 0f 11 10 12 14 1a 39 00 0f e3 07 07 0b 0b 0b 0b 00 00 00 00 ff 00 c0 10 39 00 40 e9 c8 10 02 00 00 b0 b1 11 31 23 28 80 b0 b1 27 08 00 04 02 00 00 00 00 04 02 00 00 00 88 88 ba 60 24 08 88 88 88 88 88 88 88 ba 71 35 18 88 88 88 88 88 00 00 00 01 00 00 00 00 00 00 00 00 00 39 00 3e ea 97 0a 82 02 03 07 00 00 00 00 00 00 81 88 ba 17 53 88 88 88 88 88 88 80 88 ba 06 42 88 88 88 88 88 88 23 00 00 02 80 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 39 00 04 ef ff ff 01 05 c8 01 11 05 14 01 29",
-                resetGpios: "&gpio3 RK_PB7 GPIO_ACTIVE_LOW",
-                enableGpios: "&gpio0 RK_PB5 GPIO_ACTIVE_HIGH",
-                sdio: "true",
-                useExtAmplifier: true,
-                adcKey: "true",
-            },
-            {
-                name: "XiFan HandHelds -> XiFan DC35V",
+                name: "GameConsole -> GameConsole R46H",
                 md5: "",
-                panelInitSequence: "39 00 04 b9 f1 12 83 39 00 06 b1 00 00 00 da 80 39 00 04 b2 00 13 70 39 00 0b b3 10 10 28 28 03 ff 00 00 00 00 15 00 02 b4 80 15 00 03 b5 0a 0a 15 00 03 b6 82 82 39 00 05 b8 26 62 f0 63 39 00 1c ba 33 81 05 f9 0e 0e 20 00 00 00 00 00 00 00 44 25 00 90 0a 00 00 01 4f 01 00 00 37 15 00 02 bc 47 39 00 04 bf 02 11 00 39 00 0a c0 73 73 50 50 00 00 12 50 00 39 00 0d c1 53 00 32 32 77 d1 cc cc 77 77 33 33 39 00 07 c6 82 00 bf ff 00 ff 39 00 07 c7 b8 00 0a 00 00 00 39 00 05 c8 10 40 1e 02 15 00 02 cc 0b 39 00 23 e0 00 07 0d 37 35 3f 41 44 06 0c 0d 0f 11 10 12 14 1a 00 07 0d 37 35 3f 41 44 06 0c 0d 0f 11 10 12 14 1a 39 00 0f e3 07 07 0b 0b 0b 0b 00 00 00 00 ff 00 c0 10 39 00 40 e9 c8 10 02 00 00 b0 b1 11 31 23 28 80 b0 b1 27 08 00 04 02 00 00 00 00 04 02 00 00 00 88 88 ba 60 24 08 88 88 88 88 88 88 88 ba 71 35 18 88 88 88 88 88 00 00 00 01 00 00 00 00 00 00 00 00 00 39 00 3e ea 97 0a 82 02 03 07 00 00 00 00 00 00 81 88 ba 17 53 88 88 88 88 88 88 80 88 ba 06 42 88 88 88 88 88 88 23 00 00 02 80 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 39 00 04 ef ff ff 01 05 c8 01 11 05 14 01 29",
-                resetGpios: "&gpio3 RK_PD3 GPIO_ACTIVE_LOW",
-                enableGpios: "&gpio3 RK_PA3 GPIO_ACTIVE_HIGH",
-                sdio: "true",
-                useExtAmplifier: true,
-                adcKey: "true",
+                panelInitSequence: "15 00 02 ee 01 15 00 02 ea 07 15 00 02 eb 12 15 00 02 0a 8b 15 00 02 17 35 15 00 02 1d 33 15 00 02 21 01 15 00 02 28 1c 15 00 02 29 27 15 00 02 2a 63 15 00 02 2b b5 15 00 02 2c 00 15 00 02 2d 33 15 00 02 2f f3 15 00 02 ee 02 15 00 02 39 78 15 00 02 39 78 15 00 02 00 00 15 00 02 01 18 15 00 02 02 15 15 00 02 03 10 15 00 02 04 18 15 00 02 05 3f 15 00 02 06 11 15 00 02 07 11 15 00 02 08 11 15 00 02 09 0f 15 00 02 0a 10 15 00 02 0b 54 15 00 02 0c 14 15 00 02 0d 17 15 00 02 0e 35 15 00 02 0f 37 15 00 02 10 3f 15 00 02 20 00 15 00 02 21 18 15 00 02 22 15 15 00 02 23 10 15 00 02 24 12 15 00 02 25 37 15 00 02 26 0b 15 00 02 27 0d 15 00 02 28 0d 15 00 02 29 0b 15 00 02 2a 10 15 00 02 2b 54 15 00 02 2c 14 15 00 02 2d 17 15 00 02 2e 35 15 00 02 2f 37 15 00 02 30 3f 15 00 02 ee 04 15 00 02 00 04 15 00 02 01 01 15 00 02 02 80 15 00 02 03 04 15 00 02 04 00 15 00 02 06 16 15 00 02 07 03 15 00 02 08 13 15 00 02 09 0a 15 00 02 0a 0f 15 00 02 0b 10 15 00 02 22 80 15 00 02 24 08 15 00 02 2a 00 15 00 02 ee 05 15 00 02 00 04 15 00 02 01 08 15 00 02 02 55 15 00 02 03 05 15 00 02 04 00 15 00 02 05 04 15 00 02 06 00 15 00 02 07 13 15 00 02 08 1e 15 00 02 09 66 15 00 02 0d 22 15 00 02 10 08 15 00 02 11 0c 15 00 02 12 55 15 00 02 13 05 15 00 02 19 14 15 00 02 1a 76 15 00 02 23 00 15 00 02 43 13 15 00 02 40 44 15 00 02 41 00 15 00 02 30 01 15 00 02 31 01 15 00 02 32 00 15 00 02 33 14 15 00 02 34 14 15 00 02 35 b4 15 00 02 36 01 15 00 02 37 01 15 00 02 38 00 15 00 02 39 14 15 00 02 3a 14 15 00 02 44 01 15 00 02 45 81 15 00 02 46 05 15 00 02 ee 06 15 00 02 00 23 15 00 02 01 01 15 00 02 02 04 15 00 02 06 cd 15 00 02 08 67 15 00 02 09 45 15 00 02 0a 23 15 00 02 0b 01 15 00 02 ee 07 15 00 02 00 3c 15 00 02 01 20 15 00 02 02 20 15 00 02 03 21 15 00 02 04 21 15 00 02 05 3c 15 00 02 06 3c 15 00 02 07 04 15 00 02 08 04 15 00 02 09 0c 15 00 02 0a 0c 15 00 02 0b 01 15 00 02 0c 15 15 00 02 0d 15 15 00 02 0e 17 15 00 02 0f 17 15 00 02 10 11 15 00 02 11 11 15 00 02 12 13 15 00 02 13 13 15 00 02 14 0d 15 00 02 15 0d 15 00 02 20 3c 15 00 02 21 20 15 00 02 22 20 15 00 02 23 21 15 00 02 24 21 15 00 02 25 3c 15 00 02 26 3c 15 00 02 27 04 15 00 02 28 04 15 00 02 29 0c 15 00 02 2a 0c 15 00 02 2b 00 15 00 02 2c 14 15 00 02 2d 14 15 00 02 2e 16 15 00 02 2f 16 15 00 02 30 10 15 00 02 31 10 15 00 02 32 12 15 00 02 33 12 15 00 02 34 0d 15 00 02 35 0d 15 00 02 ee 08 15 00 02 10 00 15 00 02 12 da 15 00 02 14 10 15 00 02 22 69 15 00 02 ee 0f 15 00 02 00 01 15 00 02 01 10 15 00 02 ee 00 15 00 02 ea 00 15 00 02 eb 00 05 c8 01 11 05 14 01 29",
+                resetGpios: "&gpio3 RK_PC0 GPIO_ACTIVE_LOW",
+                enableGpios: null,
+                sdio: "false",
+                useExtAmplifier: null,
             },
             {
-                name: "XiFan HandHelds -> XiFan DC40V | XiFan HandHelds -> XiFan XF40V",
+                name: "GameConsole -> GameConsole R40XX",
                 md5: "",
-                panelInitSequence: "39 00 04 b9 f1 12 83 39 00 06 b1 00 00 00 da 80 39 00 04 b2 3c 12 30 39 00 0b b3 10 10 28 28 03 ff 00 00 00 00 15 00 02 b4 80 39 00 03 b5 0a 0a 39 00 03 b6 97 97 39 00 05 b8 26 22 f0 13 39 00 1c ba 33 81 05 f9 0e 0e 20 00 00 00 00 00 00 00 44 25 00 90 0a 00 00 01 4f 01 00 00 37 15 00 02 bc 47 39 00 04 bf 02 11 00 39 00 0a c0 73 73 50 50 00 00 12 70 00 39 00 0d c1 25 00 32 32 77 e4 ff ff cc cc 77 77 39 00 07 c6 82 00 bf ff 00 ff 39 00 07 c7 b8 00 0a 00 00 00 39 00 05 c8 10 40 1e 02 15 00 02 cc 0b 39 00 23 e0 00 0b 10 2c 3d 3f 42 3a 07 0d 0f 13 15 13 14 0f 16 00 0b 10 2c 3d 3f 42 3a 07 0d 0f 13 15 13 14 0f 16 39 00 0f e3 07 07 0b 0b 0b 0b 00 00 00 00 ff 00 c0 10 39 00 40 e9 c8 10 0a 00 00 80 81 12 31 23 4f 86 a0 00 47 08 00 00 0c 00 00 00 00 00 0c 00 00 00 98 02 8b af 46 02 88 88 88 88 88 98 13 8b af 57 13 88 88 88 88 88 00 00 00 00 00 00 00 00 00 00 00 00 00 39 00 3e ea 97 0c 09 09 09 78 00 00 00 00 00 00 9f 31 8b a8 31 75 88 88 88 88 88 9f 20 8b a8 20 64 88 88 88 88 88 23 00 00 02 71 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 40 80 81 00 00 00 00 39 00 04 ef ff ff 01 05 fa 01 11 05 32 01 29",
-                resetGpios: "&gpio3 RK_PD3 GPIO_ACTIVE_LOW",
-                enableGpios: "&gpio3 RK_PA3 GPIO_ACTIVE_HIGH",
-                sdio: "true",
-                useExtAmplifier: true,
-                adcKey: "true",
-            },
-            {
-                name: "XiFan HandHelds -> XiFan R36MAX",
-                md5: ["82f93e50285b7dfbb7ab05a133c2812b", "3d7f16bbd611f88ee9b0eb10791eadfc"],
-                panelInitSequence: "39 00 04 b9 f1 12 83 39 00 06 b1 00 00 00 da 80 39 00 04 b2 3c 12 30 39 00 0b b3 10 10 28 28 03 ff 00 00 00 00 15 00 02 b4 80 39 00 03 b5 0a 0a 39 00 03 b6 97 97 39 00 05 b8 26 22 f0 13 39 00 1c ba 33 81 05 f9 0e 0e 20 00 00 00 00 00 00 00 44 25 00 90 0a 00 00 01 4f 01 00 00 37 15 00 02 bc 47 39 00 04 bf 02 11 00 39 00 0a c0 73 73 50 50 00 00 12 70 00 39 00 0d c1 25 00 32 32 77 e4 ff ff cc cc 77 77 39 00 07 c6 82 00 bf ff 00 ff 39 00 07 c7 b8 00 0a 00 00 00 39 00 05 c8 10 40 1e 02 15 00 02 cc 0b 39 00 23 e0 00 0b 10 2c 3d 3f 42 3a 07 0d 0f 13 15 13 14 0f 16 00 0b 10 2c 3d 3f 42 3a 07 0d 0f 13 15 13 14 0f 16 39 00 0f e3 07 07 0b 0b 0b 0b 00 00 00 00 ff 00 c0 10 39 00 40 e9 c8 10 0a 00 00 80 81 12 31 23 4f 86 a0 00 47 08 00 00 0c 00 00 00 00 00 0c 00 00 00 98 02 8b af 46 02 88 88 88 88 88 98 13 8b af 57 13 88 88 88 88 88 00 00 00 00 00 00 00 00 00 00 00 00 00 39 00 3e ea 97 0c 09 09 09 78 00 00 00 00 00 00 9f 31 8b a8 31 75 88 88 88 88 88 9f 20 8b a8 20 64 88 88 88 88 88 23 00 00 02 71 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 40 80 81 00 00 00 00 39 00 04 ef ff ff 01 05 fa 01 11 05 32 01 29",
-                resetGpios: "&gpio3 RK_PB7 GPIO_ACTIVE_LOW",
-                enableGpios: "&gpio0 RK_PB5 GPIO_ACTIVE_HIGH",
+                panelInitSequence: "15 00 02 ee 01 15 00 02 ea 07 15 00 02 eb 12 15 00 02 0a 8b 15 00 02 17 35 15 00 02 1d 33 15 00 02 21 01 15 00 02 28 1c 15 00 02 29 27 15 00 02 2a 63 15 00 02 2b b5 15 00 02 2c 00 15 00 02 2d 33 15 00 02 2f f3 15 00 02 ee 02 15 00 02 39 78 15 00 02 39 78 15 00 02 00 00 15 00 02 01 18 15 00 02 02 15 15 00 02 03 10 15 00 02 04 18 15 00 02 05 3f 15 00 02 06 11 15 00 02 07 11 15 00 02 08 11 15 00 02 09 0f 15 00 02 0a 10 15 00 02 0b 54 15 00 02 0c 14 15 00 02 0d 17 15 00 02 0e 35 15 00 02 0f 37 15 00 02 10 3f 15 00 02 20 00 15 00 02 21 18 15 00 02 22 15 15 00 02 23 10 15 00 02 24 12 15 00 02 25 37 15 00 02 26 0b 15 00 02 27 0d 15 00 02 28 0d 15 00 02 29 0b 15 00 02 2a 10 15 00 02 2b 54 15 00 02 2c 14 15 00 02 2d 17 15 00 02 2e 35 15 00 02 2f 37 15 00 02 30 3f 15 00 02 ee 04 15 00 02 00 04 15 00 02 01 01 15 00 02 02 80 15 00 02 03 04 15 00 02 04 00 15 00 02 06 16 15 00 02 07 03 15 00 02 08 13 15 00 02 09 0a 15 00 02 0a 0f 15 00 02 0b 10 15 00 02 22 80 15 00 02 24 08 15 00 02 2a 00 15 00 02 ee 05 15 00 02 00 04 15 00 02 01 08 15 00 02 02 55 15 00 02 03 05 15 00 02 04 00 15 00 02 05 04 15 00 02 06 00 15 00 02 07 13 15 00 02 08 1e 15 00 02 09 66 15 00 02 0d 22 15 00 02 10 08 15 00 02 11 0c 15 00 02 12 55 15 00 02 13 05 15 00 02 19 14 15 00 02 1a 76 15 00 02 23 00 15 00 02 43 13 15 00 02 40 44 15 00 02 41 00 15 00 02 30 01 15 00 02 31 01 15 00 02 32 00 15 00 02 33 14 15 00 02 34 14 15 00 02 35 b4 15 00 02 36 01 15 00 02 37 01 15 00 02 38 00 15 00 02 39 14 15 00 02 3a 14 15 00 02 44 01 15 00 02 45 81 15 00 02 46 05 15 00 02 ee 06 15 00 02 00 23 15 00 02 01 01 15 00 02 02 04 15 00 02 06 cd 15 00 02 08 67 15 00 02 09 45 15 00 02 0a 23 15 00 02 0b 01 15 00 02 ee 07 15 00 02 00 3c 15 00 02 01 20 15 00 02 02 20 15 00 02 03 21 15 00 02 04 21 15 00 02 05 3c 15 00 02 06 3c 15 00 02 07 04 15 00 02 08 04 15 00 02 09 0c 15 00 02 0a 0c 15 00 02 0b 01 15 00 02 0c 15 15 00 02 0d 15 15 00 02 0e 17 15 00 02 0f 17 15 00 02 10 11 15 00 02 11 11 15 00 02 12 13 15 00 02 13 13 15 00 02 14 0d 15 00 02 15 0d 15 00 02 20 3c 15 00 02 21 20 15 00 02 22 20 15 00 02 23 21 15 00 02 24 21 15 00 02 25 3c 15 00 02 26 3c 15 00 02 27 04 15 00 02 28 04 15 00 02 29 0c 15 00 02 2a 0c 15 00 02 2b 00 15 00 02 2c 14 15 00 02 2d 14 15 00 02 2e 16 15 00 02 2f 16 15 00 02 30 10 15 00 02 31 10 15 00 02 32 12 15 00 02 33 12 15 00 02 34 0d 15 00 02 35 0d 15 00 02 ee 08 15 00 02 10 00 15 00 02 12 da 15 00 02 14 10 15 00 02 22 69 15 00 02 ee 0f 15 00 02 00 01 15 00 02 01 10 15 00 02 ee 00 15 00 02 ea 00 15 00 02 eb 00 05 c8 01 11 05 14 01 29",
+                resetGpios: "&gpio3 RK_PC0 GPIO_ACTIVE_LOW",
+                enableGpios: null,
                 sdio: "false",
-                useExtAmplifier: true,
-                adcKey: "true",
+                useExtAmplifier: null,
             },
-            {
-                name: "XiFan HandHelds -> XiFan MYMINI",
-                md5: ["04d57af3acefbad48505b005d0803c3e", "0bd2d5c14c10918598467cd5cbd259b7", "38644ce69040902198adb12228554cd0"],
-                panelInitSequence: "39 00 04 b9 f1 12 83 39 00 06 b1 00 00 00 da 80 39 00 04 b2 00 13 70 39 00 0b b3 10 10 28 28 03 ff 00 00 00 00 15 00 02 b4 80 15 00 03 b5 0a 0a 15 00 03 b6 82 82 39 00 05 b8 26 62 f0 63 39 00 1c ba 33 81 05 f9 0e 0e 20 00 00 00 00 00 00 00 44 25 00 90 0a 00 00 01 4f 01 00 00 37 15 00 02 bc 47 39 00 04 bf 02 11 00 39 00 0a c0 73 73 50 50 00 00 12 50 00 39 00 0d c1 53 00 32 32 77 d1 cc cc 77 77 33 33 39 00 07 c6 82 00 bf ff 00 ff 39 00 07 c7 b8 00 0a 00 00 00 39 00 05 c8 10 40 1e 02 15 00 02 cc 0b 39 00 23 e0 00 07 0d 37 35 3f 41 44 06 0c 0d 0f 11 10 12 14 1a 00 07 0d 37 35 3f 41 44 06 0c 0d 0f 11 10 12 14 1a 39 00 0f e3 07 07 0b 0b 0b 0b 00 00 00 00 ff 00 c0 10 39 00 40 e9 c8 10 02 00 00 b0 b1 11 31 23 28 80 b0 b1 27 08 00 04 02 00 00 00 00 04 02 00 00 00 88 88 ba 60 24 08 88 88 88 88 88 88 88 ba 71 35 18 88 88 88 88 88 00 00 00 01 00 00 00 00 00 00 00 00 00 39 00 3e ea 97 0a 82 02 03 07 00 00 00 00 00 00 81 88 ba 17 53 88 88 88 88 88 88 80 88 ba 06 42 88 88 88 88 88 88 23 00 00 02 80 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 39 00 04 ef ff ff 01 05 c8 01 11 05 14 01 29",
-                resetGpios: "&gpio3 RK_PB7 GPIO_ACTIVE_LOW",
-                enableGpios: "&gpio0 RK_PB5 GPIO_ACTIVE_HIGH",
-                sdio: "false",
-                useExtAmplifier: true,
-            },
-            {
-                name: "Other -> GameConsole R36Ultra",
-                md5: "5cb5429b5418aa71b730501786578d04",
-                panelInitSequence: "39 00 04 b9 f1 12 83 39 00 06 b1 00 00 00 da 80 39 00 04 b2 3c 12 30 39 00 0b b3 10 10 28 28 03 ff 00 00 00 00 15 00 02 b4 80 39 00 03 b5 0a 0a 39 00 03 b6 97 97 39 00 05 b8 26 22 f0 13 39 00 1c ba 33 81 05 f9 0e 0e 20 00 00 00 00 00 00 00 44 25 00 90 0a 00 00 01 4f 01 00 00 37 15 00 02 bc 47 39 00 04 bf 02 11 00 39 00 0a c0 73 73 50 50 00 00 12 70 00 39 00 0d c1 25 00 32 32 77 e4 ff ff cc cc 77 77 39 00 07 c6 82 00 bf ff 00 ff 39 00 07 c7 b8 00 0a 00 00 00 39 00 05 c8 10 40 1e 02 15 00 02 cc 0b 39 00 23 e0 00 0b 10 2c 3d 3f 42 3a 07 0d 0f 13 15 13 14 0f 16 00 0b 10 2c 3d 3f 42 3a 07 0d 0f 13 15 13 14 0f 16 39 00 0f e3 07 07 0b 0b 0b 0b 00 00 00 00 ff 00 c0 10 39 00 40 e9 c8 10 0a 00 00 80 81 12 31 23 4f 86 a0 00 47 08 00 00 0c 00 00 00 00 00 0c 00 00 00 98 02 8b af 46 02 88 88 88 88 88 98 13 8b af 57 13 88 88 88 88 88 00 00 00 00 00 00 00 00 00 00 00 00 00 39 00 3e ea 97 0c 09 09 09 78 00 00 00 00 00 00 9f 31 8b a8 31 75 88 88 88 88 88 9f 20 8b a8 20 64 88 88 88 88 88 23 00 00 02 71 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 40 80 81 00 00 00 00 39 00 04 ef ff ff 01 05 fa 01 11 05 32 01 29",
-                resetGpios: "&gpio3 RK_PD3 GPIO_ACTIVE_LOW",
-                enableGpios: "&gpio3 RK_PA3 GPIO_ACTIVE_HIGH",
-                sdio: "true",
-                useExtAmplifier: false,
-                adcKey: "true",
-            },
-            {
-                name: "Other -> GameConsole T16Max",
+             {
+                name: "GameConsole -> GameConsole R36sPlus",
                 md5: "",
-                panelInitSequence: "05 c8 01 11 05 32 01 29",
-                resetGpios: "&gpio3 RK_PB7 GPIO_ACTIVE_LOW",
-                enableGpios: "&gpio0 RK_PB5 GPIO_ACTIVE_HIGH",
+                panelInitSequence: "05 fa 01 11 39 00 04 b9 f1 12 83 39 00 1c ba 33 81 05 f9 0e 0e 20 00 00 00 00 00 00 00 44 25 00 90 0a 00 00 01 4f 01 00 00 37 39 00 05 b8 25 22 f0 63 39 00 04 bf 02 11 00 39 00 0b b3 10 10 28 28 03 ff 00 00 00 00 39 00 0a c0 73 73 50 50 00 00 12 70 00 15 00 02 bc 46 15 00 02 cc 0b 15 00 02 b4 80 39 00 04 b2 3c 12 30 39 00 0f e3 07 07 0b 0b 03 0b 00 00 00 00 ff 00 c0 10 39 00 0d c1 36 00 32 32 77 f1 cc cc 77 77 33 33 39 00 03 b5 0a 0a 39 00 03 b6 88 88 39 00 40 e9 c8 10 0a 10 0f a1 80 12 31 23 47 86 a1 80 47 08 00 00 0d 00 00 00 00 00 0d 00 00 00 48 02 8b af 46 02 88 88 88 88 88 48 13 8b af 57 13 88 88 88 88 88 00 00 00 00 00 00 00 00 00 00 00 00 00 39 00 3e ea 96 12 01 01 01 78 02 00 00 00 00 00 4f 31 8b a8 31 75 88 88 88 88 88 4f 20 8b a8 20 64 88 88 88 88 88 23 00 00 01 02 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 40 a1 80 00 00 00 00 39 00 23 e0 00 0a 0f 29 3b 3f 42 39 06 0d 10 13 15 14 15 10 17 00 0a 0f 29 3b 3f 42 39 06 0d 10 13 15 14 15 10 17 05 32 01 29",
+                resetGpios: "&gpio3 RK_PC0 GPIO_ACTIVE_LOW",
+                enableGpios: null,
                 sdio: "false",
-                useExtAmplifier: false,
-                adcKey: "true",
-            },
-            {
-                name: "Other -> GameConsole RX6H",
-                md5: "0b11a2bf3a862dbb0e16ae6cd8b8b228",
-                panelInitSequence: "15 00 02 ff 30 15 00 02 ff 52 15 00 02 ff 01 15 00 02 e3 00 15 00 02 25 10 15 00 02 28 6f 15 00 02 29 01 15 00 02 2a df 15 00 02 2c 22 15 00 02 c3 0f 15 00 02 37 9c 15 00 02 38 a7 15 00 02 39 41 15 00 02 80 20 15 00 02 91 67 15 00 02 92 67 15 00 02 a0 55 15 00 02 a1 50 15 00 02 a3 58 15 00 02 a4 9c 15 00 02 a7 02 15 00 02 a8 01 15 00 02 a9 21 15 00 02 aa fc 15 00 02 ab 28 15 00 02 ac 06 15 00 02 ad 06 15 00 02 ae 06 15 00 02 af 03 15 00 02 b0 08 15 00 02 b1 26 15 00 02 b2 28 15 00 02 b3 28 15 00 02 b4 03 15 00 02 b5 08 15 00 02 b6 26 15 00 02 b7 08 15 00 02 b8 26 15 00 02 c0 00 15 00 02 c1 00 15 00 02 c2 00 15 00 02 ff 30 15 00 02 ff 52 15 00 02 ff 02 15 00 02 b0 02 15 00 02 d0 02 15 00 02 b1 0f 15 00 02 d1 10 15 00 02 b2 11 15 00 02 d2 12 15 00 02 b3 32 15 00 02 d3 33 15 00 02 b4 36 15 00 02 d4 36 15 00 02 b5 3c 15 00 02 d5 3c 15 00 02 b6 20 15 00 02 d6 20 15 00 02 b7 3e 15 00 02 d7 3e 15 00 02 b8 0e 15 00 02 d8 0d 15 00 02 b9 05 15 00 02 d9 05 15 00 02 ba 11 15 00 02 da 12 15 00 02 bb 11 15 00 02 db 11 15 00 02 bc 13 15 00 02 dc 14 15 00 02 bd 14 15 00 02 dd 14 15 00 02 be 16 15 00 02 de 18 15 00 02 bf 0e 15 00 02 df 0f 15 00 02 c0 17 15 00 02 e0 17 15 00 02 c1 07 15 00 02 e1 08 15 00 02 ff 30 15 00 02 ff 52 15 00 02 ff 03 15 00 02 08 8a 15 00 02 09 8b 15 00 02 30 00 15 00 02 31 00 15 00 02 32 00 15 00 02 33 00 15 00 02 34 61 15 00 02 35 d4 15 00 02 36 24 15 00 02 37 03 15 00 02 40 86 15 00 02 41 87 15 00 02 42 84 15 00 02 43 85 15 00 02 44 11 15 00 02 45 de 15 00 02 46 dd 15 00 02 47 11 15 00 02 48 e0 15 00 02 49 df 15 00 02 50 82 15 00 02 51 83 15 00 02 52 80 15 00 02 53 81 15 00 02 54 11 15 00 02 55 e2 15 00 02 56 e1 15 00 02 57 11 15 00 02 58 e4 15 00 02 59 e3 15 00 02 82 0f 15 00 02 83 0f 15 00 02 84 00 15 00 02 85 0f 15 00 02 86 0f 15 00 02 87 0e 15 00 02 88 0e 15 00 02 89 06 15 00 02 8a 06 15 00 02 8b 07 15 00 02 8c 07 15 00 02 8d 04 15 00 02 8e 04 15 00 02 8f 05 15 00 02 90 05 15 00 02 98 0f 15 00 02 99 0f 15 00 02 9a 00 15 00 02 9b 0f 15 00 02 9c 0f 15 00 02 9d 0e 15 00 02 9e 0e 15 00 02 9f 06 15 00 02 a0 06 15 00 02 a1 07 15 00 02 a2 07 15 00 02 a3 04 15 00 02 a4 04 15 00 02 a5 05 15 00 02 a6 05 15 00 02 e0 02 15 00 02 e1 52 15 00 02 ff 30 15 00 02 ff 52 15 00 02 ff 00 15 00 02 36 02 05 c8 01 11 05 64 01 29",
-                resetGpios: "&gpio3 RK_PB7 GPIO_ACTIVE_LOW",
-                enableGpios: "&gpio0 RK_PB5 GPIO_ACTIVE_HIGH",
-                sdio: "false",
-                useExtAmplifier: true,
-                adcKey: "true",
-            },
-            {
-                name: "Other -> GameConsole K36S | Other -> GameConsole R36T",
-                md5: ["ccc295fcb58c947bbc3026d153eae978", "320555247f7e911cb5c8e1ef7899776e", "9782673a1f17f559a62ee210d4bbf206"],
-                panelInitSequence: "15 00 02 ff 30 15 00 02 ff 52 15 00 02 ff 01 15 00 02 e3 00 15 00 02 25 10 15 00 02 28 6f 15 00 02 29 01 15 00 02 2a df 15 00 02 2c 22 15 00 02 c3 0f 15 00 02 37 9c 15 00 02 38 a7 15 00 02 39 41 15 00 02 80 20 15 00 02 91 67 15 00 02 92 67 15 00 02 a0 55 15 00 02 a1 50 15 00 02 a3 58 15 00 02 a4 9c 15 00 02 a7 02 15 00 02 a8 01 15 00 02 a9 21 15 00 02 aa fc 15 00 02 ab 28 15 00 02 ac 06 15 00 02 ad 06 15 00 02 ae 06 15 00 02 af 03 15 00 02 b0 08 15 00 02 b1 26 15 00 02 b2 28 15 00 02 b3 28 15 00 02 b4 03 15 00 02 b5 08 15 00 02 b6 26 15 00 02 b7 08 15 00 02 b8 26 15 00 02 c0 00 15 00 02 c1 00 15 00 02 c2 00 15 00 02 ff 30 15 00 02 ff 52 15 00 02 ff 02 15 00 02 b0 02 15 00 02 d0 02 15 00 02 b1 0f 15 00 02 d1 10 15 00 02 b2 11 15 00 02 d2 12 15 00 02 b3 32 15 00 02 d3 33 15 00 02 b4 36 15 00 02 d4 36 15 00 02 b5 3c 15 00 02 d5 3c 15 00 02 b6 20 15 00 02 d6 20 15 00 02 b7 3e 15 00 02 d7 3e 15 00 02 b8 0e 15 00 02 d8 0d 15 00 02 b9 05 15 00 02 d9 05 15 00 02 ba 11 15 00 02 da 12 15 00 02 bb 11 15 00 02 db 11 15 00 02 bc 13 15 00 02 dc 14 15 00 02 bd 14 15 00 02 dd 14 15 00 02 be 16 15 00 02 de 18 15 00 02 bf 0e 15 00 02 df 0f 15 00 02 c0 17 15 00 02 e0 17 15 00 02 c1 07 15 00 02 e1 08 15 00 02 ff 30 15 00 02 ff 52 15 00 02 ff 03 15 00 02 08 8a 15 00 02 09 8b 15 00 02 30 00 15 00 02 31 00 15 00 02 32 00 15 00 02 33 00 15 00 02 34 61 15 00 02 35 d4 15 00 02 36 24 15 00 02 37 03 15 00 02 40 86 15 00 02 41 87 15 00 02 42 84 15 00 02 43 85 15 00 02 44 11 15 00 02 45 de 15 00 02 46 dd 15 00 02 47 11 15 00 02 48 e0 15 00 02 49 df 15 00 02 50 82 15 00 02 51 83 15 00 02 52 80 15 00 02 53 81 15 00 02 54 11 15 00 02 55 e2 15 00 02 56 e1 15 00 02 57 11 15 00 02 58 e4 15 00 02 59 e3 15 00 02 82 0f 15 00 02 83 0f 15 00 02 84 00 15 00 02 85 0f 15 00 02 86 0f 15 00 02 87 0e 15 00 02 88 0e 15 00 02 89 06 15 00 02 8a 06 15 00 02 8b 07 15 00 02 8c 07 15 00 02 8d 04 15 00 02 8e 04 15 00 02 8f 05 15 00 02 90 05 15 00 02 98 0f 15 00 02 99 0f 15 00 02 9a 00 15 00 02 9b 0f 15 00 02 9c 0f 15 00 02 9d 0e 15 00 02 9e 0e 15 00 02 9f 06 15 00 02 a0 06 15 00 02 a1 07 15 00 02 a2 07 15 00 02 a3 04 15 00 02 a4 04 15 00 02 a5 05 15 00 02 a6 05 15 00 02 e0 02 15 00 02 e1 52 15 00 02 ff 30 15 00 02 ff 52 15 00 02 ff 00 15 00 02 36 02 05 c8 01 11 05 64 01 29",
-                resetGpios: "&gpio3 RK_PB7 GPIO_ACTIVE_LOW",
-                enableGpios: "&gpio0 RK_PB5 GPIO_ACTIVE_HIGH",
-                sdio: "true",
-                useExtAmplifier: false,
-                adcKey: "true",
-            },
-            {
-                name: "Other -> GameConsole HG36",
-                md5: "bd2e29ab7c1fdf9a40066821b6f61549",
-                panelInitSequence: "39 00 04 b9 f1 12 83 39 00 06 b1 00 00 00 da 80 39 00 04 b2 00 13 70 39 00 0b b3 10 10 28 28 03 ff 00 00 00 00 15 00 02 b4 80 15 00 03 b5 0a 0a 15 00 03 b6 82 82 39 00 05 b8 26 62 f0 63 39 00 1c ba 33 81 05 f9 0e 0e 20 00 00 00 00 00 00 00 44 25 00 90 0a 00 00 01 4f 01 00 00 37 15 00 02 bc 47 39 00 04 bf 02 11 00 39 00 0a c0 73 73 50 50 00 00 12 50 00 39 00 0d c1 53 00 32 32 77 d1 cc cc 77 77 33 33 39 00 07 c6 82 00 bf ff 00 ff 39 00 07 c7 b8 00 0a 00 00 00 39 00 05 c8 10 40 1e 02 15 00 02 cc 0b 39 00 23 e0 00 07 0d 37 35 3f 41 44 06 0c 0d 0f 11 10 12 14 1a 00 07 0d 37 35 3f 41 44 06 0c 0d 0f 11 10 12 14 1a 39 00 0f e3 07 07 0b 0b 0b 0b 00 00 00 00 ff 00 c0 10 39 00 40 e9 c8 10 02 00 00 b0 b1 11 31 23 28 80 b0 b1 27 08 00 04 02 00 00 00 00 04 02 00 00 00 88 88 ba 60 24 08 88 88 88 88 88 88 88 ba 71 35 18 88 88 88 88 88 00 00 00 01 00 00 00 00 00 00 00 00 00 39 00 3e ea 97 0a 82 02 03 07 00 00 00 00 00 00 81 88 ba 17 53 88 88 88 88 88 88 80 88 ba 06 42 88 88 88 88 88 88 23 00 00 02 80 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 39 00 04 ef ff ff 01 05 c8 01 11 05 14 01 29",
-                resetGpios: "&gpio3 RK_PB7 GPIO_ACTIVE_LOW",
-                enableGpios: "&gpio0 RK_PB5 GPIO_ACTIVE_HIGH",
-                sdio: "false",
-                useExtAmplifier: false,
-                adcKey: "true",
-            },
-            {
-                name: "Other -> GameConsole XGB36",
-                md5: "4cb770d59316b68d4f5314b4b11859a5",
-                panelInitSequence: "39 00 04 b9 f1 12 83 39 00 06 b1 00 00 00 da 80 39 00 04 b2 00 13 70 39 00 0b b3 10 10 28 28 03 ff 00 00 00 00 15 00 02 b4 80 15 00 03 b5 0a 0a 15 00 03 b6 82 82 39 00 05 b8 26 62 f0 63 39 00 1c ba 33 81 05 f9 0e 0e 20 00 00 00 00 00 00 00 44 25 00 90 0a 00 00 01 4f 01 00 00 37 15 00 02 bc 47 39 00 04 bf 02 11 00 39 00 0a c0 73 73 50 50 00 00 12 50 00 39 00 0d c1 53 00 32 32 77 d1 cc cc 77 77 33 33 39 00 07 c6 82 00 bf ff 00 ff 39 00 07 c7 b8 00 0a 00 00 00 39 00 05 c8 10 40 1e 02 15 00 02 cc 0b 39 00 23 e0 00 07 0d 37 35 3f 41 44 06 0c 0d 0f 11 10 12 14 1a 00 07 0d 37 35 3f 41 44 06 0c 0d 0f 11 10 12 14 1a 39 00 0f e3 07 07 0b 0b 0b 0b 00 00 00 00 ff 00 c0 10 39 00 40 e9 c8 10 02 00 00 b0 b1 11 31 23 28 80 b0 b1 27 08 00 04 02 00 00 00 00 04 02 00 00 00 88 88 ba 60 24 08 88 88 88 88 88 88 88 ba 71 35 18 88 88 88 88 88 00 00 00 01 00 00 00 00 00 00 00 00 00 39 00 3e ea 97 0a 82 02 03 07 00 00 00 00 00 00 81 88 ba 17 53 88 88 88 88 88 88 80 88 ba 06 42 88 88 88 88 88 88 23 00 00 02 80 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 39 00 04 ef ff ff 01 05 c8 01 11 05 14 01 29",
-                resetGpios: "&gpio3 RK_PD3 GPIO_ACTIVE_LOW",
-                enableGpios: "&gpio3 RK_PA3 GPIO_ACTIVE_HIGH",
-                sdio: "false",
-                useExtAmplifier: true,
+                useExtAmplifier: null,
             },
             {
                 name: "GameConsole -> GameConsole R36s Panel 0",
@@ -831,6 +923,53 @@
                 useExtAmplifier: null,
             },
             {
+                name: "GameConsole -> GameConsole R36s Panel 4 V22",
+                md5: "",
+                panelInitSequence: "15 00 02 ff 30 15 00 02 ff 52 15 00 02 ff 01 15 00 02 e3 00 15 00 02 25 10 15 00 02 28 6f 15 00 02 29 01 15 00 02 2a df 15 00 02 2c 22 15 00 02 c3 0f 15 00 02 37 9c 15 00 02 38 a7 15 00 02 39 41 15 00 02 80 20 15 00 02 91 67 15 00 02 92 67 15 00 02 a0 55 15 00 02 a1 50 15 00 02 a3 58 15 00 02 a4 9c 15 00 02 a7 02 15 00 02 a8 01 15 00 02 a9 21 15 00 02 aa fc 15 00 02 ab 28 15 00 02 ac 06 15 00 02 ad 06 15 00 02 ae 06 15 00 02 af 03 15 00 02 b0 08 15 00 02 b1 26 15 00 02 b2 28 15 00 02 b3 28 15 00 02 b4 03 15 00 02 b5 08 15 00 02 b6 26 15 00 02 b7 08 15 00 02 b8 26 15 00 02 2c 22 15 00 02 5c 40 15 00 02 c0 00 15 00 02 c1 00 15 00 02 c2 00 15 00 02 ff 30 15 00 02 ff 52 15 00 02 ff 02 15 00 02 b0 02 15 00 02 d0 02 15 00 02 b1 0f 15 00 02 d1 10 15 00 02 b2 11 15 00 02 d2 12 15 00 02 b3 32 15 00 02 d3 33 15 00 02 b4 36 15 00 02 d4 36 15 00 02 b5 3c 15 00 02 d5 3c 15 00 02 b6 20 15 00 02 d6 20 15 00 02 b7 3e 15 00 02 d7 3e 15 00 02 b8 0e 15 00 02 d8 0d 15 00 02 b9 05 15 00 02 d9 05 15 00 02 ba 11 15 00 02 da 12 15 00 02 bb 11 15 00 02 db 11 15 00 02 bc 13 15 00 02 dc 14 15 00 02 bd 14 15 00 02 dd 14 15 00 02 be 16 15 00 02 de 18 15 00 02 bf 0e 15 00 02 df 0f 15 00 02 c0 17 15 00 02 e0 17 15 00 02 c1 07 15 00 02 e1 08 15 00 02 ff 30 15 00 02 ff 52 15 00 02 ff 03 15 00 02 08 8a 15 00 02 09 8b 15 00 02 30 00 15 00 02 31 00 15 00 02 32 00 15 00 02 33 00 15 00 02 34 61 15 00 02 35 d4 15 00 02 36 24 15 00 02 37 03 15 00 02 40 86 15 00 02 41 87 15 00 02 42 84 15 00 02 43 85 15 00 02 44 11 15 00 02 45 de 15 00 02 46 dd 15 00 02 47 11 15 00 02 48 e0 15 00 02 49 df 15 00 02 50 82 15 00 02 51 83 15 00 02 52 80 15 00 02 53 81 15 00 02 54 11 15 00 02 55 e2 15 00 02 56 e1 15 00 02 57 11 15 00 02 58 e4 15 00 02 59 e3 15 00 02 82 0f 15 00 02 83 0f 15 00 02 84 00 15 00 02 85 0f 15 00 02 86 0f 15 00 02 87 0e 15 00 02 88 0e 15 00 02 89 06 15 00 02 8a 06 15 00 02 8b 07 15 00 02 8c 07 15 00 02 8d 04 15 00 02 8e 04 15 00 02 8f 05 15 00 02 90 05 15 00 02 98 0f 15 00 02 99 0f 15 00 02 9a 00 15 00 02 9b 0f 15 00 02 9c 0f 15 00 02 9d 0e 15 00 02 9e 0e 15 00 02 9f 06 15 00 02 a0 06 15 00 02 a1 07 15 00 02 a2 07 15 00 02 a3 04 15 00 02 a4 04 15 00 02 a5 05 15 00 02 a6 05 15 00 02 e0 02 15 00 02 e1 52 15 00 02 ff 30 15 00 02 ff 52 15 00 02 ff 00 15 00 02 36 02 05 c8 01 11 05 14 01 29",
+                resetGpios: "&gpio3 RK_PC0 GPIO_ACTIVE_LOW",
+                enableGpios: null,
+                sdio: "false",
+                useExtAmplifier: null,
+            },
+            {
+                name: "GameConsole -> GameConsole R36XX",
+                md5: "",
+                panelInitSequence: "15 00 02 ff 30 15 00 02 ff 52 15 00 02 ff 01 15 00 02 e3 00 15 00 02 25 10 15 00 02 28 6f 15 00 02 29 01 15 00 02 2a df 15 00 02 2c 22 15 00 02 c3 0f 15 00 02 37 9c 15 00 02 38 a7 15 00 02 39 41 15 00 02 80 20 15 00 02 91 67 15 00 02 92 67 15 00 02 a0 55 15 00 02 a1 50 15 00 02 a3 58 15 00 02 a4 9c 15 00 02 a7 02 15 00 02 a8 01 15 00 02 a9 21 15 00 02 aa fc 15 00 02 ab 28 15 00 02 ac 06 15 00 02 ad 06 15 00 02 ae 06 15 00 02 af 03 15 00 02 b0 08 15 00 02 b1 26 15 00 02 b2 28 15 00 02 b3 28 15 00 02 b4 03 15 00 02 b5 08 15 00 02 b6 26 15 00 02 b7 08 15 00 02 b8 26 15 00 02 2c 22 15 00 02 5c 40 15 00 02 c0 00 15 00 02 c1 00 15 00 02 c2 00 15 00 02 ff 30 15 00 02 ff 52 15 00 02 ff 02 15 00 02 b0 02 15 00 02 d0 02 15 00 02 b1 0f 15 00 02 d1 10 15 00 02 b2 11 15 00 02 d2 12 15 00 02 b3 32 15 00 02 d3 33 15 00 02 b4 36 15 00 02 d4 36 15 00 02 b5 3c 15 00 02 d5 3c 15 00 02 b6 20 15 00 02 d6 20 15 00 02 b7 3e 15 00 02 d7 3e 15 00 02 b8 0e 15 00 02 d8 0d 15 00 02 b9 05 15 00 02 d9 05 15 00 02 ba 11 15 00 02 da 12 15 00 02 bb 11 15 00 02 db 11 15 00 02 bc 13 15 00 02 dc 14 15 00 02 bd 14 15 00 02 dd 14 15 00 02 be 16 15 00 02 de 18 15 00 02 bf 0e 15 00 02 df 0f 15 00 02 c0 17 15 00 02 e0 17 15 00 02 c1 07 15 00 02 e1 08 15 00 02 ff 30 15 00 02 ff 52 15 00 02 ff 03 15 00 02 08 8a 15 00 02 09 8b 15 00 02 30 00 15 00 02 31 00 15 00 02 32 00 15 00 02 33 00 15 00 02 34 61 15 00 02 35 d4 15 00 02 36 24 15 00 02 37 03 15 00 02 40 86 15 00 02 41 87 15 00 02 42 84 15 00 02 43 85 15 00 02 44 11 15 00 02 45 de 15 00 02 46 dd 15 00 02 47 11 15 00 02 48 e0 15 00 02 49 df 15 00 02 50 82 15 00 02 51 83 15 00 02 52 80 15 00 02 53 81 15 00 02 54 11 15 00 02 55 e2 15 00 02 56 e1 15 00 02 57 11 15 00 02 58 e4 15 00 02 59 e3 15 00 02 82 0f 15 00 02 83 0f 15 00 02 84 00 15 00 02 85 0f 15 00 02 86 0f 15 00 02 87 0e 15 00 02 88 0e 15 00 02 89 06 15 00 02 8a 06 15 00 02 8b 07 15 00 02 8c 07 15 00 02 8d 04 15 00 02 8e 04 15 00 02 8f 05 15 00 02 90 05 15 00 02 98 0f 15 00 02 99 0f 15 00 02 9a 00 15 00 02 9b 0f 15 00 02 9c 0f 15 00 02 9d 0e 15 00 02 9e 0e 15 00 02 9f 06 15 00 02 a0 06 15 00 02 a1 07 15 00 02 a2 07 15 00 02 a3 04 15 00 02 a4 04 15 00 02 a5 05 15 00 02 a6 05 15 00 02 e0 02 15 00 02 e1 52 15 00 02 ff 30 15 00 02 ff 52 15 00 02 ff 00 15 00 02 36 02 15 00 02 11 00 15 00 02 29 00 05 c8 01 11 05 14 01 29",
+                resetGpios: "&gpio3 RK_PC0 GPIO_ACTIVE_LOW",
+                enableGpios: null,
+                sdio: "false",
+                useExtAmplifier: null,
+            },
+            {
+                name: "GameConsole -> GameConsole R36H",
+                md5: "",
+                panelInitSequence: "15 00 02 ff 30 15 00 02 ff 52 15 00 02 ff 01 15 00 02 e3 00 15 00 02 25 10 15 00 02 28 6f 15 00 02 29 01 15 00 02 2a df 15 00 02 2c 22 15 00 02 c3 0f 15 00 02 37 9c 15 00 02 38 a7 15 00 02 39 41 15 00 02 80 20 15 00 02 91 67 15 00 02 92 67 15 00 02 a0 55 15 00 02 a1 50 15 00 02 a3 58 15 00 02 a4 9c 15 00 02 a7 02 15 00 02 a8 01 15 00 02 a9 21 15 00 02 aa fc 15 00 02 ab 28 15 00 02 ac 06 15 00 02 ad 06 15 00 02 ae 06 15 00 02 af 03 15 00 02 b0 08 15 00 02 b1 26 15 00 02 b2 28 15 00 02 b3 28 15 00 02 b4 03 15 00 02 b5 08 15 00 02 b6 26 15 00 02 b7 08 15 00 02 b8 26 15 00 02 2c 22 15 00 02 5c 40 15 00 02 c0 00 15 00 02 c1 00 15 00 02 c2 00 15 00 02 ff 30 15 00 02 ff 52 15 00 02 ff 02 15 00 02 b0 02 15 00 02 d0 02 15 00 02 b1 0f 15 00 02 d1 10 15 00 02 b2 11 15 00 02 d2 12 15 00 02 b3 32 15 00 02 d3 33 15 00 02 b4 36 15 00 02 d4 36 15 00 02 b5 3c 15 00 02 d5 3c 15 00 02 b6 20 15 00 02 d6 20 15 00 02 b7 3e 15 00 02 d7 3e 15 00 02 b8 0e 15 00 02 d8 0d 15 00 02 b9 05 15 00 02 d9 05 15 00 02 ba 11 15 00 02 da 12 15 00 02 bb 11 15 00 02 db 11 15 00 02 bc 13 15 00 02 dc 14 15 00 02 bd 14 15 00 02 dd 14 15 00 02 be 16 15 00 02 de 18 15 00 02 bf 0e 15 00 02 df 0f 15 00 02 c0 17 15 00 02 e0 17 15 00 02 c1 07 15 00 02 e1 08 15 00 02 ff 30 15 00 02 ff 52 15 00 02 ff 03 15 00 02 08 8a 15 00 02 09 8b 15 00 02 30 00 15 00 02 31 00 15 00 02 32 00 15 00 02 33 00 15 00 02 34 61 15 00 02 35 d4 15 00 02 36 24 15 00 02 37 03 15 00 02 40 86 15 00 02 41 87 15 00 02 42 84 15 00 02 43 85 15 00 02 44 11 15 00 02 45 de 15 00 02 46 dd 15 00 02 47 11 15 00 02 48 e0 15 00 02 49 df 15 00 02 50 82 15 00 02 51 83 15 00 02 52 80 15 00 02 53 81 15 00 02 54 11 15 00 02 55 e2 15 00 02 56 e1 15 00 02 57 11 15 00 02 58 e4 15 00 02 59 e3 15 00 02 82 0f 15 00 02 83 0f 15 00 02 84 00 15 00 02 85 0f 15 00 02 86 0f 15 00 02 87 0e 15 00 02 88 0e 15 00 02 89 06 15 00 02 8a 06 15 00 02 8b 07 15 00 02 8c 07 15 00 02 8d 04 15 00 02 8e 04 15 00 02 8f 05 15 00 02 90 05 15 00 02 98 0f 15 00 02 99 0f 15 00 02 9a 00 15 00 02 9b 0f 15 00 02 9c 0f 15 00 02 9d 0e 15 00 02 9e 0e 15 00 02 9f 06 15 00 02 a0 06 15 00 02 a1 07 15 00 02 a2 07 15 00 02 a3 04 15 00 02 a4 04 15 00 02 a5 05 15 00 02 a6 05 15 00 02 e0 02 15 00 02 e1 52 15 00 02 ff 30 15 00 02 ff 52 15 00 02 ff 00 15 00 02 36 02 15 00 02 11 00 15 00 02 29 00 05 c8 01 11 05 14 01 29",
+                resetGpios: "&gpio3 RK_PC0 GPIO_ACTIVE_LOW",
+                enableGpios: null,
+                sdio: "false",
+                useExtAmplifier: null,
+            },
+            {
+                name: "GameConsole -> GameConsole O30S",
+                md5: "",
+                panelInitSequence: "15 00 02 ff 30 15 00 02 ff 52 15 00 02 ff 01 15 00 02 e3 00 15 00 02 25 10 15 00 02 28 6f 15 00 02 29 01 15 00 02 2a df 15 00 02 2c 22 15 00 02 c3 0f 15 00 02 37 9c 15 00 02 38 a7 15 00 02 39 41 15 00 02 80 20 15 00 02 91 67 15 00 02 92 67 15 00 02 a0 55 15 00 02 a1 50 15 00 02 a3 58 15 00 02 a4 9c 15 00 02 a7 02 15 00 02 a8 01 15 00 02 a9 21 15 00 02 aa fc 15 00 02 ab 28 15 00 02 ac 06 15 00 02 ad 06 15 00 02 ae 06 15 00 02 af 03 15 00 02 b0 08 15 00 02 b1 26 15 00 02 b2 28 15 00 02 b3 28 15 00 02 b4 03 15 00 02 b5 08 15 00 02 b6 26 15 00 02 b7 08 15 00 02 b8 26 15 00 02 2c 22 15 00 02 5c 40 15 00 02 c0 00 15 00 02 c1 00 15 00 02 c2 00 15 00 02 ff 30 15 00 02 ff 52 15 00 02 ff 02 15 00 02 b0 02 15 00 02 d0 02 15 00 02 b1 0f 15 00 02 d1 10 15 00 02 b2 11 15 00 02 d2 12 15 00 02 b3 32 15 00 02 d3 33 15 00 02 b4 36 15 00 02 d4 36 15 00 02 b5 3c 15 00 02 d5 3c 15 00 02 b6 20 15 00 02 d6 20 15 00 02 b7 3e 15 00 02 d7 3e 15 00 02 b8 0e 15 00 02 d8 0d 15 00 02 b9 05 15 00 02 d9 05 15 00 02 ba 11 15 00 02 da 12 15 00 02 bb 11 15 00 02 db 11 15 00 02 bc 13 15 00 02 dc 14 15 00 02 bd 14 15 00 02 dd 14 15 00 02 be 16 15 00 02 de 18 15 00 02 bf 0e 15 00 02 df 0f 15 00 02 c0 17 15 00 02 e0 17 15 00 02 c1 07 15 00 02 e1 08 15 00 02 ff 30 15 00 02 ff 52 15 00 02 ff 03 15 00 02 08 8a 15 00 02 09 8b 15 00 02 30 00 15 00 02 31 00 15 00 02 32 00 15 00 02 33 00 15 00 02 34 61 15 00 02 35 d4 15 00 02 36 24 15 00 02 37 03 15 00 02 40 86 15 00 02 41 87 15 00 02 42 84 15 00 02 43 85 15 00 02 44 11 15 00 02 45 de 15 00 02 46 dd 15 00 02 47 11 15 00 02 48 e0 15 00 02 49 df 15 00 02 50 82 15 00 02 51 83 15 00 02 52 80 15 00 02 53 81 15 00 02 54 11 15 00 02 55 e2 15 00 02 56 e1 15 00 02 57 11 15 00 02 58 e4 15 00 02 59 e3 15 00 02 82 0f 15 00 02 83 0f 15 00 02 84 00 15 00 02 85 0f 15 00 02 86 0f 15 00 02 87 0e 15 00 02 88 0e 15 00 02 89 06 15 00 02 8a 06 15 00 02 8b 07 15 00 02 8c 07 15 00 02 8d 04 15 00 02 8e 04 15 00 02 8f 05 15 00 02 90 05 15 00 02 98 0f 15 00 02 99 0f 15 00 02 9a 00 15 00 02 9b 0f 15 00 02 9c 0f 15 00 02 9d 0e 15 00 02 9e 0e 15 00 02 9f 06 15 00 02 a0 06 15 00 02 a1 07 15 00 02 a2 07 15 00 02 a3 04 15 00 02 a4 04 15 00 02 a5 05 15 00 02 a6 05 15 00 02 e0 02 15 00 02 e1 52 15 00 02 ff 30 15 00 02 ff 52 15 00 02 ff 00 15 00 02 36 02 15 00 02 11 00 15 00 02 29 00 05 c8 01 11 05 14 01 29",
+                resetGpios: "&gpio3 RK_PC0 GPIO_ACTIVE_LOW",
+                enableGpios: null,
+                sdio: "false",
+                useExtAmplifier: null,
+            },
+            {
+                name: "Other -> R50S",
+                md5: [""],
+                panelInitSequence: "05 05 01 01 05 fa 01 11 39 00 06 ff 77 01 00 00 10 15 00 03 c0 e9 03 15 00 03 c1 11 02 15 00 03 c2 31 08 15 00 02 cc 10 39 00 11 b0 00 0d 14 0d 10 05 02 08 08 1e 05 13 11 a3 29 18 39 00 11 b1 00 0c 14 0c 10 05 03 08 07 20 05 13 11 a4 29 18 39 00 06 ff 77 01 00 00 11 15 00 02 b0 6c 15 00 02 b1 43 15 00 02 b2 07 15 00 02 b3 80 15 00 02 b5 47 15 00 02 b7 85 15 00 02 b8 20 15 00 02 b9 10 15 00 02 c1 78 15 00 02 c3 78 15 fa 02 d0 88 39 00 04 e0 00 00 02 39 00 0c e1 08 00 0a 00 07 00 09 00 00 33 33 39 00 0f e2 00 00 00 00 00 00 00 00 00 00 00 00 00 00 39 00 05 e3 00 00 33 33 15 00 03 e4 44 44 39 00 11 e5 0e 60 a0 a0 10 60 a0 a0 0a 60 a0 a0 0c 60 a0 a0 39 00 05 e6 00 00 33 33 15 00 03 e7 44 44 39 00 11 e8 0d 60 a0 a0 0f 60 a0 a0 09 60 a0 a0 0b 60 a0 a0 39 00 08 eb 02 01 e4 e4 44 00 40 15 00 03 ec 02 01 39 00 11 ed ab 89 76 54 01 ff ff ff ff ff ff 10 45 67 98 ba 39 00 06 ff 77 01 00 00 00 15 00 02 3a 70 15 00 02 53 ec 15 00 02 55 b3 15 00 02 5e ff 05 32 01 29",
+                resetGpios: "&gpio3 RK_PC0 GPIO_ACTIVE_LOW",
+                enableGpios: null,
+                sdio: "false",
+                useExtAmplifier: false,
+                adcKey: "false",
+            },
+            // SaySouce R36s
+            {
                 name: "SaySouce R36s -> Soy Sauce V03",
                 md5: ["6043228f47ed2ebd01970f46be133ca9", "861278f7ab7ade97ac1515aedbbdeff0"],
                 panelInitSequence: "39 00 04 b9 f1 12 83 39 00 1c ba 33 81 05 f9 0e 0e 20 00 00 00 00 00 00 00 44 25 00 91 0a 00 00 02 4f d1 00 00 37 15 00 02 b8 25 39 00 04 bf 02 11 00 39 00 0b b3 0c 10 0a 50 03 ff 00 00 00 00 39 00 0a c0 73 73 50 50 00 00 08 70 00 15 00 02 bc 46 15 00 02 cc 0b 15 00 02 b4 80 39 00 04 b2 00 13 f0 39 00 0f e3 07 07 0b 0b 03 0b 00 00 00 00 ff 00 c0 10 39 00 0d c1 53 00 1e 1e 77 e1 cc dd 67 77 33 33 39 00 03 b5 10 10 39 00 03 b6 6c 7c 39 00 40 e9 08 00 0e 00 00 b0 b1 11 31 23 28 10 b0 b1 27 08 00 04 02 00 00 00 00 04 02 00 00 00 88 88 ba 60 24 08 88 88 88 88 88 88 88 ba 71 35 18 88 88 88 88 88 00 00 00 01 00 00 00 00 00 00 00 00 00 39 00 3e ea 97 0a 82 02 13 07 00 00 00 00 00 00 80 88 ba 17 53 88 88 88 88 88 88 81 88 ba 06 42 88 88 88 88 88 88 23 10 00 02 80 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 39 00 23 e0 00 07 0b 27 2d 3f 3b 37 05 0a 0b 0f 11 0f 12 12 18 00 07 0b 27 2d 3f 3b 37 05 0a 0b 0f 11 0f 12 12 18 05 96 01 11 05 32 01 29",
@@ -848,33 +987,146 @@
                 sdio: "false",
                 useExtAmplifier: null,
             },
+            // XiFan
             {
-                name: "GameConsole -> GameConsole R46H",
-                md5: "4c2b2e92efc4de69a37326a5b504107f",
-                panelInitSequence: "15 00 02 ee 01 15 00 02 ea 07 15 00 02 eb 12 15 00 02 0a 8b 15 00 02 17 35 15 00 02 1d 33 15 00 02 21 01 15 00 02 28 1c 15 00 02 29 27 15 00 02 2a 63 15 00 02 2b b5 15 00 02 2c 00 15 00 02 2d 33 15 00 02 2f f3 15 00 02 ee 02 15 00 02 39 78 15 00 02 39 78 15 00 02 00 00 15 00 02 01 18 15 00 02 02 15 15 00 02 03 10 15 00 02 04 18 15 00 02 05 3f 15 00 02 06 11 15 00 02 07 11 15 00 02 08 11 15 00 02 09 0f 15 00 02 0a 10 15 00 02 0b 54 15 00 02 0c 14 15 00 02 0d 17 15 00 02 0e 35 15 00 02 0f 37 15 00 02 10 3f 15 00 02 20 00 15 00 02 21 18 15 00 02 22 15 15 00 02 23 10 15 00 02 24 12 15 00 02 25 37 15 00 02 26 0b 15 00 02 27 0d 15 00 02 28 0d 15 00 02 29 0b 15 00 02 2a 10 15 00 02 2b 54 15 00 02 2c 14 15 00 02 2d 17 15 00 02 2e 35 15 00 02 2f 37 15 00 02 30 3f 15 00 02 ee 04 15 00 02 00 04 15 00 02 01 01 15 00 02 02 80 15 00 02 03 04 15 00 02 04 00 15 00 02 06 16 15 00 02 07 03 15 00 02 08 13 15 00 02 09 0a 15 00 02 0a 0f 15 00 02 0b 10 15 00 02 22 80 15 00 02 24 08 15 00 02 2a 00 15 00 02 ee 05 15 00 02 00 04 15 00 02 01 08 15 00 02 02 55 15 00 02 03 05 15 00 02 04 00 15 00 02 05 04 15 00 02 06 00 15 00 02 07 13 15 00 02 08 1e 15 00 02 09 66 15 00 02 0d 22 15 00 02 10 08 15 00 02 11 0c 15 00 02 12 55 15 00 02 13 05 15 00 02 19 14 15 00 02 1a 76 15 00 02 23 00 15 00 02 43 13 15 00 02 40 44 15 00 02 41 00 15 00 02 30 01 15 00 02 31 01 15 00 02 32 00 15 00 02 33 14 15 00 02 34 14 15 00 02 35 b4 15 00 02 36 01 15 00 02 37 01 15 00 02 38 00 15 00 02 39 14 15 00 02 3a 14 15 00 02 44 01 15 00 02 45 81 15 00 02 46 05 15 00 02 ee 06 15 00 02 00 23 15 00 02 01 01 15 00 02 02 04 15 00 02 06 cd 15 00 02 08 67 15 00 02 09 45 15 00 02 0a 23 15 00 02 0b 01 15 00 02 ee 07 15 00 02 00 3c 15 00 02 01 20 15 00 02 02 20 15 00 02 03 21 15 00 02 04 21 15 00 02 05 3c 15 00 02 06 3c 15 00 02 07 04 15 00 02 08 04 15 00 02 09 0c 15 00 02 0a 0c 15 00 02 0b 01 15 00 02 0c 15 15 00 02 0d 15 15 00 02 0e 17 15 00 02 0f 17 15 00 02 10 11 15 00 02 11 11 15 00 02 12 13 15 00 02 13 13 15 00 02 14 0d 15 00 02 15 0d 15 00 02 20 3c 15 00 02 21 20 15 00 02 22 20 15 00 02 23 21 15 00 02 24 21 15 00 02 25 3c 15 00 02 26 3c 15 00 02 27 04 15 00 02 28 04 15 00 02 29 0c 15 00 02 2a 0c 15 00 02 2b 00 15 00 02 2c 14 15 00 02 2d 14 15 00 02 2e 16 15 00 02 2f 16 15 00 02 30 10 15 00 02 31 10 15 00 02 32 12 15 00 02 33 12 15 00 02 34 0d 15 00 02 35 0d 15 00 02 ee 08 15 00 02 10 00 15 00 02 12 da 15 00 02 14 10 15 00 02 22 69 15 00 02 ee 0f 15 00 02 00 01 15 00 02 01 10 15 00 02 ee 00 15 00 02 ea 00 15 00 02 eb 00 05 c8 01 11 05 14 01 29",
-                resetGpios: "&gpio3 RK_PC0 GPIO_ACTIVE_LOW",
-                enableGpios: null,
+                name: "XiFan HandHelds -> XiFan MYMINI",
+                md5: ["04d57af3acefbad48505b005d0803c3e", "0bd2d5c14c10918598467cd5cbd259b7", "38644ce69040902198adb12228554cd0"],
+                panelInitSequence: "39 00 04 b9 f1 12 83 39 00 06 b1 00 00 00 da 80 39 00 04 b2 00 13 70 39 00 0b b3 10 10 28 28 03 ff 00 00 00 00 15 00 02 b4 80 15 00 03 b5 0a 0a 15 00 03 b6 82 82 39 00 05 b8 26 62 f0 63 39 00 1c ba 33 81 05 f9 0e 0e 20 00 00 00 00 00 00 00 44 25 00 90 0a 00 00 01 4f 01 00 00 37 15 00 02 bc 47 39 00 04 bf 02 11 00 39 00 0a c0 73 73 50 50 00 00 12 50 00 39 00 0d c1 53 00 32 32 77 d1 cc cc 77 77 33 33 39 00 07 c6 82 00 bf ff 00 ff 39 00 07 c7 b8 00 0a 00 00 00 39 00 05 c8 10 40 1e 02 15 00 02 cc 0b 39 00 23 e0 00 07 0d 37 35 3f 41 44 06 0c 0d 0f 11 10 12 14 1a 00 07 0d 37 35 3f 41 44 06 0c 0d 0f 11 10 12 14 1a 39 00 0f e3 07 07 0b 0b 0b 0b 00 00 00 00 ff 00 c0 10 39 00 40 e9 c8 10 02 00 00 b0 b1 11 31 23 28 80 b0 b1 27 08 00 04 02 00 00 00 00 04 02 00 00 00 88 88 ba 60 24 08 88 88 88 88 88 88 88 ba 71 35 18 88 88 88 88 88 00 00 00 01 00 00 00 00 00 00 00 00 00 39 00 3e ea 97 0a 82 02 03 07 00 00 00 00 00 00 81 88 ba 17 53 88 88 88 88 88 88 80 88 ba 06 42 88 88 88 88 88 88 23 00 00 02 80 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 39 00 04 ef ff ff 01 05 c8 01 11 05 14 01 29",
+                resetGpios: "&gpio3 RK_PB7 GPIO_ACTIVE_LOW",
+                enableGpios: "&gpio0 RK_PB5 GPIO_ACTIVE_HIGH",
                 sdio: "false",
-                useExtAmplifier: null,
+                useExtAmplifier: true,
+            },
+             {
+                name: "XiFan HandHelds -> XiFan R36MAX",
+                md5: ["82f93e50285b7dfbb7ab05a133c2812b", "3d7f16bbd611f88ee9b0eb10791eadfc"],
+                panelInitSequence: "39 00 04 b9 f1 12 83 39 00 06 b1 00 00 00 da 80 39 00 04 b2 3c 12 30 39 00 0b b3 10 10 28 28 03 ff 00 00 00 00 15 00 02 b4 80 39 00 03 b5 0a 0a 39 00 03 b6 97 97 39 00 05 b8 26 22 f0 13 39 00 1c ba 33 81 05 f9 0e 0e 20 00 00 00 00 00 00 00 44 25 00 90 0a 00 00 01 4f 01 00 00 37 15 00 02 bc 47 39 00 04 bf 02 11 00 39 00 0a c0 73 73 50 50 00 00 12 70 00 39 00 0d c1 25 00 32 32 77 e4 ff ff cc cc 77 77 39 00 07 c6 82 00 bf ff 00 ff 39 00 07 c7 b8 00 0a 00 00 00 39 00 05 c8 10 40 1e 02 15 00 02 cc 0b 39 00 23 e0 00 0b 10 2c 3d 3f 42 3a 07 0d 0f 13 15 13 14 0f 16 00 0b 10 2c 3d 3f 42 3a 07 0d 0f 13 15 13 14 0f 16 39 00 0f e3 07 07 0b 0b 0b 0b 00 00 00 00 ff 00 c0 10 39 00 40 e9 c8 10 0a 00 00 80 81 12 31 23 4f 86 a0 00 47 08 00 00 0c 00 00 00 00 00 0c 00 00 00 98 02 8b af 46 02 88 88 88 88 88 98 13 8b af 57 13 88 88 88 88 88 00 00 00 00 00 00 00 00 00 00 00 00 00 39 00 3e ea 97 0c 09 09 09 78 00 00 00 00 00 00 9f 31 8b a8 31 75 88 88 88 88 88 9f 20 8b a8 20 64 88 88 88 88 88 23 00 00 02 71 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 40 80 81 00 00 00 00 39 00 04 ef ff ff 01 05 fa 01 11 05 32 01 29",
+                resetGpios: "&gpio3 RK_PB7 GPIO_ACTIVE_LOW",
+                enableGpios: "&gpio0 RK_PB5 GPIO_ACTIVE_HIGH",
+                sdio: "false",
+                useExtAmplifier: true,
+                adcKey: "true",
             },
             {
-                name: "GameConsole -> GameConsole R36sPlus",
-                md5: "ff983f16c0dbc18ab97116cc3677f559",
-                panelInitSequence: "05 fa 01 11 39 00 04 b9 f1 12 83 39 00 1c ba 33 81 05 f9 0e 0e 20 00 00 00 00 00 00 00 44 25 00 90 0a 00 00 01 4f 01 00 00 37 39 00 05 b8 25 22 f0 63 39 00 04 bf 02 11 00 39 00 0b b3 10 10 28 28 03 ff 00 00 00 00 39 00 0a c0 73 73 50 50 00 00 12 70 00 15 00 02 bc 46 15 00 02 cc 0b 15 00 02 b4 80 39 00 04 b2 3c 12 30 39 00 0f e3 07 07 0b 0b 03 0b 00 00 00 00 ff 00 c0 10 39 00 0d c1 36 00 32 32 77 f1 cc cc 77 77 33 33 39 00 03 b5 0a 0a 39 00 03 b6 88 88 39 00 40 e9 c8 10 0a 10 0f a1 80 12 31 23 47 86 a1 80 47 08 00 00 0d 00 00 00 00 00 0d 00 00 00 48 02 8b af 46 02 88 88 88 88 88 48 13 8b af 57 13 88 88 88 88 88 00 00 00 00 00 00 00 00 00 00 00 00 00 39 00 3e ea 96 12 01 01 01 78 02 00 00 00 00 00 4f 31 8b a8 31 75 88 88 88 88 88 4f 20 8b a8 20 64 88 88 88 88 88 23 00 00 01 02 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 40 a1 80 00 00 00 00 39 00 23 e0 00 0a 0f 29 3b 3f 42 39 06 0d 10 13 15 14 15 10 17 00 0a 0f 29 3b 3f 42 39 06 0d 10 13 15 14 15 10 17 05 32 01 29",
-                resetGpios: "&gpio3 RK_PC0 GPIO_ACTIVE_LOW",
-                enableGpios: null,
+                name: "XiFan HandHelds -> XiFan R36Pro",
+                md5: ["6de588c4eda969c2487402a4823ca60a", "2748ec226bcd9c06095bb94c4637493a"],
+                panelInitSequence: "39 00 04 b9 f1 12 83 39 00 06 b1 00 00 00 da 80 39 00 04 b2 00 13 70 39 00 0b b3 10 10 28 28 03 ff 00 00 00 00 15 00 02 b4 80 15 00 03 b5 0a 0a 15 00 03 b6 82 82 39 00 05 b8 26 62 f0 63 39 00 1c ba 33 81 05 f9 0e 0e 20 00 00 00 00 00 00 00 44 25 00 90 0a 00 00 01 4f 01 00 00 37 15 00 02 bc 47 39 00 04 bf 02 11 00 39 00 0a c0 73 73 50 50 00 00 12 50 00 39 00 0d c1 53 00 32 32 77 d1 cc cc 77 77 33 33 39 00 07 c6 82 00 bf ff 00 ff 39 00 07 c7 b8 00 0a 00 00 00 39 00 05 c8 10 40 1e 02 15 00 02 cc 0b 39 00 23 e0 00 07 0d 37 35 3f 41 44 06 0c 0d 0f 11 10 12 14 1a 00 07 0d 37 35 3f 41 44 06 0c 0d 0f 11 10 12 14 1a 39 00 0f e3 07 07 0b 0b 0b 0b 00 00 00 00 ff 00 c0 10 39 00 40 e9 c8 10 02 00 00 b0 b1 11 31 23 28 80 b0 b1 27 08 00 04 02 00 00 00 00 04 02 00 00 00 88 88 ba 60 24 08 88 88 88 88 88 88 88 ba 71 35 18 88 88 88 88 88 00 00 00 01 00 00 00 00 00 00 00 00 00 39 00 3e ea 97 0a 82 02 03 07 00 00 00 00 00 00 81 88 ba 17 53 88 88 88 88 88 88 80 88 ba 06 42 88 88 88 88 88 88 23 00 00 02 80 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 39 00 04 ef ff ff 01 05 c8 01 11 05 14 01 29",
+                resetGpios: "&gpio3 RK_PB7 GPIO_ACTIVE_LOW",
+                enableGpios: "&gpio0 RK_PB5 GPIO_ACTIVE_HIGH",
                 sdio: "false",
-                useExtAmplifier: null,
+                useExtAmplifier: true,
+                adcKey: "true",
             },
             {
-                name: "YMC -> YMC A10MINI",
-                md5: "f5e765e3d4f05f46276aa44076db5afc",
-                panelInitSequence: "05 78 01 11 15 00 02 36 d0 15 00 02 3a 77 29 00 05 2a 00 00 02 7f 29 00 05 2b 00 00 01 df 05 0a 01 29",
-                resetGpios: "&gpio3 RK_PC0 GPIO_ACTIVE_LOW",
-                enableGpios: null,
-                sdio: "false",
-                useExtAmplifier: null,
+                name: "XiFan HandHelds -> XiFan XF35H",
+                md5: "97e25f0bb2fbdb2cc89b37bf3fb66ddf",
+                panelInitSequence: "39 00 04 b9 f1 12 83 39 00 06 b1 00 00 00 da 80 39 00 04 b2 00 13 70 39 00 0b b3 10 10 28 28 03 ff 00 00 00 00 15 00 02 b4 80 15 00 03 b5 0a 0a 15 00 03 b6 82 82 39 00 05 b8 26 62 f0 63 39 00 1c ba 33 81 05 f9 0e 0e 20 00 00 00 00 00 00 00 44 25 00 90 0a 00 00 01 4f 01 00 00 37 15 00 02 bc 47 39 00 04 bf 02 11 00 39 00 0a c0 73 73 50 50 00 00 12 50 00 39 00 0d c1 53 00 32 32 77 d1 cc cc 77 77 33 33 39 00 07 c6 82 00 bf ff 00 ff 39 00 07 c7 b8 00 0a 00 00 00 39 00 05 c8 10 40 1e 02 15 00 02 cc 0b 39 00 23 e0 00 07 0d 37 35 3f 41 44 06 0c 0d 0f 11 10 12 14 1a 00 07 0d 37 35 3f 41 44 06 0c 0d 0f 11 10 12 14 1a 39 00 0f e3 07 07 0b 0b 0b 0b 00 00 00 00 ff 00 c0 10 39 00 40 e9 c8 10 02 00 00 b0 b1 11 31 23 28 80 b0 b1 27 08 00 04 02 00 00 00 00 04 02 00 00 00 88 88 ba 60 24 08 88 88 88 88 88 88 88 ba 71 35 18 88 88 88 88 88 00 00 00 01 00 00 00 00 00 00 00 00 00 39 00 3e ea 97 0a 82 02 03 07 00 00 00 00 00 00 81 88 ba 17 53 88 88 88 88 88 88 80 88 ba 06 42 88 88 88 88 88 88 23 00 00 02 80 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 39 00 04 ef ff ff 01 05 c8 01 11 05 14 01 29",
+                resetGpios: "&gpio3 RK_PB7 GPIO_ACTIVE_LOW",
+                enableGpios: "&gpio0 RK_PB5 GPIO_ACTIVE_HIGH",
+                sdio: "true",
+                useExtAmplifier: true,
+                adcKey: "true",
             },
+            {
+                name: "XiFan HandHelds -> XiFan XF40H",
+                md5: "f79ac4d535197064da5c2a50bae6f186",
+                panelInitSequence: "39 00 04 b9 f1 12 83 39 00 06 b1 00 00 00 da 80 39 00 04 b2 3c 12 30 39 00 0b b3 10 10 28 28 03 ff 00 00 00 00 15 00 02 b4 80 39 00 03 b5 0a 0a 39 00 03 b6 97 97 39 00 05 b8 26 22 f0 13 39 00 1c ba 33 81 05 f9 0e 0e 20 00 00 00 00 00 00 00 44 25 00 90 0a 00 00 01 4f 01 00 00 37 15 00 02 bc 47 39 00 04 bf 02 11 00 39 00 0a c0 73 73 50 50 00 00 12 70 00 39 00 0d c1 25 00 32 32 77 e4 ff ff cc cc 77 77 39 00 07 c6 82 00 bf ff 00 ff 39 00 07 c7 b8 00 0a 00 00 00 39 00 05 c8 10 40 1e 02 15 00 02 cc 0b 39 00 23 e0 00 0b 10 2c 3d 3f 42 3a 07 0d 0f 13 15 13 14 0f 16 00 0b 10 2c 3d 3f 42 3a 07 0d 0f 13 15 13 14 0f 16 39 00 0f e3 07 07 0b 0b 0b 0b 00 00 00 00 ff 00 c0 10 39 00 40 e9 c8 10 0a 00 00 80 81 12 31 23 4f 86 a0 00 47 08 00 00 0c 00 00 00 00 00 0c 00 00 00 98 02 8b af 46 02 88 88 88 88 88 98 13 8b af 57 13 88 88 88 88 88 00 00 00 00 00 00 00 00 00 00 00 00 00 39 00 3e ea 97 0c 09 09 09 78 00 00 00 00 00 00 9f 31 8b a8 31 75 88 88 88 88 88 9f 20 8b a8 20 64 88 88 88 88 88 23 00 00 02 71 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 40 80 81 00 00 00 00 39 00 04 ef ff ff 01 05 fa 01 11 05 32 01 29",
+                resetGpios: "&gpio3 RK_PB7 GPIO_ACTIVE_LOW",
+                enableGpios: "&gpio0 RK_PB5 GPIO_ACTIVE_HIGH",
+                sdio: "true",
+                useExtAmplifier: true,
+                adcKey: "true",
+            },
+            {
+                name: "XiFan HandHelds -> XiFan DC35V",
+                md5: "",
+                panelInitSequence: "39 00 04 b9 f1 12 83 39 00 06 b1 00 00 00 da 80 39 00 04 b2 00 13 70 39 00 0b b3 10 10 28 28 03 ff 00 00 00 00 15 00 02 b4 80 15 00 03 b5 0a 0a 15 00 03 b6 82 82 39 00 05 b8 26 62 f0 63 39 00 1c ba 33 81 05 f9 0e 0e 20 00 00 00 00 00 00 00 44 25 00 90 0a 00 00 01 4f 01 00 00 37 15 00 02 bc 47 39 00 04 bf 02 11 00 39 00 0a c0 73 73 50 50 00 00 12 50 00 39 00 0d c1 53 00 32 32 77 d1 cc cc 77 77 33 33 39 00 07 c6 82 00 bf ff 00 ff 39 00 07 c7 b8 00 0a 00 00 00 39 00 05 c8 10 40 1e 02 15 00 02 cc 0b 39 00 23 e0 00 07 0d 37 35 3f 41 44 06 0c 0d 0f 11 10 12 14 1a 00 07 0d 37 35 3f 41 44 06 0c 0d 0f 11 10 12 14 1a 39 00 0f e3 07 07 0b 0b 0b 0b 00 00 00 00 ff 00 c0 10 39 00 40 e9 c8 10 02 00 00 b0 b1 11 31 23 28 80 b0 b1 27 08 00 04 02 00 00 00 00 04 02 00 00 00 88 88 ba 60 24 08 88 88 88 88 88 88 88 ba 71 35 18 88 88 88 88 88 00 00 00 01 00 00 00 00 00 00 00 00 00 39 00 3e ea 97 0a 82 02 03 07 00 00 00 00 00 00 81 88 ba 17 53 88 88 88 88 88 88 80 88 ba 06 42 88 88 88 88 88 88 23 00 00 02 80 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 39 00 04 ef ff ff 01 05 c8 01 11 05 14 01 29",
+                resetGpios: "&gpio3 RK_PD3 GPIO_ACTIVE_LOW",
+                enableGpios: "&gpio3 RK_PA3 GPIO_ACTIVE_HIGH",
+                sdio: "true",
+                useExtAmplifier: true,
+                adcKey: "true",
+            },
+            {
+                name: "XiFan HandHelds -> XiFan DC40V | XiFan HandHelds -> XiFan XF40V",
+                md5: "",
+                panelInitSequence: "39 00 04 b9 f1 12 83 39 00 06 b1 00 00 00 da 80 39 00 04 b2 3c 12 30 39 00 0b b3 10 10 28 28 03 ff 00 00 00 00 15 00 02 b4 80 39 00 03 b5 0a 0a 39 00 03 b6 97 97 39 00 05 b8 26 22 f0 13 39 00 1c ba 33 81 05 f9 0e 0e 20 00 00 00 00 00 00 00 44 25 00 90 0a 00 00 01 4f 01 00 00 37 15 00 02 bc 47 39 00 04 bf 02 11 00 39 00 0a c0 73 73 50 50 00 00 12 70 00 39 00 0d c1 25 00 32 32 77 e4 ff ff cc cc 77 77 39 00 07 c6 82 00 bf ff 00 ff 39 00 07 c7 b8 00 0a 00 00 00 39 00 05 c8 10 40 1e 02 15 00 02 cc 0b 39 00 23 e0 00 0b 10 2c 3d 3f 42 3a 07 0d 0f 13 15 13 14 0f 16 00 0b 10 2c 3d 3f 42 3a 07 0d 0f 13 15 13 14 0f 16 39 00 0f e3 07 07 0b 0b 0b 0b 00 00 00 00 ff 00 c0 10 39 00 40 e9 c8 10 0a 00 00 80 81 12 31 23 4f 86 a0 00 47 08 00 00 0c 00 00 00 00 00 0c 00 00 00 98 02 8b af 46 02 88 88 88 88 88 98 13 8b af 57 13 88 88 88 88 88 00 00 00 00 00 00 00 00 00 00 00 00 00 39 00 3e ea 97 0c 09 09 09 78 00 00 00 00 00 00 9f 31 8b a8 31 75 88 88 88 88 88 9f 20 8b a8 20 64 88 88 88 88 88 23 00 00 02 71 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 40 80 81 00 00 00 00 39 00 04 ef ff ff 01 05 fa 01 11 05 32 01 29",
+                resetGpios: "&gpio3 RK_PD3 GPIO_ACTIVE_LOW",
+                enableGpios: "&gpio3 RK_PA3 GPIO_ACTIVE_HIGH",
+                sdio: "true",
+                useExtAmplifier: true,
+                adcKey: "true",
+            },
+            // Other
+            {
+                name: "Other -> GameConsole HG36(HG3506)",
+                md5: "bd2e29ab7c1fdf9a40066821b6f61549",
+                panelInitSequence: "39 00 04 b9 f1 12 83 39 00 06 b1 00 00 00 da 80 39 00 04 b2 00 13 70 39 00 0b b3 10 10 28 28 03 ff 00 00 00 00 15 00 02 b4 80 15 00 03 b5 0a 0a 15 00 03 b6 82 82 39 00 05 b8 26 62 f0 63 39 00 1c ba 33 81 05 f9 0e 0e 20 00 00 00 00 00 00 00 44 25 00 90 0a 00 00 01 4f 01 00 00 37 15 00 02 bc 47 39 00 04 bf 02 11 00 39 00 0a c0 73 73 50 50 00 00 12 50 00 39 00 0d c1 53 00 32 32 77 d1 cc cc 77 77 33 33 39 00 07 c6 82 00 bf ff 00 ff 39 00 07 c7 b8 00 0a 00 00 00 39 00 05 c8 10 40 1e 02 15 00 02 cc 0b 39 00 23 e0 00 07 0d 37 35 3f 41 44 06 0c 0d 0f 11 10 12 14 1a 00 07 0d 37 35 3f 41 44 06 0c 0d 0f 11 10 12 14 1a 39 00 0f e3 07 07 0b 0b 0b 0b 00 00 00 00 ff 00 c0 10 39 00 40 e9 c8 10 02 00 00 b0 b1 11 31 23 28 80 b0 b1 27 08 00 04 02 00 00 00 00 04 02 00 00 00 88 88 ba 60 24 08 88 88 88 88 88 88 88 ba 71 35 18 88 88 88 88 88 00 00 00 01 00 00 00 00 00 00 00 00 00 39 00 3e ea 97 0a 82 02 03 07 00 00 00 00 00 00 81 88 ba 17 53 88 88 88 88 88 88 80 88 ba 06 42 88 88 88 88 88 88 23 00 00 02 80 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 39 00 04 ef ff ff 01 05 c8 01 11 05 14 01 29",
+                resetGpios: "&gpio3 RK_PB7 GPIO_ACTIVE_LOW",
+                enableGpios: "&gpio0 RK_PB5 GPIO_ACTIVE_HIGH",
+                sdio: "false",
+                useExtAmplifier: false,
+                adcKey: "true",
+            },
+            {
+                name: "Other -> GameConsole R36Ultra",
+                md5: "5cb5429b5418aa71b730501786578d04",
+                panelInitSequence: "39 00 04 b9 f1 12 83 39 00 06 b1 00 00 00 da 80 39 00 04 b2 3c 12 30 39 00 0b b3 10 10 28 28 03 ff 00 00 00 00 15 00 02 b4 80 39 00 03 b5 0a 0a 39 00 03 b6 97 97 39 00 05 b8 26 22 f0 13 39 00 1c ba 33 81 05 f9 0e 0e 20 00 00 00 00 00 00 00 44 25 00 90 0a 00 00 01 4f 01 00 00 37 15 00 02 bc 47 39 00 04 bf 02 11 00 39 00 0a c0 73 73 50 50 00 00 12 70 00 39 00 0d c1 25 00 32 32 77 e4 ff ff cc cc 77 77 39 00 07 c6 82 00 bf ff 00 ff 39 00 07 c7 b8 00 0a 00 00 00 39 00 05 c8 10 40 1e 02 15 00 02 cc 0b 39 00 23 e0 00 0b 10 2c 3d 3f 42 3a 07 0d 0f 13 15 13 14 0f 16 00 0b 10 2c 3d 3f 42 3a 07 0d 0f 13 15 13 14 0f 16 39 00 0f e3 07 07 0b 0b 0b 0b 00 00 00 00 ff 00 c0 10 39 00 40 e9 c8 10 0a 00 00 80 81 12 31 23 4f 86 a0 00 47 08 00 00 0c 00 00 00 00 00 0c 00 00 00 98 02 8b af 46 02 88 88 88 88 88 98 13 8b af 57 13 88 88 88 88 88 00 00 00 00 00 00 00 00 00 00 00 00 00 39 00 3e ea 97 0c 09 09 09 78 00 00 00 00 00 00 9f 31 8b a8 31 75 88 88 88 88 88 9f 20 8b a8 20 64 88 88 88 88 88 23 00 00 02 71 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 40 80 81 00 00 00 00 39 00 04 ef ff ff 01 05 fa 01 11 05 32 01 29",
+                resetGpios: "&gpio3 RK_PD3 GPIO_ACTIVE_LOW",
+                enableGpios: "&gpio3 RK_PA3 GPIO_ACTIVE_HIGH",
+                sdio: "true",
+                useExtAmplifier: false,
+                adcKey: "true",
+            },
+            {
+                name: "Other -> GameConsole RX6H",
+                md5: "0b11a2bf3a862dbb0e16ae6cd8b8b228",
+                panelInitSequence: "15 00 02 ff 30 15 00 02 ff 52 15 00 02 ff 01 15 00 02 e3 00 15 00 02 25 10 15 00 02 28 6f 15 00 02 29 01 15 00 02 2a df 15 00 02 2c 22 15 00 02 c3 0f 15 00 02 37 9c 15 00 02 38 a7 15 00 02 39 41 15 00 02 80 20 15 00 02 91 67 15 00 02 92 67 15 00 02 a0 55 15 00 02 a1 50 15 00 02 a3 58 15 00 02 a4 9c 15 00 02 a7 02 15 00 02 a8 01 15 00 02 a9 21 15 00 02 aa fc 15 00 02 ab 28 15 00 02 ac 06 15 00 02 ad 06 15 00 02 ae 06 15 00 02 af 03 15 00 02 b0 08 15 00 02 b1 26 15 00 02 b2 28 15 00 02 b3 28 15 00 02 b4 03 15 00 02 b5 08 15 00 02 b6 26 15 00 02 b7 08 15 00 02 b8 26 15 00 02 c0 00 15 00 02 c1 00 15 00 02 c2 00 15 00 02 ff 30 15 00 02 ff 52 15 00 02 ff 02 15 00 02 b0 02 15 00 02 d0 02 15 00 02 b1 0f 15 00 02 d1 10 15 00 02 b2 11 15 00 02 d2 12 15 00 02 b3 32 15 00 02 d3 33 15 00 02 b4 36 15 00 02 d4 36 15 00 02 b5 3c 15 00 02 d5 3c 15 00 02 b6 20 15 00 02 d6 20 15 00 02 b7 3e 15 00 02 d7 3e 15 00 02 b8 0e 15 00 02 d8 0d 15 00 02 b9 05 15 00 02 d9 05 15 00 02 ba 11 15 00 02 da 12 15 00 02 bb 11 15 00 02 db 11 15 00 02 bc 13 15 00 02 dc 14 15 00 02 bd 14 15 00 02 dd 14 15 00 02 be 16 15 00 02 de 18 15 00 02 bf 0e 15 00 02 df 0f 15 00 02 c0 17 15 00 02 e0 17 15 00 02 c1 07 15 00 02 e1 08 15 00 02 ff 30 15 00 02 ff 52 15 00 02 ff 03 15 00 02 08 8a 15 00 02 09 8b 15 00 02 30 00 15 00 02 31 00 15 00 02 32 00 15 00 02 33 00 15 00 02 34 61 15 00 02 35 d4 15 00 02 36 24 15 00 02 37 03 15 00 02 40 86 15 00 02 41 87 15 00 02 42 84 15 00 02 43 85 15 00 02 44 11 15 00 02 45 de 15 00 02 46 dd 15 00 02 47 11 15 00 02 48 e0 15 00 02 49 df 15 00 02 50 82 15 00 02 51 83 15 00 02 52 80 15 00 02 53 81 15 00 02 54 11 15 00 02 55 e2 15 00 02 56 e1 15 00 02 57 11 15 00 02 58 e4 15 00 02 59 e3 15 00 02 82 0f 15 00 02 83 0f 15 00 02 84 00 15 00 02 85 0f 15 00 02 86 0f 15 00 02 87 0e 15 00 02 88 0e 15 00 02 89 06 15 00 02 8a 06 15 00 02 8b 07 15 00 02 8c 07 15 00 02 8d 04 15 00 02 8e 04 15 00 02 8f 05 15 00 02 90 05 15 00 02 98 0f 15 00 02 99 0f 15 00 02 9a 00 15 00 02 9b 0f 15 00 02 9c 0f 15 00 02 9d 0e 15 00 02 9e 0e 15 00 02 9f 06 15 00 02 a0 06 15 00 02 a1 07 15 00 02 a2 07 15 00 02 a3 04 15 00 02 a4 04 15 00 02 a5 05 15 00 02 a6 05 15 00 02 e0 02 15 00 02 e1 52 15 00 02 ff 30 15 00 02 ff 52 15 00 02 ff 00 15 00 02 36 02 05 c8 01 11 05 64 01 29",
+                resetGpios: "&gpio3 RK_PB7 GPIO_ACTIVE_LOW",
+                enableGpios: "&gpio0 RK_PB5 GPIO_ACTIVE_HIGH",
+                sdio: "false",
+                useExtAmplifier: true,
+                adcKey: "true",
+            },
+            {
+                name: "Other -> GameConsole XGB36",
+                md5: "4cb770d59316b68d4f5314b4b11859a5",
+                panelInitSequence: "39 00 04 b9 f1 12 83 39 00 06 b1 00 00 00 da 80 39 00 04 b2 00 13 70 39 00 0b b3 10 10 28 28 03 ff 00 00 00 00 15 00 02 b4 80 15 00 03 b5 0a 0a 15 00 03 b6 82 82 39 00 05 b8 26 62 f0 63 39 00 1c ba 33 81 05 f9 0e 0e 20 00 00 00 00 00 00 00 44 25 00 90 0a 00 00 01 4f 01 00 00 37 15 00 02 bc 47 39 00 04 bf 02 11 00 39 00 0a c0 73 73 50 50 00 00 12 50 00 39 00 0d c1 53 00 32 32 77 d1 cc cc 77 77 33 33 39 00 07 c6 82 00 bf ff 00 ff 39 00 07 c7 b8 00 0a 00 00 00 39 00 05 c8 10 40 1e 02 15 00 02 cc 0b 39 00 23 e0 00 07 0d 37 35 3f 41 44 06 0c 0d 0f 11 10 12 14 1a 00 07 0d 37 35 3f 41 44 06 0c 0d 0f 11 10 12 14 1a 39 00 0f e3 07 07 0b 0b 0b 0b 00 00 00 00 ff 00 c0 10 39 00 40 e9 c8 10 02 00 00 b0 b1 11 31 23 28 80 b0 b1 27 08 00 04 02 00 00 00 00 04 02 00 00 00 88 88 ba 60 24 08 88 88 88 88 88 88 88 ba 71 35 18 88 88 88 88 88 00 00 00 01 00 00 00 00 00 00 00 00 00 39 00 3e ea 97 0a 82 02 03 07 00 00 00 00 00 00 81 88 ba 17 53 88 88 88 88 88 88 80 88 ba 06 42 88 88 88 88 88 88 23 00 00 02 80 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 39 00 04 ef ff ff 01 05 c8 01 11 05 14 01 29",
+                resetGpios: "&gpio3 RK_PD3 GPIO_ACTIVE_LOW",
+                enableGpios: "&gpio3 RK_PA3 GPIO_ACTIVE_HIGH",
+                sdio: "false",
+                useExtAmplifier: true,
+            },
+            {
+                name: "Other -> GameConsole T16Max",
+                md5: "",
+                panelInitSequence: "05 c8 01 11 05 32 01 29",
+                resetGpios: "&gpio3 RK_PB7 GPIO_ACTIVE_LOW",
+                enableGpios: "&gpio0 RK_PB5 GPIO_ACTIVE_HIGH",
+                sdio: "false",
+                useExtAmplifier: false,
+                adcKey: "true",
+            },
+            {
+                name: "Other -> GameConsole U8",
+                md5: ["dfc91f71485f11fa1d66ad6a456558d6"],
+                panelInitSequence: "39 00 06 ff ff 98 06 04 01 15 00 02 08 10 15 00 02 21 01 15 00 02 22 03 15 00 02 30 02 15 00 02 31 00 15 00 02 60 07 15 00 02 61 00 15 00 02 62 08 15 00 02 63 00 15 00 02 40 15 15 00 02 41 66 15 00 02 42 13 15 00 02 43 08 15 00 02 44 05 15 00 02 50 70 15 00 02 51 70 15 00 02 52 00 15 00 02 53 64 15 00 02 57 50 15 00 02 a0 0b 15 00 02 a1 11 15 00 02 a2 16 15 00 02 a3 0b 15 00 02 a4 03 15 00 02 a5 07 15 00 02 a6 06 15 00 02 a7 04 15 00 02 a8 09 15 00 02 a9 0c 15 00 02 aa 11 15 00 02 ab 07 15 00 02 ac 0d 15 00 02 ad 1a 15 00 02 ae 13 15 00 02 af 08 15 00 02 c0 0b 15 00 02 c1 11 15 00 02 c2 16 15 00 02 c3 0b 15 00 02 c4 03 15 00 02 c5 07 15 00 02 c6 06 15 00 02 c7 04 15 00 02 c8 09 15 00 02 c9 0c 15 00 02 ca 11 15 00 02 cb 07 15 00 02 cc 0d 15 00 02 cd 1a 15 00 02 ce 13 15 00 02 cf 00 39 00 06 ff ff 98 06 04 06 15 00 02 00 21 15 00 02 01 0a 15 00 02 02 00 15 00 02 03 00 15 00 02 04 05 15 00 02 05 05 15 00 02 06 80 15 00 02 07 06 15 00 02 08 01 15 00 02 09 00 15 00 02 0a 00 15 00 02 0b 00 15 00 02 0c 06 15 00 02 0d 06 15 00 02 0e 00 15 00 02 0f 00 15 00 02 10 f0 15 00 02 11 f4 15 00 02 12 03 15 00 02 13 00 15 00 02 14 00 15 00 02 15 c0 15 00 02 16 08 15 00 02 17 00 15 00 02 18 00 15 00 02 19 00 15 00 02 1a 00 15 00 02 1b 00 15 00 02 1c 00 15 00 02 1d 00 15 00 02 20 01 15 00 02 21 23 15 00 02 22 45 15 00 02 23 67 15 00 02 24 01 15 00 02 25 23 15 00 02 26 45 15 00 02 27 67 15 00 02 30 01 15 00 02 31 11 15 00 02 32 00 15 00 02 33 ee 15 00 02 34 ff 15 00 02 35 cb 15 00 02 36 da 15 00 02 37 ad 15 00 02 38 bc 15 00 02 39 76 15 00 02 3a 67 15 00 02 3b 22 15 00 02 3c 22 15 00 02 3d 22 15 00 02 3e 22 15 00 02 3f 22 15 00 02 40 22 15 00 02 52 10 15 00 02 53 10 15 00 02 54 13 39 00 06 ff ff 98 06 04 07 15 00 02 17 22 15 00 02 02 77 15 00 02 e1 79 15 00 02 b3 10 15 00 02 26 b2 39 00 06 ff ff 98 06 04 00 05 78 01 11 05 0a 01 29",
+                resetGpios: "&gpio3 RK_PB7 GPIO_ACTIVE_LOW",
+                enableGpios: "&gpio0 RK_PB5 GPIO_ACTIVE_HIGH",
+                sdio: "false",
+                useExtAmplifier: true,
+                adcKey: "true",
+            },
+            {
+                name: "Other -> GameConsole U8 V2",
+                md5: ["dfc91f71485f11fa1d66ad6a456558d6"],
+                panelInitSequence: "39 00 06 ff ff 98 06 04 01 15 00 02 08 10 15 00 02 21 01 15 00 02 22 03 15 00 02 30 02 15 00 02 31 02 15 00 02 60 07 15 00 02 61 06 15 00 02 62 06 15 00 02 63 04 15 00 02 40 15 15 00 02 41 33 15 00 02 42 00 15 00 02 43 0b 15 00 02 44 09 15 00 02 50 70 15 00 02 51 70 15 00 02 52 00 15 00 02 53 52 15 00 02 a0 00 15 00 02 a1 0c 15 00 02 a2 14 15 00 02 a3 0c 15 00 02 a4 05 15 00 02 a5 0b 15 00 02 a6 07 15 00 02 a7 06 15 00 02 a8 06 15 00 02 a9 0a 15 00 02 aa 0f 15 00 02 ab 06 15 00 02 ac 0c 15 00 02 ad 17 15 00 02 ae 0d 15 00 02 af 00 15 00 02 c0 00 15 00 02 c1 0c 15 00 02 c2 14 15 00 02 c3 0c 15 00 02 c4 06 15 00 02 c5 0b 15 00 02 c6 07 15 00 02 c7 06 15 00 02 c8 06 15 00 02 c9 0a 15 00 02 ca 0f 15 00 02 cb 06 15 00 02 cc 0c 15 00 02 cd 17 15 00 02 ce 0d 15 00 02 cf 00 39 00 06 ff ff 98 06 04 06 15 00 02 00 20 15 00 02 01 05 15 00 02 02 00 15 00 02 03 00 15 00 02 04 01 15 00 02 05 01 15 00 02 06 88 15 00 02 07 04 15 00 02 08 01 15 00 02 09 90 15 00 02 0a 04 15 00 02 0b 01 15 00 02 0c 01 15 00 02 0d 01 15 00 02 0e 00 15 00 02 0f 00 15 00 02 10 55 15 00 02 11 50 15 00 02 12 01 15 00 02 13 0c 15 00 02 14 0d 15 00 02 15 43 15 00 02 16 0b 15 00 02 17 00 15 00 02 18 00 15 00 02 19 00 15 00 02 1a 00 15 00 02 1b 00 15 00 02 1c 00 15 00 02 1d 00 15 00 02 20 01 15 00 02 21 23 15 00 02 22 45 15 00 02 23 67 15 00 02 24 01 15 00 02 25 23 15 00 02 26 45 15 00 02 27 67 15 00 02 30 02 15 00 02 31 22 15 00 02 32 11 15 00 02 33 aa 15 00 02 34 bb 15 00 02 35 66 15 00 02 36 00 15 00 02 37 22 15 00 02 38 22 15 00 02 39 22 15 00 02 3a 22 15 00 02 3b 22 15 00 02 3c 22 15 00 02 3d 22 15 00 02 3e 22 15 00 02 3f 22 15 00 02 40 22 15 00 02 52 10 15 00 02 53 10 39 00 06 ff ff 98 06 04 07 15 00 02 00 11 15 00 02 18 1d 15 00 02 17 22 15 00 02 02 77 15 00 02 e1 79 39 00 06 ff ff 98 06 04 00 05 78 01 11 05 14 01 29",
+                resetGpios: "&gpio3 RK_PB7 GPIO_ACTIVE_LOW",
+                enableGpios: "&gpio0 RK_PB5 GPIO_ACTIVE_HIGH",
+                sdio: "false",
+                useExtAmplifier: true,
+                adcKey: "true",
+            },         
         ];
 
         // ArkOSK36 数据库 (新增)
@@ -1580,6 +1832,103 @@
 
             align4(offset) { return (offset + 3) & ~3; }
         }
+        // ==================== Ko-fi 捐赠展示 ====================
+        let donorDataCache = null;   // 缓存一次请求结果，切换语言时复用
+
+        function renderDonors() {
+            const listEl = document.getElementById('donorList');
+            const titleEl = document.getElementById('donorTitle');
+            const btnEl = document.getElementById('donateButton');
+
+            if (!listEl || !titleEl || !btnEl) {
+                // 页面上没有这几个节点，直接跳过
+                return;
+            }
+
+            // 设置标题和按钮文案
+            titleEl.textContent = translations[currentLanguage].donor_title;
+            btnEl.textContent = translations[currentLanguage].donor_button;
+
+            // 绑定按钮跳转 Ko-fi
+            if (!btnEl._kofi_bound) {
+                btnEl.addEventListener('click', () => {
+                    window.open('https://ko-fi.com/lcdyk', '_blank', 'noopener');
+                });
+                btnEl._kofi_bound = true;
+            }
+
+            // 没有数据
+            if (!donorDataCache || donorDataCache.length === 0) {
+                listEl.innerHTML = `<div class="donor-empty">${translations[currentLanguage].donor_empty}</div>`;
+                return;
+            }
+
+            // 渲染列表
+            const t = translations[currentLanguage];
+            listEl.innerHTML = donorDataCache.map(d => {
+                const safeName = d.name || 'Anonymous';
+                const safeNote = currentLanguage === 'zh'
+                    ? (d.note_zh || d.note_en || '')
+                    : (d.note_en || d.note_zh || '');
+                const safeDate = d.date_approx_date || d.date || '';
+
+                return `
+        <div class="donor-item">
+            <div class="donor-header">
+                <span class="donor-name">${safeName}</span>
+                <span class="donor-date-label">${t.donor_date_label}:</span>
+                <span class="donor-date">${safeDate}</span>
+            </div>
+            ${safeNote
+                        ? `<div class="donor-note">
+                        <span class="donor-note-label">${t.donor_note_label}:</span>
+                        <span class="donor-note-text">${safeNote}</span>
+                   </div>`
+                        : ''
+                    }
+        </div>`;
+            }).join('');
+        }
+
+        async function loadDonors() {
+            try {
+                const resp = await fetch('https://ko-fi.lcdyk.workers.dev/kofi', { cache: 'no-store' });
+                if (!resp.ok) {
+                    console.error('Ko-fi API error:', resp.status);
+                    donorDataCache = [];
+                    renderDonors();
+                    return;
+                }
+                const data = await resp.json();
+                let donors = Array.isArray(data.donors) ? data.donors : [];
+
+                // ========= 排序规则 =========
+                // 1. 先按 date_approx_date 从新到旧排序
+                // 2. 如果 date_approx_date 相同，则按接口原始顺序（index）——时间相同取上面的
+                donors = donors
+                    .map((d, idx) => ({ ...d, _idx: idx }))
+                    .sort((a, b) => {
+                        const da = a.date_approx_date || '';
+                        const db = b.date_approx_date || '';
+                        if (da === db) {
+                            // 同一天，保留原始前后顺序
+                            return a._idx - b._idx;
+                        }
+                        // 字符串格式 YYYY-MM-DD，直接比较即可，新的在前
+                        return db.localeCompare(da);
+                    });
+
+                // 只保留前 5 个
+                donors = donors.slice(0, 5);
+
+                donorDataCache = donors;
+                renderDonors();
+            } catch (e) {
+                console.error('Ko-fi API exception:', e);
+                donorDataCache = [];
+                renderDonors();
+            }
+        }
 
         // ==================== 页面初始化 / 事件绑定 ====================
         document.addEventListener('DOMContentLoaded', function () {
@@ -1593,7 +1942,8 @@
             const systemBtns = document.querySelectorAll('.system-btn');
             const langBtns = document.querySelectorAll('.lang-btn');
             const debugToggle = document.getElementById('debugToggle');
-            // 加载Umami统计
+
+            // 加载 Umami 统计（你原来的逻辑）
             const umamiScript = document.createElement('script');
             umamiScript.defer = true;
             umamiScript.src = 'https://cloud.umami.is/script.js';
@@ -1603,7 +1953,7 @@
             const identifier = new DTBIdentifier();
             let currentFile = null;
 
-            // 语言切换（修复作用域）
+            // 语言切换
             function switchLanguage(lang) {
                 currentLanguage = lang;
                 document.querySelectorAll('[data-i18n]').forEach(el => {
@@ -1613,8 +1963,16 @@
                 document.querySelectorAll('.lang-btn').forEach(btn => {
                     btn.classList.toggle('active', btn.dataset.lang === lang);
                 });
-                if (currentFile) { processBtn.click(); }
+
+                // 重新渲染捐赠区域（使用缓存数据）
+                renderDonors();
+
+                // 如果已有文件，自动重新跑一遍识别，保证提示文本语言一致
+                if (currentFile) {
+                    processBtn.click();
+                }
             }
+
             langBtns.forEach(btn => {
                 btn.addEventListener('click', () => switchLanguage(btn.dataset.lang));
             });
@@ -1625,21 +1983,27 @@
                     systemBtns.forEach(b => b.classList.remove('active'));
                     this.classList.add('active');
                     identifier.setSystem(this.dataset.system);
-                    if (currentFile) { processBtn.click(); }
+                    if (currentFile) {
+                        processBtn.click();
+                    }
                 });
             });
 
             // Debug 开关
             debugToggle.addEventListener('change', function () {
                 identifier.isDebug = this.checked;
-                if (currentFile) { processBtn.click(); }
+                if (currentFile) {
+                    processBtn.click();
+                }
             });
 
-            // 文件选择/拖拽
+            // 文件选择
             fileInput.addEventListener('change', e => {
                 if (e.target.files.length > 0) {
                     currentFile = e.target.files[0];
-                    const text = currentLanguage === 'zh' ? `✅ 已选择: ${currentFile.name} (${(currentFile.size / 1024).toFixed(1)} KB)` : `✅ Selected: ${currentFile.name} (${(currentFile.size / 1024).toFixed(1)} KB)`;
+                    const text = currentLanguage === 'zh'
+                        ? `✅ 已选择: ${currentFile.name} (${(currentFile.size / 1024).toFixed(1)} KB)`
+                        : `✅ Selected: ${currentFile.name} (${(currentFile.size / 1024).toFixed(1)} KB)`;
                     selectedFile.textContent = text;
                     selectedFile.style.display = 'block';
                     processBtn.disabled = false;
@@ -1647,6 +2011,7 @@
                 }
             });
 
+            // 拖拽上传
             ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(evt => {
                 uploadArea.addEventListener(evt, preventDefaults, false);
             });
@@ -1660,8 +2025,11 @@
             uploadArea.addEventListener('drop', e => {
                 const files = e.dataTransfer.files;
                 if (files.length > 0 && (files[0].name.endsWith('.dtb') || files[0].name.endsWith('.dtbo'))) {
-                    fileInput.files = files; currentFile = files[0];
-                    const text = currentLanguage === 'zh' ? `✅ 已选择: ${currentFile.name} (${(currentFile.size / 1024).toFixed(1)} KB)` : `✅ Selected: ${currentFile.name} (${(currentFile.size / 1024).toFixed(1)} KB)`;
+                    fileInput.files = files;
+                    currentFile = files[0];
+                    const text = currentLanguage === 'zh'
+                        ? `✅ 已选择: ${currentFile.name} (${(currentFile.size / 1024).toFixed(1)} KB)`
+                        : `✅ Selected: ${currentFile.name} (${(currentFile.size / 1024).toFixed(1)} KB)`;
                     selectedFile.textContent = text;
                     selectedFile.style.display = 'block';
                     processBtn.disabled = false;
@@ -1669,21 +2037,25 @@
                 }
             });
 
-            // 识别
+            // 识别按钮
             processBtn.addEventListener('click', async function () {
                 if (!currentFile) return;
                 loading.style.display = 'flex';
-                resultArea.innerHTML = currentLanguage === 'zh' ? '<span class="comment">// 正在识别DTB文件...</span>' : '<span class="comment">// Identifying DTB file...</span>';
-                processBtn.disabled = true; hideError();
+                resultArea.innerHTML = currentLanguage === 'zh'
+                    ? '<span class="comment">// 正在识别DTB文件...</span>'
+                    : '<span class="comment">// Identifying DTB file...</span>';
+                processBtn.disabled = true;
+                hideError();
 
                 try {
                     const buf = await currentFile.arrayBuffer();
-                    // 一次性计算 MD5（同步）
                     const md5 = MD5.md5(buf);
                     const result = await identifier.identifyDtb(buf, md5);
                     resultArea.innerHTML = result;
                 } catch (err) {
-                    const msg = currentLanguage === 'zh' ? `识别错误: ${err.message}` : `Identification Error: ${err.message}`;
+                    const msg = currentLanguage === 'zh'
+                        ? `识别错误: ${err.message}`
+                        : `Identification Error: ${err.message}`;
                     showError(msg);
                     resultArea.innerHTML = `<span style="color:#e74c3c">${msg}</span>`;
                 } finally {
@@ -1692,8 +2064,17 @@
                 }
             });
 
-            function showError(m) { errorMessage.textContent = m; errorMessage.style.display = 'block'; }
-            function hideError() { errorMessage.style.display = 'none'; }
+            function showError(m) {
+                errorMessage.textContent = m;
+                errorMessage.style.display = 'block';
+            }
+            function hideError() {
+                errorMessage.style.display = 'none';
+            }
+
+            // ====== 初始化：默认中文 + 拉一次 Ko-fi 数据 ======
+            switchLanguage(currentLanguage);   // 触发一次，刷新多语言文本
+            loadDonors();                      // 从 worker 拉捐赠信息
         });
     </script>
 </body>
