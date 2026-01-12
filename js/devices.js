@@ -258,9 +258,16 @@ const devicesData = {
             path: '../images/Y3506_V03_20241210/front.jpg'
         }
         ],
-        systemInfos: ['Arkos4Clone', 'ArkOS R3XS'],
+        systemInfos: ['Rocknix MOD', 'Arkos4Clone', 'ArkOS R3XS',],
         dtbNames: ['y3506_v03_20241210'],
         systemDetails: {
+            'Rocknix MOD': {
+                status: '完全支持',
+                description: 'Rocknix KK魔改版完美支持',
+                tutorial: 'Rocknix KK魔改版建使用教程：\n1. 下载Rocknix 3326系统镜像\n2. 使用烧录工具写入TF卡\n3. 打开rocknix分区运行dtb_selector.exe选择R36S酱油->R36S酱油 V03\n4. 插入设备并启动',
+                notes: ['20260112版本往后开始支持'],
+                pageLink: '../pages/downloads.html'
+            },
             'Arkos4Clone': {
                 status: '完全支持',
                 description: 'Arkos4Clone基于该设备开发',
@@ -306,9 +313,16 @@ const devicesData = {
             path: '../images/Y3506_V04_20250529/front.jpg'
         }
         ],
-        systemInfos: ['Arkos4Clone', 'ArkOS R3XS'],
+        systemInfos: ['Rocknix MOD', 'Arkos4Clone', 'ArkOS R3XS',],
         dtbNames: ['y3506_v04_20250529'],
         systemDetails: {
+            'Rocknix MOD': {
+                status: '完全支持',
+                description: 'Rocknix KK魔改版完美支持',
+                tutorial: 'Rocknix KK魔改版建使用教程：\n1. 下载Rocknix 3326系统镜像\n2. 使用烧录工具写入TF卡\n3. 打开rocknix分区运行dtb_selector.exe选择R36S酱油->R36S酱油 V04\n4. 插入设备并启动',
+                notes: ['20260112版本往后开始支持'],
+                pageLink: '../pages/downloads.html'
+            },
             'Arkos4Clone': {
                 status: '完全支持',
                 description: 'Arkos4Clone基于该设备开发',
