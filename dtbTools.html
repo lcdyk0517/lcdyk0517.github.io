@@ -1238,7 +1238,15 @@
             const useExtAmplifier = typeof item.useExtAmplifier === 'string' ? (item.useExtAmplifier.toLowerCase() === 'true') : !!item.useExtAmplifier;
             // 关键：把 "false"/"true" 字符串严格转换为布尔
             const adcKey = typeof item.adcKey === 'string' ? (item.adcKey.toLowerCase() === 'true') : !!item.adcKey;
-            return { ...item, md5, sdio, useExtAmplifier, adcKey };
+            // 可选：design_capacity（仅显示，不参与匹配）
+            const dcRaw = (item.design_capacity ?? item.designCapacity ?? null);
+            const design_capacity =
+                (dcRaw === null || dcRaw === undefined || dcRaw === '')
+                    ? null
+                    : (typeof dcRaw === 'string'
+                        ? parseInt(dcRaw, 10)
+                        : Number(dcRaw));
+            return { ...item, md5, sdio, useExtAmplifier, adcKey, design_capacity };
         }
         const ARKOS4CLONE_DB = ARKOS4CLONE_DATABASE.map(normalizeDbItem);
         const ARKOSK36_DB = ARKOSK36_DATABASE.map(normalizeDbItem);
@@ -1308,12 +1316,23 @@
                 // === 提取关键信息 ===
                 const panelInfo = this.extractPanelInfo(arrayBuffer);
                 const codecInfo = this.extractCodecInfo(arrayBuffer);
+                const designCapacity = this.detectDesignCapacity(view);
 
                 // 新增：adc-keys 状态（仅看 adc-keys 节点自身的 status）
                 let adcKeysEnabled = null;
                 if (this.currentSystem === 'arkos4clone') {
                     adcKeysEnabled = this.detectAdcKeysFlag(view);
                 }
+
+                // 头部补充显示 design_capacity（不参与匹配，仅供参考）
+                // const capLabel = (currentLanguage === 'zh')
+                // ? '你的dtb中电池容量为'
+                // : 'Battery design_capacity in your DTB is';
+
+                // result.push(
+                // `<span class="property">${capLabel}</span>: ` +
+                // `<span class="value">${(designCapacity !== null && designCapacity !== undefined) ? designCapacity : 'NA'}</span>`
+                // );
                 // 调试输出
                 if (this.isDebug) {
                     result.push(`<span class="comment">${translations[currentLanguage].panelInfo}</span>`);
@@ -1397,10 +1416,26 @@
                 }
 
                 if (screenMatches.length > 0) {
+                    const capLine = (designCapacity !== null && designCapacity !== undefined)
+                        ? `<div class="comment" style="margin-top:6px;">🔋 ${currentLanguage === 'zh' ? '你的dtb中电池容量为' : 'Battery capacity in your DTB'}: <span class="value">${designCapacity}</span></div>`
+                        : '';
+
+                    const title = (currentLanguage === 'zh')
+                        ? '屏幕参数一致，但 MD5 不同'
+                        : 'Screen detected as identical but MD5 differs';
+
+                    const desc = (currentLanguage === 'zh')
+                        ? '可用于测试，但不能保证完全兼容：'
+                        : 'Can be used for testing but full compatibility is not guaranteed:';
+
                     result.push(
-                        `<div class="match-warning">⚠️ <span class="property">${translations[currentLanguage].screenMatch}</span><br>` +
-                        `${translations[currentLanguage].screenMatchDesc}<br>${translations[currentLanguage].screenMatchAdvice}` +
-                        screenMatches.map(n => `<br>• ${n}`).join('') +
+                        `<div class="match-warning">` +
+                        `⚠️ <span class="property">${title}</span><br>` +
+                        `<span class="comment">${desc}</span>` +
+                        capLine +
+                        `<div style="margin-top:8px;">` +
+                        screenMatches.map(n => `<div>• <span class="value">${n.replace(/\s*->\s*/g, ' <span class="comment">→</span> ')}</span></div>`).join('') +
+                        `</div>` +
                         `</div>`
                     );
                 } else {
@@ -1678,6 +1713,36 @@
                 const sdioSupport = !!props.supportsSdio; // 仅看属性是否存在
                 return { sdioSupport, hostPath };
             }
+            // 新增：读取 DT 中 battery 节点的 design_capacity（u32, 十进制返回）
+            detectDesignCapacity(view) {
+                try {
+                    if (view.getUint32(0, false) !== 0xd00dfeed) return null;
+                    const off_dt_strings = view.getUint32(12, false);
+
+                    // 优先按节点名 battery 命中（兼容不同路径）
+                    for (const [path, begin] of this.pathToBegin.entries()) {
+                        const name = this.getNodeNameFromPath(path);
+                        if (name !== 'battery') continue;
+                        const props = this.findPropertiesInNode(view, begin, off_dt_strings);
+                        if (props.design_capacity !== null && props.design_capacity !== undefined) {
+                            return props.design_capacity;
+                        }
+                    }
+
+                    // 兜底：如果没找到 battery 节点，则全局扫一遍（最小侵入）
+                    for (let off = 0; off < view.byteLength - 100; off++) {
+                        const token = view.getUint32(off, false);
+                        if (token !== 0x1) continue; // BEGIN_NODE
+                        const name = this.readString(view, off + 4);
+                        if (!name || name !== 'battery') continue;
+                        const props = this.findPropertiesInNode(view, off, off_dt_strings);
+                        if (props.design_capacity !== null && props.design_capacity !== undefined) {
+                            return props.design_capacity;
+                        }
+                    }
+                } catch (e) { }
+                return null;
+            }
 
             // 仅检查 adc-keys 自身的 status
             detectAdcKeysFlag(view) {
@@ -1732,7 +1797,8 @@
                 let initSequence = null, resetGpios = null, enableGpios = null, powerSupply = null, gpio = null;
                 let supportsSdio = false, useExtAmplifier = false;
                 let compatibleList = null;
-                let statusStr = null; // ← 新增
+                let statusStr = null;
+                let design_capacity = null;
 
                 // 进入属性区（紧跟在 begin-node 名字之后）
                 let off = nodeOffset + 4;
@@ -1760,6 +1826,10 @@
                         const data = new Uint8Array(view.buffer, off + 12, len); powerSupply = this.parseGpioData(data);
                     } else if (propName === 'gpio') {
                         const data = new Uint8Array(view.buffer, off + 12, len); gpio = this.parseGpioData(data);
+                    } else if (propName === 'design_capacity') {
+                        if (len >= 4) {
+                            design_capacity = view.getUint32(off + 12, false);
+                        } 
                     } else if (propName === 'supports-sdio') {
                         supportsSdio = true;
                     } else if (propName === 'use-ext-amplifier') {
@@ -1780,7 +1850,8 @@
                 return {
                     init: initSequence, resetGpios, enableGpios, powerSupply, gpio,
                     supportsSdio, useExtAmplifier, compatible: compatibleList,
-                    status: statusStr // ← 新增
+                    status: statusStr,
+                    design_capacity
                 };
             }
             parseGpioData(data) {
