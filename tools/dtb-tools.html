@@ -1,0 +1,1010 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>DTB → DTS (Controlled Edits) → Download DTS (Lock) → Upload Verify → Compile DTB</title>
+  <style>
+    body{font-family:monospace;background:#111;color:#eee;margin:16px}
+    button,input,label,select{margin:4px;padding:6px 10px}
+    .row{margin:10px 0}
+    .box{padding:10px;border:1px solid #333;border-radius:12px;background:#151515;margin:10px 0}
+    .badge{display:inline-block;border:1px solid #555;border-radius:999px;padding:2px 8px;margin-left:6px}
+    .ok{color:#9cff9c} .warn{color:#ffb84d}
+    .hint{color:#aaa;font-size:12px;line-height:1.4;margin-top:6px}
+    a.download{display:inline-block;margin-top:8px;padding:8px 12px;border:1px solid #666;border-radius:10px;color:#eee;background:#222;text-decoration:none}
+    .grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+    .grid > div{border:1px solid #2b2b2b;border-radius:10px;padding:10px;background:#141414}
+    .k{opacity:.9}
+    input[type="number"]{width:180px}
+    .amuxline{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+    .amuxline input[type="number"]{width:70px}
+    .topbar{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+    .spacer{flex:1}
+  </style>
+</head>
+<body>
+
+<div class="topbar">
+  <h3 id="title" style="margin:0">DTB → DTS (Controlled Edits) → Download (Lock) → Upload Verify → Compile DTB</h3>
+  <div class="spacer"></div>
+  <label class="k" for="langSel" id="lblLang">Language</label>
+  <select id="langSel">
+    <option value="en" selected>English</option>
+    <option value="zh">中文</option>
+  </select>
+</div>
+
+<div class="row">
+  <button id="btnLoad">Load dtc</button>
+  <span class="badge" id="stTool">dtc: Not loaded</span>
+  <span class="badge" id="st1">1 Upload DTB: Pending</span>
+  <span class="badge" id="st2">2 Decompile+Edit: Pending</span>
+  <span class="badge" id="st3">3 Download DTS: Pending</span>
+  <span class="badge" id="st4">4 Upload Verify: Pending</span>
+  <span class="badge" id="st5">5 Compile DTB: Pending</span>
+</div>
+
+<div class="box">
+  <b id="s1">Step 1:</b> <span id="s1t">Upload DTB</span>
+  <div class="row">
+    <input type="file" id="fileDtb" accept=".dtb,.dtbo" />
+    <span class="badge" id="bDtb">DTB: -</span>
+    <span class="badge" id="bDtbHash">DTB SHA-256: -</span>
+  </div>
+</div>
+
+<div class="box">
+  <b id="s2">Step 2:</b> <span id="s2t">Decompile DTB → DTS, then apply controlled edits</span>
+  <div class="row">
+    <button id="btnDecompile" disabled>Decompile (DTB → DTS)</button>
+    <span class="badge" id="bDtsSrc">DTS: Not generated</span>
+  </div>
+
+  <div class="grid">
+    <div>
+      <div class="k" id="joyTitle">A) odroidgo3-joypad invert options (auto-detected; user editable)</div>
+      <div class="hint" id="joyHint">
+        Target: inside <span class="k">odroidgo3-joypad</span> node, usually near <span class="k">poll-interval</span>.<br>
+        Checkboxes map to: <span class="k">invert-absx;</span> / <span class="k">invert-absy;</span> /
+        <span class="k">invert-absrx;</span> / <span class="k">invert-absry;</span>
+      </div>
+      <div class="row">
+        <label><input type="checkbox" id="inv_absx" disabled> invert-absx</label><br>
+        <label><input type="checkbox" id="inv_absy" disabled> invert-absy</label><br>
+        <label><input type="checkbox" id="inv_absrx" disabled> invert-absrx</label><br>
+        <label><input type="checkbox" id="inv_absry" disabled> invert-absry</label>
+      </div>
+      <div class="hint" id="hJoy"></div>
+    </div>
+
+    <div>
+      <div class="k" id="batTitle">B) Battery design capacity (edit decimal; written back as hex in DTS)</div>
+      <div class="row">
+        <div><span class="k">design_capacity</span>:
+          <input type="number" id="cap_dec" min="0" step="1" disabled>
+          <span class="badge" id="cap_hex">hex: -</span>
+        </div>
+        <div><span class="k">design_qmax</span>:
+          <input type="number" id="qmax_dec" min="0" step="1" disabled>
+          <span class="badge" id="qmax_hex">hex: -</span>
+        </div>
+      </div>
+      <div class="hint" id="hBat"></div>
+    </div>
+
+    <div>
+      <div class="k" id="amuxTitle">C) amux-channel-mapping (decimal UI; must be a 0/1/2/3 permutation)</div>
+      <div class="hint" id="amuxHint">
+        Parse: <span class="k">amux-channel-mapping = &lt;0x02 0x03 0x01 0x00&gt;;</span><br>
+        UI shows 4 decimal numbers; write-back uses decimal: <span class="k">&lt;2 3 1 0&gt;</span>.
+      </div>
+      <div class="row amuxline">
+        <span class="k">amux-channel-mapping = &lt;</span>
+        <input type="number" id="amux0" min="0" max="3" step="1" disabled>
+        <input type="number" id="amux1" min="0" max="3" step="1" disabled>
+        <input type="number" id="amux2" min="0" max="3" step="1" disabled>
+        <input type="number" id="amux3" min="0" max="3" step="1" disabled>
+        <span class="k">&gt;;</span>
+        <span class="badge" id="amuxBadge">amux: -</span>
+      </div>
+      <div class="hint" id="hAmux"></div>
+    </div>
+  </div>
+
+  <div class="hint" id="h2"></div>
+</div>
+
+<div class="box">
+  <b id="s3">Step 3:</b> <span id="s3t">Generate modified DTS download and record verification token</span>
+  <div class="row">
+    <button id="btnMakeDts" disabled>Generate modified DTS (Download + Lock)</button>
+    <span class="badge" id="bDtsHash">DTS SHA-256: -</span>
+  </div>
+  <div id="dlDts"></div>
+  <div class="hint" id="h3"></div>
+</div>
+
+<div class="box">
+  <b id="s4">Step 4:</b> <span id="s4t">Upload the DTS you just downloaded (must match)</span>
+  <div class="row">
+    <input type="file" id="fileDts" accept=".dts,.txt" disabled />
+    <span class="badge" id="bUpHash">Upload DTS SHA-256: -</span>
+    <span class="badge" id="bCheck">Verify: -</span>
+  </div>
+  <div class="hint" id="h4"></div>
+</div>
+
+<div class="box">
+  <b id="s5">Step 5:</b> <span id="s5t">Compile (verified DTS → DTB) and provide download</span>
+  <div class="row">
+    <button id="btnCompile" disabled>Compile DTB (Download)</button>
+    <button id="btnReset">Reset</button>
+  </div>
+  <div id="dlDtb"></div>
+  <div class="hint" id="h5"></div>
+</div>
+
+<script type="module">
+import createDtcModule from "./dtc.js";
+
+const $ = (id)=>document.getElementById(id);
+
+/* =========================
+   i18n (default EN)
+========================= */
+const I18N = {
+  en: {
+    title: "DTB → DTS (Controlled Edits) → Download (Lock) → Upload Verify → Compile DTB",
+    lang: "Language",
+    load: "Load dtc",
+    dtcLoaded: "dtc: Loaded",
+    dtcNotLoaded: "dtc: Not loaded",
+    st1: "1 Upload DTB: ",
+    st2: "2 Decompile+Edit: ",
+    st3: "3 Download DTS: ",
+    st4: "4 Upload Verify: ",
+    st5: "5 Compile DTB: ",
+    done: "Done",
+    pending: "Pending",
+
+    step1: "Step 1:",
+    step1t: "Upload DTB",
+    dtbSel: "DTB: Selected",
+    dtbDash: "DTB: -",
+    dtbHash: "DTB SHA-256: ",
+
+    step2: "Step 2:",
+    step2t: "Decompile DTB → DTS, then apply controlled edits",
+    decompile: "Decompile (DTB → DTS)",
+    dtsGen: "DTS: Generated",
+    dtsFail: "DTS: Failed",
+    dtsNot: "DTS: Not generated",
+    s2ok: "✅ Decompile done: options loaded.",
+    s2fail: "❌ Decompile failed: out.dts not generated.",
+
+    joyTitle: "A) odroidgo3-joypad invert options (auto-detected; user editable)",
+    joyFound: "✅ Found odroidgo3-joypad node",
+    joyNotFound: "⚠️ odroidgo3-joypad node not found (invert edits disabled)",
+
+    batTitle: "B) Battery design capacity (edit decimal; written back as hex in DTS)",
+    batFound: "✅ Found battery node",
+    batNotFound: "⚠️ battery/rk817-battery node not found (battery edits disabled)",
+
+    amuxTitle: "C) amux-channel-mapping (decimal UI; must be a 0/1/2/3 permutation)",
+    amuxOK: "✅ Valid permutation: ",
+    amuxBad: "❌ Invalid: must be 0/1/2/3 all unique (permutation only).",
+    amuxMissing: "⚠️ amux-channel-mapping not found (won't modify).",
+
+    step3: "Step 3:",
+    step3t: "Generate modified DTS download and record verification token",
+    makeDts: "Generate modified DTS (Download + Lock)",
+    dtsHash: "DTS SHA-256: ",
+    s3ok: "✅ Step 3 done: DTS generated and locked. Upload it in Step 4 (must match).",
+
+    step4: "Step 4:",
+    step4t: "Upload the DTS you just downloaded (must match)",
+    upHash: "Upload DTS SHA-256: ",
+    verify: "Verify: ",
+    verifyOK: "Match ✅",
+    verifyBad: "Mismatch",
+    s4need3: "⚠️ Please finish Step 3 first.",
+    s4ok: "✅ Step 4 done: matches, you can compile in Step 5.",
+    s4bad: "❌ Mismatch: uploaded file is not the one generated in Step 3 (wrong file / edited file).",
+
+    step5: "Step 5:",
+    step5t: "Compile (verified DTS → DTB) and provide download",
+    compile: "Compile DTB (Download)",
+    reset: "Reset",
+    s5ok: "✅ Step 5 done: DTB download is ready.",
+    s5syntax: "❌ DTS syntax error: ",
+    s5weird: "⚠️ dtc returned 0, but no out.dtb and cannot extract from stdout.",
+    s5fail: "❌ Compile failed and no stderr captured.",
+    dl: "⬇️ Download ",
+  },
+  zh: {
+    title: "DTB → DTS（受控修改）→ 下载（锁定）→ 上传校验 → 编译 DTB",
+    lang: "语言",
+    load: "加载 dtc",
+    dtcLoaded: "dtc: 已加载",
+    dtcNotLoaded: "dtc: 未加载",
+    st1: "1 上传DTB: ",
+    st2: "2 反编译+修改: ",
+    st3: "3 下载DTS: ",
+    st4: "4 上传校验: ",
+    st5: "5 编译DTB: ",
+    done: "已完成",
+    pending: "未完成",
+
+    step1: "Step 1:",
+    step1t: "上传 DTB",
+    dtbSel: "DTB: 已选择",
+    dtbDash: "DTB: -",
+    dtbHash: "DTB SHA-256: ",
+
+    step2: "Step 2:",
+    step2t: "反编译 DTB → DTS，并提供受控修改选项",
+    decompile: "反编译（DTB → DTS）",
+    dtsGen: "DTS: 已生成",
+    dtsFail: "DTS: 失败",
+    dtsNot: "DTS: 未生成",
+    s2ok: "✅ 反编译完成：已加载选项。",
+    s2fail: "❌ 反编译失败：未生成 out.dts。",
+
+    joyTitle: "A) odroidgo3-joypad invert 选项（自动检测；可改）",
+    joyFound: "✅ 找到 odroidgo3-joypad 节点",
+    joyNotFound: "⚠️ 未找到 odroidgo3-joypad 节点（不会修改 invert）",
+
+    batTitle: "B) battery 设计容量（10进制可改，写回 DTS 用 0x 十六进制）",
+    batFound: "✅ 找到 battery 节点",
+    batNotFound: "⚠️ 未找到 battery/rk817-battery 节点（不会修改容量）",
+
+    amuxTitle: "C) amux-channel-mapping（十进制UI；必须是 0/1/2/3 的排列且不重复）",
+    amuxOK: "✅ 有效排列：",
+    amuxBad: "❌ 不合法：必须是 0/1/2/3 四个数字且不重复（只能换顺序）。",
+    amuxMissing: "⚠️ 未找到 amux-channel-mapping（不会修改）。",
+
+    step3: "Step 3:",
+    step3t: "生成修改后的 DTS 下载，并记录校验令牌",
+    makeDts: "生成修改后 DTS（下载 + 锁定）",
+    dtsHash: "DTS SHA-256: ",
+    s3ok: "✅ Step3 完成：已生成并锁定 DTS。请在 Step4 上传同一个文件（必须一致）。",
+
+    step4: "Step 4:",
+    step4t: "上传你刚下载的 DTS（必须一致）",
+    upHash: "上传DTS SHA-256: ",
+    verify: "校验: ",
+    verifyOK: "一致 ✅",
+    verifyBad: "不一致",
+    s4need3: "⚠️ 请先完成 Step3。",
+    s4ok: "✅ Step4 完成：一致，可以进入 Step5 编译。",
+    s4bad: "❌ 不一致：你上传的文件不是 Step3 生成的那个（选错/被修改）。",
+
+    step5: "Step 5:",
+    step5t: "编译（通过校验的 DTS → DTB）并提供下载",
+    compile: "编译 DTB（下载）",
+    reset: "重置",
+    s5ok: "✅ Step5 完成：DTB 下载已生成。",
+    s5syntax: "❌ DTS 语法错误：",
+    s5weird: "⚠️ dtc 返回 0，但没有 out.dtb，也无法从 stdout 提取 DTB。",
+    s5fail: "❌ 编译失败，且没有捕获到 stderr 输出。",
+    dl: "⬇️ 点击下载 ",
+  }
+};
+
+let lang = "en";
+const t = (k)=> (I18N[lang] && I18N[lang][k]) ? I18N[lang][k] : (I18N.en[k] || k);
+
+function applyI18n(){
+  $("title").textContent = t("title");
+  document.title = t("title");
+  $("lblLang").textContent = t("lang");
+  $("btnLoad").textContent = t("load");
+
+  $("s1").textContent = t("step1");
+  $("s1t").textContent = t("step1t");
+  $("s2").textContent = t("step2");
+  $("s2t").textContent = t("step2t");
+  $("btnDecompile").textContent = t("decompile");
+  $("s3").textContent = t("step3");
+  $("s3t").textContent = t("step3t");
+  $("btnMakeDts").textContent = t("makeDts");
+  $("s4").textContent = t("step4");
+  $("s4t").textContent = t("step4t");
+  $("s5").textContent = t("step5");
+  $("s5t").textContent = t("step5t");
+  $("btnCompile").textContent = t("compile");
+  $("btnReset").textContent = t("reset");
+
+  $("joyTitle").textContent = t("joyTitle");
+  $("batTitle").textContent = t("batTitle");
+  $("amuxTitle").textContent = t("amuxTitle");
+
+  // Refresh status texts without changing state
+  setStatus();
+  // Refresh verify labels
+  $("bDtbHash").textContent = (dtbHash ? t("dtbHash")+dtbHash : "DTB SHA-256: -");
+  $("bDtsHash").textContent = (dtsOutHash ? t("dtsHash")+dtsOutHash : "DTS SHA-256: -");
+  $("bUpHash").textContent = (dtsUpHash ? t("upHash")+dtsUpHash : "Upload DTS SHA-256: -");
+}
+
+$("langSel").onchange = ()=>{
+  lang = $("langSel").value || "en";
+  applyI18n();
+};
+
+/* =========================
+   State
+========================= */
+let dtc = null;
+
+// step1
+let dtbU8 = null;
+let dtbName = "input.dtb";
+let dtbHash = "";
+
+// step2
+let dtsOrigText = "";     // decompiled
+let dtsWorkText = "";     // edited
+let hasJoyNode = false;
+let hasBatNode = false;
+let hasAmuxProp = false;
+
+// step3
+let dtsOutU8 = null;
+let dtsOutHash = "";
+let lastUrlDts = null;
+
+// step4
+let dtsUpU8 = null;
+let dtsUpHash = "";
+let dtsVerified = false;
+
+// step5
+let lastUrlDtb = null;
+
+/* capture stdout/stderr for dtc (no UI log) */
+let capStdout = [];
+let capStderr = [];
+function resetCapture(){ capStdout=[]; capStderr=[]; }
+
+function revokeUrl(u){ try{ if(u) URL.revokeObjectURL(u); }catch{} }
+function clearDownloads(){
+  revokeUrl(lastUrlDts); lastUrlDts=null;
+  revokeUrl(lastUrlDtb); lastUrlDtb=null;
+  $("dlDts").textContent="";
+  $("dlDtb").textContent="";
+}
+
+function setStatus(){
+  $("stTool").textContent = dtc ? t("dtcLoaded") : t("dtcNotLoaded");
+  $("st1").textContent = t("st1") + (dtbU8 ? t("done") : t("pending"));
+  $("st2").textContent = t("st2") + (dtsOrigText ? t("done") : t("pending"));
+  $("st3").textContent = t("st3") + (dtsOutHash ? t("done") : t("pending"));
+  $("st4").textContent = t("st4") + (dtsVerified ? t("done") : t("pending"));
+  $("st5").textContent = t("st5") + ($("dlDtb").children.length ? t("done") : t("pending"));
+
+  $("btnDecompile").disabled = !dtc || !dtbU8;
+  $("btnMakeDts").disabled = !dtsOrigText;
+  $("fileDts").disabled = !dtsOutHash;
+  $("btnCompile").disabled = !dtc || !dtsVerified || !dtsUpU8;
+
+  const optEnable = Boolean(dtsOrigText);
+  $("inv_absx").disabled = !optEnable;
+  $("inv_absy").disabled = !optEnable;
+  $("inv_absrx").disabled = !optEnable;
+  $("inv_absry").disabled = !optEnable;
+  $("cap_dec").disabled = !optEnable;
+  $("qmax_dec").disabled = !optEnable;
+
+  $("amux0").disabled = !optEnable;
+  $("amux1").disabled = !optEnable;
+  $("amux2").disabled = !optEnable;
+  $("amux3").disabled = !optEnable;
+}
+
+/* =========================
+   Helpers
+========================= */
+function hookFSWrite(Module){
+  const FS = Module.FS;
+  const origWrite = FS.write;
+  FS.write = function(stream, buffer, offset, length, pos, canOwn){
+    try{
+      if (stream && (stream.fd===1 || stream.fd===2) && buffer && length>0){
+        const chunk = buffer.slice(offset, offset+length);
+        (stream.fd===1 ? capStdout : capStderr).push(chunk);
+      }
+    }catch{}
+    return origWrite.call(this, stream, buffer, offset, length, pos, canOwn);
+  };
+}
+function flushAll(){
+  try{ if(dtc && dtc._fflush) dtc._fflush(0); }catch{}
+}
+function concatU8(chunks){
+  let total=0; for(const c of chunks) total+=c.length;
+  const out=new Uint8Array(total); let off=0;
+  for(const c of chunks){ out.set(c,off); off+=c.length; }
+  return out;
+}
+function decodePossiblyNulTerminatedUtf8(u8){
+  const nul=u8.indexOf(0);
+  const slice=(nul>=0)?u8.subarray(0,nul):u8;
+  return new TextDecoder("utf-8",{fatal:false}).decode(slice);
+}
+function findDtbBlobInStdout(u8){
+  const m0=0xD0, m1=0x0D, m2=0xFE, m3=0xED;
+  for (let i=0;i<=u8.length-8;i++){
+    if(u8[i]===m0 && u8[i+1]===m1 && u8[i+2]===m2 && u8[i+3]===m3){
+      const dv = new DataView(u8.buffer, u8.byteOffset+i, u8.byteLength-i);
+      const total = dv.getUint32(4, false); // big-endian
+      if(total >= 40 && total <= (u8.length-i)){
+        return { offset:i, total, blob:u8.subarray(i, i+total) };
+      }
+    }
+  }
+  return null;
+}
+function buildDownload(containerId, u8, filename, which){
+  const blob = new Blob([u8], {type:"application/octet-stream"});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href=url; a.download=filename; a.className="download";
+  a.textContent = t("dl") + filename;
+  const box=$(containerId);
+  box.textContent=""; box.appendChild(a);
+
+  if(which==="dts"){ revokeUrl(lastUrlDts); lastUrlDts=url; }
+  else { revokeUrl(lastUrlDtb); lastUrlDtb=url; }
+}
+
+/* === Replacement for MD5: SHA-256 via WebCrypto (short + robust) === */
+async function sha256HexFromU8(u8){
+  // NOTE: requires secure context (https / localhost). GitHub Pages is OK.
+  const buf = u8.buffer.slice(u8.byteOffset, u8.byteOffset + u8.byteLength);
+  const hash = await crypto.subtle.digest("SHA-256", buf);
+  const b = new Uint8Array(hash);
+  let s=""; for(const v of b) s += v.toString(16).padStart(2,"0");
+  return s;
+}
+
+/* normalize uploaded DTS encoding to UTF-8 bytes */
+function normalizeTextToUtf8Bytes(u8){
+  // UTF-8 BOM
+  if (u8.length>=3 && u8[0]===0xEF && u8[1]===0xBB && u8[2]===0xBF) return u8.subarray(3);
+  // UTF-16 LE BOM
+  if (u8.length>=2 && u8[0]===0xFF && u8[1]===0xFE) {
+    const dv = new DataView(u8.buffer, u8.byteOffset+2, u8.byteLength-2);
+    let s=""; for(let i=0;i<dv.byteLength;i+=2) s+=String.fromCharCode(dv.getUint16(i,true));
+    return new TextEncoder().encode(s);
+  }
+  // UTF-16 BE BOM
+  if (u8.length>=2 && u8[0]===0xFE && u8[1]===0xFF) {
+    const dv = new DataView(u8.buffer, u8.byteOffset+2, u8.byteLength-2);
+    let s=""; for(let i=0;i<dv.byteLength;i+=2) s+=String.fromCharCode(dv.getUint16(i,false));
+    return new TextEncoder().encode(s);
+  }
+  return u8;
+}
+
+/* =========================
+   DTS limited patching
+========================= */
+function findNodeBlock(text, nodeName){
+  const esc = nodeName.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  const re = new RegExp("\\b" + esc + "\\s*\\{", "m");
+  const m = re.exec(text);
+  if(!m) return null;
+
+  let i = m.index + m[0].length;
+  let depth = 1;
+  while(i < text.length){
+    const ch = text[i];
+    if(ch === "{") depth++;
+    else if(ch === "}") {
+      depth--;
+      if(depth === 0){
+        let j = i + 1;
+        while(j < text.length && /\s/.test(text[j])) j++;
+        if(text[j] === ";") j++;
+        return { start: m.index, end: j, bodyStart: m.index + m[0].length, bodyEnd: i };
+      }
+    }
+    i++;
+  }
+  return null;
+}
+function hasPropLine(nodeBody, prop){
+  const esc = prop.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  const re = new RegExp("^\\s*" + esc + "\\s*;\\s*$", "m");
+  return re.test(nodeBody);
+}
+function removePropLine(nodeBody, prop){
+  const esc = prop.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  const re = new RegExp("^\\s*" + esc + "\\s*;\\s*\\n?", "m");
+  return nodeBody.replace(re, "");
+}
+function ensurePropLineAfterPoll(nodeBody, prop){
+  if(hasPropLine(nodeBody, prop)) return nodeBody;
+
+  const lines = nodeBody.split("\n");
+  let insAt = -1;
+  for(let i=0;i<lines.length;i++){
+    if(/^\s*poll-interval\s*=/.test(lines[i])) { insAt = i+1; break; }
+  }
+  const indent = (() => {
+    for(const l of lines){
+      const m = l.match(/^(\s+)\S/);
+      if(m) return m[1];
+    }
+    return "        ";
+  })();
+
+  const line = indent + prop + ";";
+  if(insAt < 0) lines.push(line);
+  else {
+    while(insAt < lines.length && lines[insAt].trim()==="") insAt++;
+    lines.splice(insAt, 0, line);
+  }
+  return lines.join("\n");
+}
+function parseAngleLikeValue(token){
+  const t0 = token.trim().replace(/[<>;]/g,"").trim();
+  if(/^0x[0-9a-fA-F]+$/.test(t0)) return parseInt(t0, 16);
+  if(/^\d+$/.test(t0)) return parseInt(t0, 10);
+  return null;
+}
+function readBatteryValue(nodeBody, key){
+  const re = new RegExp("\\b" + key + "\\s*=\\s*<\\s*([^>]+)\\s*>\\s*;", "m");
+  const m = re.exec(nodeBody);
+  if(!m) return null;
+  return parseAngleLikeValue(m[1]);
+}
+function writeBatteryValue(nodeBody, key, decValue){
+  const hex = "0x" + Number(decValue >>> 0).toString(16);
+  const re = new RegExp("(\\b" + key + "\\s*=\\s*<\\s*)([^>]+)(\\s*>\\s*;)", "m");
+  if(re.test(nodeBody)) return nodeBody.replace(re, `$1${hex}$3`);
+  const indent = (() => {
+    const m = nodeBody.match(/^\s+/m);
+    return m ? m[0] : "        ";
+  })();
+  return nodeBody.replace(/\s*$/, "\n" + indent + key + " = <" + hex + ">;\n");
+}
+
+/* AMUX parse / validate / write (global property) */
+function readAmuxMappingFromText(dtsText){
+  const re = /\bamux-channel-mapping\s*=\s*<\s*([^>]+)\s*>\s*;/m;
+  const m = re.exec(dtsText);
+  if(!m) return null;
+  const parts = m[1].trim().split(/\s+/).filter(Boolean);
+  if(parts.length !== 4) return null;
+  const vals = [];
+  for(const p of parts){
+    const v = parseAngleLikeValue(p);
+    if(v === null) return null;
+    vals.push(v);
+  }
+  return vals;
+}
+function isValidAmuxPermutation(vals){
+  if(!Array.isArray(vals) || vals.length !== 4) return false;
+  for(const v of vals){
+    if(!Number.isInteger(v) || v < 0 || v > 3) return false;
+  }
+  const s = new Set(vals);
+  return s.size === 4 && s.has(0) && s.has(1) && s.has(2) && s.has(3);
+}
+function getAmuxFromUI(){
+  return [
+    Number($("amux0").value),
+    Number($("amux1").value),
+    Number($("amux2").value),
+    Number($("amux3").value),
+  ];
+}
+function updateAmuxBadge(){
+  if(!dtsOrigText){
+    $("amuxBadge").textContent = "amux: -";
+    $("hAmux").textContent = "";
+    return;
+  }
+  if(!hasAmuxProp){
+    $("amuxBadge").textContent = "amux: -";
+    $("hAmux").innerHTML = "<span class='warn'>" + t("amuxMissing") + "</span>";
+    return;
+  }
+  const vals = getAmuxFromUI();
+  if(isValidAmuxPermutation(vals)){
+    $("amuxBadge").textContent = "amux: OK ✅";
+    $("hAmux").innerHTML = "<span class='ok'>" + t("amuxOK") + "</span>&lt;" + vals.join(" ") + "&gt;";
+  } else {
+    $("amuxBadge").textContent = "amux: BAD";
+    $("hAmux").innerHTML = "<span class='warn'>" + t("amuxBad") + "</span>";
+  }
+}
+function writeAmuxMappingInText(dtsText, vals){
+  const re = /(\bamux-channel-mapping\s*=\s*<\s*)([^>]*)(\s*>\s*;)/m;
+  if(!re.test(dtsText)) return dtsText;
+  return dtsText.replace(re, "$1" + vals.join(" ") + "$3");
+}
+
+function applyControlledEdits(dtsText){
+  let out = dtsText;
+
+  // Joypad node
+  const joy = findNodeBlock(out, "odroidgo3-joypad");
+  if(joy){
+    hasJoyNode = true;
+    let body = out.slice(joy.bodyStart, joy.bodyEnd);
+    const opts = [
+      { id:"inv_absx", prop:"invert-absx" },
+      { id:"inv_absy", prop:"invert-absy" },
+      { id:"inv_absrx", prop:"invert-absrx" },
+      { id:"inv_absry", prop:"invert-absry" },
+    ];
+    for(const o of opts){
+      const want = $(o.id).checked;
+      body = removePropLine(body, o.prop);
+      if(want) body = ensurePropLineAfterPoll(body, o.prop);
+    }
+    out = out.slice(0, joy.bodyStart) + body + out.slice(joy.bodyEnd);
+  } else {
+    hasJoyNode = false;
+  }
+
+  // Battery node
+  let bat = findNodeBlock(out, "battery");
+  if(!bat) bat = findNodeBlock(out, "rk817-battery");
+  if(bat){
+    hasBatNode = true;
+    let body = out.slice(bat.bodyStart, bat.bodyEnd);
+    const cap = Number($("cap_dec").value);
+    const qmx = Number($("qmax_dec").value);
+    if(Number.isFinite(cap) && cap >= 0) body = writeBatteryValue(body, "design_capacity", cap);
+    if(Number.isFinite(qmx) && qmx >= 0) body = writeBatteryValue(body, "design_qmax", qmx);
+    out = out.slice(0, bat.bodyStart) + body + out.slice(bat.bodyEnd);
+  } else {
+    hasBatNode = false;
+  }
+
+  // AMUX property
+  if(hasAmuxProp){
+    const uiVals = getAmuxFromUI();
+    if(isValidAmuxPermutation(uiVals)){
+      out = writeAmuxMappingInText(out, uiVals);
+    }
+  }
+
+  return out;
+}
+
+function syncOptionUIFromDecompiled(dtsText){
+  // Joypad
+  const joy = findNodeBlock(dtsText, "odroidgo3-joypad");
+  hasJoyNode = Boolean(joy);
+  if(joy){
+    const body = dtsText.slice(joy.bodyStart, joy.bodyEnd);
+    $("inv_absx").checked = hasPropLine(body, "invert-absx");
+    $("inv_absy").checked = hasPropLine(body, "invert-absy");
+    $("inv_absrx").checked = hasPropLine(body, "invert-absrx");
+    $("inv_absry").checked = hasPropLine(body, "invert-absry");
+    $("hJoy").innerHTML = "<span class='ok'>" + t("joyFound") + "</span>";
+  } else {
+    $("inv_absx").checked = $("inv_absy").checked = $("inv_absrx").checked = $("inv_absry").checked = false;
+    $("hJoy").innerHTML = "<span class='warn'>" + t("joyNotFound") + "</span>";
+  }
+
+  // Battery
+  let bat = findNodeBlock(dtsText, "battery");
+  if(!bat) bat = findNodeBlock(dtsText, "rk817-battery");
+  hasBatNode = Boolean(bat);
+  if(bat){
+    const body = dtsText.slice(bat.bodyStart, bat.bodyEnd);
+    const cap = readBatteryValue(body, "design_capacity");
+    const qmx = readBatteryValue(body, "design_qmax");
+
+    if(cap !== null){
+      $("cap_dec").value = String(cap);
+      $("cap_hex").textContent = "hex: 0x" + cap.toString(16);
+    } else {
+      $("cap_dec").value = "";
+      $("cap_hex").textContent = "hex: -";
+    }
+    if(qmx !== null){
+      $("qmax_dec").value = String(qmx);
+      $("qmax_hex").textContent = "hex: 0x" + qmx.toString(16);
+    } else {
+      $("qmax_dec").value = "";
+      $("qmax_hex").textContent = "hex: -";
+    }
+    $("hBat").innerHTML = "<span class='ok'>" + t("batFound") + "</span>";
+  } else {
+    $("cap_dec").value = ""; $("qmax_dec").value = "";
+    $("cap_hex").textContent = "hex: -"; $("qmax_hex").textContent = "hex: -";
+    $("hBat").innerHTML = "<span class='warn'>" + t("batNotFound") + "</span>";
+  }
+
+  // live hex updates
+  const updHex = ()=>{
+    const cap = Number($("cap_dec").value);
+    $("cap_hex").textContent = Number.isFinite(cap) && cap>=0 ? ("hex: 0x"+(cap>>>0).toString(16)) : "hex: -";
+    const qmx = Number($("qmax_dec").value);
+    $("qmax_hex").textContent = Number.isFinite(qmx) && qmx>=0 ? ("hex: 0x"+(qmx>>>0).toString(16)) : "hex: -";
+  };
+  $("cap_dec").oninput = updHex;
+  $("qmax_dec").oninput = updHex;
+  updHex();
+
+  // AMUX
+  const amuxVals = readAmuxMappingFromText(dtsText);
+  hasAmuxProp = Boolean(amuxVals);
+  if(amuxVals && amuxVals.length === 4){
+    $("amux0").value = String(amuxVals[0]);
+    $("amux1").value = String(amuxVals[1]);
+    $("amux2").value = String(amuxVals[2]);
+    $("amux3").value = String(amuxVals[3]);
+  } else {
+    $("amux0").value = ""; $("amux1").value = ""; $("amux2").value = ""; $("amux3").value = "";
+  }
+  const amuxOnInput = ()=> updateAmuxBadge();
+  $("amux0").oninput = amuxOnInput;
+  $("amux1").oninput = amuxOnInput;
+  $("amux2").oninput = amuxOnInput;
+  $("amux3").oninput = amuxOnInput;
+  updateAmuxBadge();
+}
+
+/* =========================
+   Events
+========================= */
+$("btnLoad").onclick = async ()=>{
+  clearDownloads();
+  resetCapture();
+  $("h2").textContent=""; $("h3").textContent=""; $("h4").textContent=""; $("h5").textContent="";
+
+  dtc = await createDtcModule({
+    noInitialRun: true,
+    locateFile: (p)=> p.endsWith(".wasm") ? "./dtc.wasm" : p,
+    stdin: () => null,
+    input: () => null,
+    // no UI log: keep console-only
+    print: ()=>{},
+    printErr: ()=>{},
+    onAbort: ()=>{},
+    onExit: ()=>{},
+    preRun: [ (Module)=>{
+      try { Module.FS.init(() => null, () => {}, () => {}); } catch {}
+      try { hookFSWrite(Module); } catch {}
+    }],
+  });
+
+  try{ dtc.FS.mkdir("/work"); }catch{}
+  dtc.FS.chdir("/work");
+  setStatus();
+};
+
+$("fileDtb").onchange = async (e)=>{
+  const f = e.target.files?.[0];
+  if(!f) return;
+
+  dtbName = f.name || "input.dtb";
+  dtbU8 = new Uint8Array(await f.arrayBuffer());
+  dtbHash = await sha256HexFromU8(dtbU8);
+
+  $("bDtb").textContent = t("dtbSel");
+  $("bDtbHash").textContent = t("dtbHash") + dtbHash;
+
+  // reset pipeline
+  dtsOrigText=""; dtsWorkText="";
+  dtsOutU8=null; dtsOutHash="";
+  dtsUpU8=null; dtsUpHash=""; dtsVerified=false;
+  hasJoyNode=false; hasBatNode=false; hasAmuxProp=false;
+
+  $("bDtsSrc").textContent = t("dtsNot");
+  $("bDtsHash").textContent = "DTS SHA-256: -";
+  $("bUpHash").textContent = "Upload DTS SHA-256: -";
+  $("bCheck").textContent = t("verify") + "-";
+
+  $("h2").textContent=""; $("h3").textContent=""; $("h4").textContent=""; $("h5").textContent="";
+  $("hJoy").textContent=""; $("hBat").textContent=""; $("hAmux").textContent="";
+  $("amuxBadge").textContent="amux: -";
+
+  clearDownloads();
+  setStatus();
+};
+
+$("btnDecompile").onclick = ()=>{
+  if(!dtc || !dtbU8) return;
+
+  resetCapture();
+  $("h2").textContent=""; $("h3").textContent=""; $("h4").textContent=""; $("h5").textContent="";
+  $("bDtsSrc").textContent = "DTS: ...";
+
+  dtc.FS.chdir("/work");
+  try{ dtc.FS.unlink("in.dtb"); }catch{}
+  try{ dtc.FS.unlink("out.dts"); }catch{}
+  dtc.FS.writeFile("in.dtb", dtbU8);
+
+  const args = ["-I","dtb","-O","dts","-o","out.dts","in.dtb"];
+  try{ dtc.callMain(args); }catch{}
+
+  flushAll();
+
+  const st = (()=>{ try{return dtc.FS.stat("out.dts");}catch{return null;} })();
+  if(!st){
+    $("bDtsSrc").textContent = t("dtsFail");
+    $("h2").innerHTML = "<span class='warn'>" + t("s2fail") + "</span>";
+    setStatus();
+    return;
+  }
+
+  const outU8 = dtc.FS.readFile("out.dts");
+  dtsOrigText = decodePossiblyNulTerminatedUtf8(outU8);
+  $("bDtsSrc").textContent = t("dtsGen");
+  $("h2").innerHTML = "<span class='ok'>" + t("s2ok") + "</span>";
+
+  syncOptionUIFromDecompiled(dtsOrigText);
+
+  // reset step3/4/5
+  dtsOutU8=null; dtsOutHash="";
+  dtsUpU8=null; dtsUpHash=""; dtsVerified=false;
+  $("bDtsHash").textContent = "DTS SHA-256: -";
+  $("bUpHash").textContent = "Upload DTS SHA-256: -";
+  $("bCheck").textContent = t("verify") + "-";
+  $("fileDts").value="";
+  clearDownloads();
+
+  setStatus();
+};
+
+$("btnMakeDts").onclick = async ()=>{
+  if(!dtsOrigText) return;
+
+  $("h3").textContent="";
+  $("h4").textContent="";
+  $("h5").textContent="";
+  $("dlDts").textContent="";
+  revokeUrl(lastUrlDts); lastUrlDts=null;
+
+  dtsWorkText = applyControlledEdits(dtsOrigText);
+  dtsOutU8 = new TextEncoder().encode(dtsWorkText.endsWith("\n") ? dtsWorkText : (dtsWorkText + "\n"));
+  dtsOutHash = await sha256HexFromU8(dtsOutU8);
+  $("bDtsHash").textContent = t("dtsHash") + dtsOutHash;
+
+  const outName = (dtbName.replace(/\.dtbo?$/i,"") || "modified") + ".modified.dts";
+  buildDownload("dlDts", dtsOutU8, outName, "dts");
+
+  // reset step4/5
+  dtsUpU8=null; dtsUpHash=""; dtsVerified=false;
+  $("fileDts").value="";
+  $("bUpHash").textContent = "Upload DTS SHA-256: -";
+  $("bCheck").textContent = t("verify") + "-";
+  $("dlDtb").textContent="";
+  revokeUrl(lastUrlDtb); lastUrlDtb=null;
+
+  $("h3").innerHTML = "<span class='ok'>" + t("s3ok") + "</span>";
+  setStatus();
+};
+
+$("fileDts").onchange = async (e)=>{
+  const f = e.target.files?.[0];
+  if(!f) return;
+
+  const raw = new Uint8Array(await f.arrayBuffer());
+  dtsUpU8 = normalizeTextToUtf8Bytes(raw);
+  dtsUpHash = await sha256HexFromU8(dtsUpU8);
+  $("bUpHash").textContent = t("upHash") + dtsUpHash;
+
+  if(!dtsOutHash){
+    dtsVerified=false;
+    $("bCheck").textContent = t("verify") + "-";
+    $("h4").innerHTML = "<span class='warn'>" + t("s4need3") + "</span>";
+    setStatus();
+    return;
+  }
+
+  if(dtsUpHash !== dtsOutHash){
+    dtsVerified=false;
+    $("bCheck").textContent = t("verify") + t("verifyBad");
+    $("h4").innerHTML = "<span class='warn'>" + t("s4bad") + "</span>";
+  } else {
+    dtsVerified=true;
+    $("bCheck").textContent = t("verify") + t("verifyOK");
+    $("h4").innerHTML = "<span class='ok'>" + t("s4ok") + "</span>";
+  }
+
+  setStatus();
+};
+
+$("btnCompile").onclick = ()=>{
+  if(!dtc || !dtsVerified || !dtsUpU8) return;
+
+  resetCapture();
+  $("dlDtb").textContent="";
+  revokeUrl(lastUrlDtb); lastUrlDtb=null;
+  $("h5").textContent="";
+
+  dtc.FS.chdir("/work");
+  try{ dtc.FS.unlink("in.dts"); }catch{}
+  try{ dtc.FS.unlink("out.dtb"); }catch{}
+  dtc.FS.writeFile("in.dts", dtsUpU8);
+
+  const args = ["-I","dts","-O","dtb","-o","out.dtb","in.dts"];
+  let rc=-999;
+  try{ rc = dtc.callMain(args); }catch{ rc = -999; }
+
+  flushAll();
+
+  const errBytes = concatU8(capStderr);
+  const errText = errBytes.length ? decodePossiblyNulTerminatedUtf8(errBytes).trim() : "";
+  if(errText){
+    const m = errText.match(/(?:in\.dts|<stdin>):(\d+)\.(\d+)(?:-(\d+)\.(\d+))?\s+syntax error/);
+    if(m) $("h5").innerHTML = "<span class='warn'>" + t("s5syntax") + "</span>" + m[0];
+  }
+
+  const st = (()=>{ try{return dtc.FS.stat("out.dtb");}catch{return null;} })();
+  if(st){
+    const out = dtc.FS.readFile("out.dtb");
+    const outName = (dtbName.replace(/\.dtbo?$/i,"") || "patched") + ".patched.dtb";
+    buildDownload("dlDtb", out, outName, "dtb");
+    $("h5").innerHTML = "<span class='ok'>" + t("s5ok") + "</span>";
+    setStatus(); return;
+  }
+
+  const outStd = concatU8(capStdout);
+  if(rc === 0 && outStd.length){
+    const hit = findDtbBlobInStdout(outStd);
+    if(hit){
+      const outName = (dtbName.replace(/\.dtbo?$/i,"") || "patched") + ".patched.dtb";
+      buildDownload("dlDtb", hit.blob, outName, "dtb");
+      $("h5").innerHTML = "<span class='ok'>" + t("s5ok") + "</span>";
+      setStatus(); return;
+    }
+  }
+
+  if(rc === 0){
+    $("h5").innerHTML = "<span class='warn'>" + t("s5weird") + "</span>";
+  } else if(!errText){
+    $("h5").innerHTML = "<span class='warn'>" + t("s5fail") + "</span>";
+  }
+  setStatus();
+};
+
+$("btnReset").onclick = ()=>{
+  dtbU8=null; dtbName="input.dtb"; dtbHash="";
+  dtsOrigText=""; dtsWorkText="";
+  dtsOutU8=null; dtsOutHash="";
+  dtsUpU8=null; dtsUpHash=""; dtsVerified=false;
+  hasJoyNode=false; hasBatNode=false; hasAmuxProp=false;
+
+  $("fileDtb").value=""; $("fileDts").value="";
+  $("bDtb").textContent = t("dtbDash");
+  $("bDtbHash").textContent = "DTB SHA-256: -";
+  $("bDtsSrc").textContent = t("dtsNot");
+  $("bDtsHash").textContent = "DTS SHA-256: -";
+  $("bUpHash").textContent = "Upload DTS SHA-256: -";
+  $("bCheck").textContent = t("verify") + "-";
+
+  $("h2").textContent=""; $("h3").textContent=""; $("h4").textContent=""; $("h5").textContent="";
+  $("hJoy").textContent=""; $("hBat").textContent=""; $("hAmux").textContent="";
+  $("cap_dec").value=""; $("qmax_dec").value="";
+  $("cap_hex").textContent="hex: -"; $("qmax_hex").textContent="hex: -";
+  $("inv_absx").checked=$("inv_absy").checked=$("inv_absrx").checked=$("inv_absry").checked=false;
+
+  $("amux0").value=""; $("amux1").value=""; $("amux2").value=""; $("amux3").value="";
+  $("amuxBadge").textContent="amux: -";
+
+  clearDownloads();
+  setStatus();
+};
+
+/* init */
+lang = "en";
+$("langSel").value = "en";
+applyI18n();
+setStatus();
+</script>
+
+</body>
+</html>
