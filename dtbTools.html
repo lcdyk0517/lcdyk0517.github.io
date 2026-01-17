@@ -1246,7 +1246,14 @@
                     : (typeof dcRaw === 'string'
                         ? parseInt(dcRaw, 10)
                         : Number(dcRaw));
-            return { ...item, md5, sdio, useExtAmplifier, adcKey, design_capacity };
+            const dcQmax = (item.design_qmax ?? item.designQmax ?? null);
+            const design_qmax =
+                (dcQmax === null || dcQmax === undefined || dcQmax === '')
+                    ? null
+                    : (typeof dcQmax === 'string'
+                        ? parseInt(dcQmax, 10)
+                        : Number(dcQmax));
+            return { ...item, md5, sdio, useExtAmplifier, adcKey, design_capacity, design_qmax };
         }
         const ARKOS4CLONE_DB = ARKOS4CLONE_DATABASE.map(normalizeDbItem);
         const ARKOSK36_DB = ARKOSK36_DATABASE.map(normalizeDbItem);
@@ -1317,6 +1324,7 @@
                 const panelInfo = this.extractPanelInfo(arrayBuffer);
                 const codecInfo = this.extractCodecInfo(arrayBuffer);
                 const designCapacity = this.detectDesignCapacity(view);
+                const designQmax = this.detectDesignQmax(view);
 
                 // 新增：adc-keys 状态（仅看 adc-keys 节点自身的 status）
                 let adcKeysEnabled = null;
@@ -1417,9 +1425,11 @@
 
                 if (screenMatches.length > 0) {
                     const capLine = (designCapacity !== null && designCapacity !== undefined)
-                        ? `<div class="comment" style="margin-top:6px;">🔋 ${currentLanguage === 'zh' ? '你的dtb中电池容量为' : 'Battery capacity in your DTB'}: <span class="value">${designCapacity}</span></div>`
+                        ? `<div class="comment" style="margin-top:6px;">🔋 ${currentLanguage === 'zh' ? '你的dtb中电池设计容量为' : 'designCapacity in your DTB'}: <span class="value">${designCapacity}</span></div>`
                         : '';
-
+                    const capLineMax = (designQmax !== null && designQmax !== undefined)
+                        ? `<div class="comment" style="margin-top:6px;">🔋 ${currentLanguage === 'zh' ? '你的dtb中电池最大容量为' : 'designQmax in your DTB'}: <span class="value">${designQmax}</span></div>`
+                        : '';
                     const title = (currentLanguage === 'zh')
                         ? '屏幕参数一致，但 MD5 不同'
                         : 'Screen detected as identical but MD5 differs';
@@ -1432,7 +1442,7 @@
                         `<div class="match-warning">` +
                         `⚠️ <span class="property">${title}</span><br>` +
                         `<span class="comment">${desc}</span>` +
-                        capLine +
+                        capLine + capLineMax +
                         `<div style="margin-top:8px;">` +
                         screenMatches.map(n => `<div>• <span class="value">${n.replace(/\s*->\s*/g, ' <span class="comment">→</span> ')}</span></div>`).join('') +
                         `</div>` +
@@ -1743,6 +1753,36 @@
                 } catch (e) { }
                 return null;
             }
+            // 新增：读取 DT 中 battery 节点的 design_qmax（u32, 十进制返回）
+            detectDesignQmax(view) {
+                try {
+                    if (view.getUint32(0, false) !== 0xd00dfeed) return null;
+                    const off_dt_strings = view.getUint32(12, false);
+
+                    // 优先按节点名 battery 命中（兼容不同路径）
+                    for (const [path, begin] of this.pathToBegin.entries()) {
+                        const name = this.getNodeNameFromPath(path);
+                        if (name !== 'battery') continue;
+                        const props = this.findPropertiesInNode(view, begin, off_dt_strings);
+                        if (props.design_qmax !== null && props.design_qmax !== undefined) {
+                            return props.design_qmax;
+                        }
+                    }
+
+                    // 兜底：如果没找到 battery 节点，则全局扫一遍（最小侵入）
+                    for (let off = 0; off < view.byteLength - 100; off++) {
+                        const token = view.getUint32(off, false);
+                        if (token !== 0x1) continue; // BEGIN_NODE
+                        const name = this.readString(view, off + 4);
+                        if (!name || name !== 'battery') continue;
+                        const props = this.findPropertiesInNode(view, off, off_dt_strings);
+                        if (props.design_qmax !== null && props.design_qmax !== undefined) {
+                            return props.design_qmax;
+                        }
+                    }
+                } catch (e) { }
+                return null;
+            }
 
             // 仅检查 adc-keys 自身的 status
             detectAdcKeysFlag(view) {
@@ -1799,6 +1839,7 @@
                 let compatibleList = null;
                 let statusStr = null;
                 let design_capacity = null;
+                let design_qmax = null;
 
                 // 进入属性区（紧跟在 begin-node 名字之后）
                 let off = nodeOffset + 4;
@@ -1830,6 +1871,10 @@
                         if (len >= 4) {
                             design_capacity = view.getUint32(off + 12, false);
                         } 
+                    } else if (propName === 'design_qmax') {
+                        if (len >= 4) {
+                            design_qmax = view.getUint32(off + 12, false);
+                        } 
                     } else if (propName === 'supports-sdio') {
                         supportsSdio = true;
                     } else if (propName === 'use-ext-amplifier') {
@@ -1851,7 +1896,7 @@
                     init: initSequence, resetGpios, enableGpios, powerSupply, gpio,
                     supportsSdio, useExtAmplifier, compatible: compatibleList,
                     status: statusStr,
-                    design_capacity
+                    design_capacity, design_qmax
                 };
             }
             parseGpioData(data) {
