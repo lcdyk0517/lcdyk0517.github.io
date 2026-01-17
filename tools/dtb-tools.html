@@ -20,6 +20,7 @@
     .amuxline{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
     .amuxline input[type="number"]{width:70px}
     .topbar{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+    .btnpill{border:1px solid #666;border-radius:999px;background:#222;color:#eee;cursor:pointer}
     .spacer{flex:1}
   </style>
 </head>
@@ -110,6 +111,18 @@
       </div>
       <div class="hint" id="hAmux"></div>
     </div>
+
+    <div>
+      <div class="k" id="sdioTitle">D) Built-in WiFi (SDIO) enable/disable (supports-sdio;)</div>
+      <div class="hint" id="sdioHint">
+        Target: <span class="k">dwmmc@ff380000</span> node. If it contains <span class="k">supports-sdio;</span>,
+        you can toggle <span class="k">status = "okay"</span> / <span class="k">"disabled"</span> (disabling can save power).
+      </div>
+      <div class="row">
+        <button id="sdioToggle" class="btnpill" disabled>status: -</button>
+      </div>
+      <div class="hint" id="hSdio"></div>
+    </div>
   </div>
 
   <div class="hint" id="h2"></div>
@@ -196,6 +209,10 @@ const I18N = {
     amuxBad: "❌ Invalid: must be 0/1/2/3 all unique (permutation only).",
     amuxMissing: "⚠️ amux-channel-mapping not found (won't modify).",
 
+    sdioTitle: "D) Built-in WiFi (SDIO) enable/disable (supports-sdio;)",
+    sdioNoNeed: "✅ No supports-sdio; found under dwmmc@ff380000 (no action needed).",
+    sdioFound: "✅ Found supports-sdio; (toggle WiFi power here).",
+
     step3: "Step 3:",
     step3t: "Generate modified DTS download and record verification token",
     makeDts: "Generate modified DTS (Download + Lock)",
@@ -264,6 +281,10 @@ const I18N = {
     amuxBad: "❌ 不合法：必须是 0/1/2/3 四个数字且不重复（只能换顺序）。",
     amuxMissing: "⚠️ 未找到 amux-channel-mapping（不会修改）。",
 
+    sdioTitle: "D) 内置 WiFi（SDIO）启用/禁用（supports-sdio;）",
+    sdioNoNeed: "✅ dwmmc@ff380000 下未发现 supports-sdio;（无需操作此项）。",
+    sdioFound: "✅ 找到 supports-sdio;（可在此切换 WiFi 省电）。",
+
     step3: "Step 3:",
     step3t: "生成修改后的 DTS 下载，并记录校验令牌",
     makeDts: "生成修改后 DTS（下载 + 锁定）",
@@ -319,6 +340,7 @@ function applyI18n(){
   $("joyTitle").textContent = t("joyTitle");
   $("batTitle").textContent = t("batTitle");
   $("amuxTitle").textContent = t("amuxTitle");
+  $("sdioTitle").textContent = t("sdioTitle");
 
   // Refresh status texts without changing state
   setStatus();
@@ -349,6 +371,10 @@ let dtsWorkText = "";     // edited
 let hasJoyNode = false;
 let hasBatNode = false;
 let hasAmuxProp = false;
+
+// sdio (wifi)
+let hasSdioWifi = false;       // dwmmc@ff380000 contains supports-sdio;
+let sdioStatusWanted = "";     // "okay" or "disabled" (only used when hasSdioWifi)
 
 // step3
 let dtsOutU8 = null;
@@ -401,6 +427,9 @@ function setStatus(){
   $("amux1").disabled = !optEnable;
   $("amux2").disabled = !optEnable;
   $("amux3").disabled = !optEnable;
+
+  // sdio toggle enabled only if decompiled AND supports-sdio exists
+  $("sdioToggle").disabled = !(optEnable && hasSdioWifi);
 }
 
 /* =========================
@@ -572,6 +601,23 @@ function writeBatteryValue(nodeBody, key, decValue){
   return nodeBody.replace(/\s*$/, "\n" + indent + key + " = <" + hex + ">;\n");
 }
 
+function hasPropLineLoose(nodeBody, prop){
+  const esc = prop.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  // allow whitespace and optional trailing comment
+  const re = new RegExp("^\\s*" + esc + "\\s*;\\s*(?:\\/\\/.*)?$", "m");
+  return re.test(nodeBody);
+}
+function readStatusValue(nodeBody){
+  const m = nodeBody.match(/\bstatus\s*=\s*"(okay|disabled)"\s*;/m);
+  return m ? m[1] : "";
+}
+function writeStatusValue(nodeBody, want){
+  const re = /(\bstatus\s*=\s*")((?:okay|disabled))("\s*;)/m;
+  if(re.test(nodeBody)) return nodeBody.replace(re, `$1${want}$3`);
+  const indent = (() => { const m = nodeBody.match(/^\s+/m); return m ? m[0] : "        "; })();
+  return nodeBody.replace(/\s*$/, "\n" + indent + `status = "${want}";` + "\n");
+}
+
 /* AMUX parse / validate / write (global property) */
 function readAmuxMappingFromText(dtsText){
   const re = /\bamux-channel-mapping\s*=\s*<\s*([^>]+)\s*>\s*;/m;
@@ -675,6 +721,21 @@ function applyControlledEdits(dtsText){
       out = writeAmuxMappingInText(out, uiVals);
     }
   }
+  // SDIO WiFi (dwmmc@ff380000)
+  const mmc = findNodeBlock(out, "dwmmc@ff380000");
+  if(mmc){
+    let body = out.slice(mmc.bodyStart, mmc.bodyEnd);
+    if(hasPropLineLoose(body, "supports-sdio")){
+      hasSdioWifi = true;
+      const want = (sdioStatusWanted === "disabled") ? "disabled" : "okay";
+      body = writeStatusValue(body, want);
+      out = out.slice(0, mmc.bodyStart) + body + out.slice(mmc.bodyEnd);
+    } else {
+      hasSdioWifi = false;
+    }
+  } else {
+    hasSdioWifi = false;
+  }
 
   return out;
 }
@@ -753,15 +814,49 @@ function syncOptionUIFromDecompiled(dtsText){
   $("amux2").oninput = amuxOnInput;
   $("amux3").oninput = amuxOnInput;
   updateAmuxBadge();
+
+  // SDIO WiFi toggle
+  const mmc = findNodeBlock(dtsText, "dwmmc@ff380000");
+  hasSdioWifi = false;
+  sdioStatusWanted = "";
+  if(mmc){
+    const body = dtsText.slice(mmc.bodyStart, mmc.bodyEnd);
+    if(hasPropLineLoose(body, "supports-sdio")){
+      hasSdioWifi = true;
+      const cur = readStatusValue(body) || "okay";
+      sdioStatusWanted = (cur === "disabled") ? "disabled" : "okay";
+      $("sdioToggle").textContent = `status: ${sdioStatusWanted}`;
+      $("hSdio").innerHTML = "<span class='ok'>" + t("sdioFound") + "</span>";
+    } else {
+      $("sdioToggle").textContent = "status: -";
+      $("hSdio").innerHTML = "<span class='ok'>" + t("sdioNoNeed") + "</span>";
+    }
+  } else {
+    $("sdioToggle").textContent = "status: -";
+    $("hSdio").textContent = "";
+  }
+
+  $("sdioToggle").onclick = ()=>{
+    if(!hasSdioWifi) return;
+    sdioStatusWanted = (sdioStatusWanted === "disabled") ? "okay" : "disabled";
+    $("sdioToggle").textContent = `status: ${sdioStatusWanted}`;
+  };
 }
 
 /* =========================
    Events
 ========================= */
 $("btnLoad").onclick = async ()=>{
+  await loadDtc();
+};
+
+async function loadDtc(){
   clearDownloads();
   resetCapture();
   $("h2").textContent=""; $("h3").textContent=""; $("h4").textContent=""; $("h5").textContent="";
+
+  // already loaded -> no-op
+  if(dtc){ setStatus(); return; }
 
   dtc = await createDtcModule({
     noInitialRun: true,
@@ -782,7 +877,7 @@ $("btnLoad").onclick = async ()=>{
   try{ dtc.FS.mkdir("/work"); }catch{}
   dtc.FS.chdir("/work");
   setStatus();
-};
+}
 
 $("fileDtb").onchange = async (e)=>{
   const f = e.target.files?.[0];
@@ -800,6 +895,7 @@ $("fileDtb").onchange = async (e)=>{
   dtsOutU8=null; dtsOutHash="";
   dtsUpU8=null; dtsUpHash=""; dtsVerified=false;
   hasJoyNode=false; hasBatNode=false; hasAmuxProp=false;
+  hasSdioWifi=false; sdioStatusWanted="";
 
   $("bDtsSrc").textContent = t("dtsNot");
   $("bDtsHash").textContent = "DTS SHA-256: -";
@@ -809,6 +905,8 @@ $("fileDtb").onchange = async (e)=>{
   $("h2").textContent=""; $("h3").textContent=""; $("h4").textContent=""; $("h5").textContent="";
   $("hJoy").textContent=""; $("hBat").textContent=""; $("hAmux").textContent="";
   $("amuxBadge").textContent="amux: -";
+  $("hSdio").textContent="";
+  $("sdioToggle").textContent="status: -";
 
   clearDownloads();
   setStatus();
@@ -977,6 +1075,7 @@ $("btnReset").onclick = ()=>{
   dtsOutU8=null; dtsOutHash="";
   dtsUpU8=null; dtsUpHash=""; dtsVerified=false;
   hasJoyNode=false; hasBatNode=false; hasAmuxProp=false;
+  hasSdioWifi=false; sdioStatusWanted="";
 
   $("fileDtb").value=""; $("fileDts").value="";
   $("bDtb").textContent = t("dtbDash");
@@ -994,6 +1093,8 @@ $("btnReset").onclick = ()=>{
 
   $("amux0").value=""; $("amux1").value=""; $("amux2").value=""; $("amux3").value="";
   $("amuxBadge").textContent="amux: -";
+  $("sdioToggle").textContent="status: -";
+  $("hSdio").textContent="";
 
   clearDownloads();
   setStatus();
@@ -1004,6 +1105,7 @@ lang = "en";
 $("langSel").value = "en";
 applyI18n();
 setStatus();
+loadDtc();
 </script>
 
 </body>
