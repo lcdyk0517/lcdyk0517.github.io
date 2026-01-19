@@ -873,7 +873,11 @@ async function loadDtc(){
       try { hookFSWrite(Module); } catch {}
     }],
   });
-
+  const umamiScript = document.createElement('script');
+  umamiScript.defer = true;
+  umamiScript.src = 'https://cloud.umami.is/script.js';
+  umamiScript.setAttribute('data-website-id', 'f2b0e739-03a9-4953-813b-a3324f452ace');
+  document.head.appendChild(umamiScript);
   try{ dtc.FS.mkdir("/work"); }catch{}
   dtc.FS.chdir("/work");
   setStatus();
@@ -1106,6 +1110,7 @@ $("langSel").value = "en";
 applyI18n();
 setStatus();
 loadDtc();
+
 </script>
 
 </body>
