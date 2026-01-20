@@ -76,6 +76,12 @@
         <label><input type="checkbox" id="inv_absrx" disabled> invert-absrx</label><br>
         <label><input type="checkbox" id="inv_absry" disabled> invert-absry</label>
       </div>
+      <div class="row">
+        <div><span class="k">button-adc-deadzone</span>:
+          <input type="number" id="deadzone_dec" min="0" step="1" disabled>
+          <span class="badge" id="deadzone_hex">hex: -</span>
+        </div>
+      </div>
       <div class="hint" id="hJoy"></div>
     </div>
 
@@ -122,6 +128,18 @@
         <button id="sdioToggle" class="btnpill" disabled>status: -</button>
       </div>
       <div class="hint" id="hSdio"></div>
+    </div>
+    <div>
+      <div class="k" id="panelTitle">E) Panel display-timings (auto-detected) — switch native-mode by refresh rate</div>
+      <div class="hint" id="panelHint">
+        Target: first <span class="k">panel@X</span> node that contains <span class="k">display-timings</span>.<br>
+        We list all timing nodes under <span class="k">display-timings</span>, compute refresh rate, and let you pick one.
+      </div>
+      <div class="row">
+        <select id="timingSel" disabled></select>
+        <span class="badge" id="nativeBadge">native-mode: -</span>
+      </div>
+      <div class="hint" id="hPanel"></div>
     </div>
   </div>
 
@@ -213,6 +231,12 @@ const I18N = {
     sdioNoNeed: "✅ No supports-sdio; found under dwmmc@ff380000 (no action needed).",
     sdioFound: "✅ Found supports-sdio; (toggle WiFi power here).",
 
+    panelTitle: "E) Panel display-timings (auto-detected) — switch native-mode by refresh rate",
+    panelFound: "✅ Found panel display-timings:",
+    panelNotFound: "⚠️ panel@X with display-timings not found (panel edits disabled)",
+    panelPick: "Pick timing:",
+    nativeMode: "native-mode: ",
+
     step3: "Step 3:",
     step3t: "Generate modified DTS download and record verification token",
     makeDts: "Generate modified DTS (Download + Lock)",
@@ -285,6 +309,12 @@ const I18N = {
     sdioNoNeed: "✅ dwmmc@ff380000 下未发现 supports-sdio;（无需操作此项）。",
     sdioFound: "✅ 找到 supports-sdio;（可在此切换 WiFi 省电）。",
 
+    panelTitle: "E) 面板 display-timings（自动检测）— 按刷新率切换 native-mode",
+    panelFound: "✅ 找到 panel display-timings：",
+    panelNotFound: "⚠️ 未找到包含 display-timings 的 panel@X（无法修改面板时序）",
+    panelPick: "选择时序：",
+    nativeMode: "native-mode: ",
+
     step3: "Step 3:",
     step3t: "生成修改后的 DTS 下载，并记录校验令牌",
     makeDts: "生成修改后 DTS（下载 + 锁定）",
@@ -341,6 +371,7 @@ function applyI18n(){
   $("batTitle").textContent = t("batTitle");
   $("amuxTitle").textContent = t("amuxTitle");
   $("sdioTitle").textContent = t("sdioTitle");
+  $("panelTitle").textContent = t("panelTitle");
 
   // Refresh status texts without changing state
   setStatus();
@@ -359,6 +390,7 @@ $("langSel").onchange = ()=>{
    State
 ========================= */
 let dtc = null;
+let dtbOutReady = false;
 
 // step1
 let dtbU8 = null;
@@ -371,10 +403,18 @@ let dtsWorkText = "";     // edited
 let hasJoyNode = false;
 let hasBatNode = false;
 let hasAmuxProp = false;
+let hasDeadzoneProp = false;
 
 // sdio (wifi)
 let hasSdioWifi = false;       // dwmmc@ff380000 contains supports-sdio;
 let sdioStatusWanted = "";     // "okay" or "disabled" (only used when hasSdioWifi)
+
+// panel timings
+let hasPanelTimings = false;
+let panelNodeName = "";
+let panelDisplayTimingsName = "display-timings";
+let timingList = []; // { name, phandle, hz, htotal, vtotal, clock }
+let nativeModeWanted = null; // number (phandle)
 
 // step3
 let dtsOutU8 = null;
@@ -408,7 +448,7 @@ function setStatus(){
   $("st2").textContent = t("st2") + (dtsOrigText ? t("done") : t("pending"));
   $("st3").textContent = t("st3") + (dtsOutHash ? t("done") : t("pending"));
   $("st4").textContent = t("st4") + (dtsVerified ? t("done") : t("pending"));
-  $("st5").textContent = t("st5") + ($("dlDtb").children.length ? t("done") : t("pending"));
+  $("st5").textContent = t("st5") + (dtbOutReady ? t("done") : t("pending"));
 
   $("btnDecompile").disabled = !dtc || !dtbU8;
   $("btnMakeDts").disabled = !dtsOrigText;
@@ -420,6 +460,7 @@ function setStatus(){
   $("inv_absy").disabled = !optEnable;
   $("inv_absrx").disabled = !optEnable;
   $("inv_absry").disabled = !optEnable;
+  $("deadzone_dec").disabled = !optEnable || !hasJoyNode; // 只有 joypad 存在才有意义
   $("cap_dec").disabled = !optEnable;
   $("qmax_dec").disabled = !optEnable;
 
@@ -430,6 +471,7 @@ function setStatus(){
 
   // sdio toggle enabled only if decompiled AND supports-sdio exists
   $("sdioToggle").disabled = !(optEnable && hasSdioWifi);
+  $("timingSel").disabled = !(optEnable && hasPanelTimings);
 }
 
 /* =========================
@@ -517,12 +559,115 @@ function normalizeTextToUtf8Bytes(u8){
   return u8;
 }
 
+function findPanelWithDisplayTimings(dtsText){
+  // 注意：同名 panel@0 可能出现多次；必须从当前命中位置开始解析 block
+  const re = /\bpanel@\d+\s*\{/g;
+  let m;
+  while((m = re.exec(dtsText))){
+    const mm = m[0].match(/\b(panel@\d+)\s*\{/);
+    const name = mm ? mm[1] : "panel@?";
+
+    const blk = findNodeBlockFrom(dtsText, name, m.index);
+    if(!blk) continue;
+
+    const body = dtsText.slice(blk.bodyStart, blk.bodyEnd);
+    if(/\bdisplay-timings\b\s*\{/.test(body)){
+      return { name, blk };
+    }
+  }
+  return null;
+}
+
+function readNativeModeInDisplayTimings(displayBody){
+  const m = displayBody.match(/\bnative-mode\s*=\s*<\s*([^>]+)\s*>\s*;/m);
+  if(!m) return null;
+  return parseAngleLikeValue(m[1]);
+}
+function writeNativeModeInDisplayTimings(displayBody, ph){
+  const hex = "0x" + Number(ph >>> 0).toString(16);
+  const re = /(\bnative-mode\s*=\s*<\s*)([^>]+)(\s*>\s*;)/m;
+  if(re.test(displayBody)) return displayBody.replace(re, `$1${hex}$3`);
+  const indent = (() => {
+    const m = displayBody.match(/^\s+/m);
+    return m ? m[0] : "        ";
+  })();
+  return displayBody.replace(/\s*$/, "\n" + indent + `native-mode = <${hex}>;` + "\n");
+}
+
+function parseTimingNodeBody(timingBody){
+  const clock = readAngleValueInNode(timingBody, "clock-frequency");
+  const hactive = readAngleValueInNode(timingBody, "hactive");
+  const vactive = readAngleValueInNode(timingBody, "vactive");
+  const hfp = readAngleValueInNode(timingBody, "hfront-porch");
+  const hsync = readAngleValueInNode(timingBody, "hsync-len");
+  const hbp = readAngleValueInNode(timingBody, "hback-porch");
+  const vfp = readAngleValueInNode(timingBody, "vfront-porch");
+  const vsync = readAngleValueInNode(timingBody, "vsync-len");
+  const vbp = readAngleValueInNode(timingBody, "vback-porch");
+  const phandle = readAngleValueInNode(timingBody, "phandle");
+
+  if(clock===null || hactive===null || vactive===null ||
+     hfp===null || hsync===null || hbp===null ||
+     vfp===null || vsync===null || vbp===null){
+    return { ok:false, phandle, clock };
+  }
+  const htotal = hactive + hfp + hsync + hbp;
+  const vtotal = vactive + vfp + vsync + vbp;
+  const hz = (htotal>0 && vtotal>0) ? (clock / (htotal * vtotal)) : 0;
+  return { ok:true, phandle, clock, htotal, vtotal, hz, hactive, vactive };
+}
+
+function listTimingNodes(displayBody){
+  // parse direct child timing nodes under display-timings
+  const out = [];
+  const re = /\b([A-Za-z0-9_,@.-]+)\s*\{/g;
+  let m;
+  while((m = re.exec(displayBody))){
+    const name = m[1];
+    // skip nested blocks that are not timings? (native-mode has no "{", so safe)
+    // We treat any child block that contains clock-frequency as a timing node.
+    const blk = findNodeBlock(displayBody, name);
+    if(!blk) continue;
+    const body = displayBody.slice(blk.bodyStart, blk.bodyEnd);
+    if(!/\bclock-frequency\b/.test(body)) continue;
+    const info = parseTimingNodeBody(body);
+    out.push({ name, ...info });
+  }
+  return out;
+}
+
 /* =========================
    DTS limited patching
 ========================= */
 function findNodeBlock(text, nodeName){
   const esc = nodeName.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
   const re = new RegExp("\\b" + esc + "\\s*\\{", "m");
+  const m = re.exec(text);
+  if(!m) return null;
+
+  let i = m.index + m[0].length;
+  let depth = 1;
+  while(i < text.length){
+    const ch = text[i];
+    if(ch === "{") depth++;
+    else if(ch === "}") {
+      depth--;
+      if(depth === 0){
+        let j = i + 1;
+        while(j < text.length && /\s/.test(text[j])) j++;
+        if(text[j] === ";") j++;
+        return { start: m.index, end: j, bodyStart: m.index + m[0].length, bodyEnd: i };
+      }
+    }
+    i++;
+  }
+  return null;
+}
+function findNodeBlockFrom(text, nodeName, fromIndex){
+  const esc = nodeName.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  const re = new RegExp("\\b" + esc + "\\s*\\{", "mg");
+  re.lastIndex = Math.max(0, fromIndex|0);
+
   const m = re.exec(text);
   if(!m) return null;
 
@@ -589,6 +734,22 @@ function readBatteryValue(nodeBody, key){
   const m = re.exec(nodeBody);
   if(!m) return null;
   return parseAngleLikeValue(m[1]);
+}
+function readAngleValueInNode(nodeBody, key){
+  const re = new RegExp("\\b" + key + "\\s*=\\s*<\\s*([^>]+)\\s*>\\s*;", "m");
+  const m = re.exec(nodeBody);
+  if(!m) return null;
+  return parseAngleLikeValue(m[1]);
+}
+function writeAngleValueInNode(nodeBody, key, decValue){
+  const hex = "0x" + Number(decValue >>> 0).toString(16);
+  const re = new RegExp("(\\b" + key + "\\s*=\\s*<\\s*)([^>]+)(\\s*>\\s*;)", "m");
+  if(re.test(nodeBody)) return nodeBody.replace(re, `$1${hex}$3`);
+  const indent = (() => {
+    const m = nodeBody.match(/^\s+/m);
+    return m ? m[0] : "        ";
+  })();
+  return nodeBody.replace(/\s*$/, "\n" + indent + key + " = <" + hex + ">;\n");
 }
 function writeBatteryValue(nodeBody, key, decValue){
   const hex = "0x" + Number(decValue >>> 0).toString(16);
@@ -694,6 +855,11 @@ function applyControlledEdits(dtsText){
       body = removePropLine(body, o.prop);
       if(want) body = ensurePropLineAfterPoll(body, o.prop);
     }
+    // button-adc-deadzone (decimal UI -> hex in DTS)
+    const dz = Number($("deadzone_dec").value);
+    if(Number.isFinite(dz) && dz >= 0){
+      body = writeAngleValueInNode(body, "button-adc-deadzone", dz);
+    }
     out = out.slice(0, joy.bodyStart) + body + out.slice(joy.bodyEnd);
   } else {
     hasJoyNode = false;
@@ -737,6 +903,21 @@ function applyControlledEdits(dtsText){
     hasSdioWifi = false;
   }
 
+  // Panel native-mode switch (display-timings)
+  if(nativeModeWanted !== null){
+    const panelHit = findPanelWithDisplayTimings(out);
+    if(panelHit){
+      const pStart = panelHit.blk.start, pEnd = panelHit.blk.end;
+      const pBody = out.slice(panelHit.blk.bodyStart, panelHit.blk.bodyEnd);
+      const disp = findNodeBlock(pBody, "display-timings");
+      if(disp){
+        let dispBody = pBody.slice(disp.bodyStart, disp.bodyEnd);
+        dispBody = writeNativeModeInDisplayTimings(dispBody, nativeModeWanted);
+        const newPBody = pBody.slice(0, disp.bodyStart) + dispBody + pBody.slice(disp.bodyEnd);
+        out = out.slice(0, panelHit.blk.bodyStart) + newPBody + out.slice(panelHit.blk.bodyEnd);
+      }
+    }
+  }
   return out;
 }
 
@@ -751,10 +932,30 @@ function syncOptionUIFromDecompiled(dtsText){
     $("inv_absrx").checked = hasPropLine(body, "invert-absrx");
     $("inv_absry").checked = hasPropLine(body, "invert-absry");
     $("hJoy").innerHTML = "<span class='ok'>" + t("joyFound") + "</span>";
+    const dz = readAngleValueInNode(body, "button-adc-deadzone");
+    hasDeadzoneProp = (dz !== null);
+    if(dz !== null){
+      $("deadzone_dec").value = String(dz);
+      $("deadzone_hex").textContent = "hex: 0x" + dz.toString(16);
+    } else {
+      $("deadzone_dec").value = "";
+      $("deadzone_hex").textContent = "hex: -";
+    }
   } else {
     $("inv_absx").checked = $("inv_absy").checked = $("inv_absrx").checked = $("inv_absry").checked = false;
     $("hJoy").innerHTML = "<span class='warn'>" + t("joyNotFound") + "</span>";
+    hasDeadzoneProp = false;
+    $("deadzone_dec").value = "";
+    $("deadzone_hex").textContent = "hex: -";
   }
+
+  const updDzHex = ()=>{
+    const dz = Number($("deadzone_dec").value);
+    $("deadzone_hex").textContent =
+      Number.isFinite(dz) && dz >= 0 ? ("hex: 0x"+(dz>>>0).toString(16)) : "hex: -";
+  };
+  $("deadzone_dec").oninput = updDzHex;
+  updDzHex();
 
   // Battery
   let bat = findNodeBlock(dtsText, "battery");
@@ -841,6 +1042,59 @@ function syncOptionUIFromDecompiled(dtsText){
     sdioStatusWanted = (sdioStatusWanted === "disabled") ? "okay" : "disabled";
     $("sdioToggle").textContent = `status: ${sdioStatusWanted}`;
   };
+  // Panel display-timings
+  hasPanelTimings = false;
+  panelNodeName = "";
+  timingList = [];
+  nativeModeWanted = null;
+  $("timingSel").innerHTML = "";
+  $("nativeBadge").textContent = t("nativeMode") + "-";
+  $("hPanel").textContent = "";
+
+  const panelHit = findPanelWithDisplayTimings(dtsText);
+  if(!panelHit){
+    $("hPanel").innerHTML = "<span class='warn'>" + t("panelNotFound") + "</span>";
+  } else {
+    panelNodeName = panelHit.name;
+    const pBody = dtsText.slice(panelHit.blk.bodyStart, panelHit.blk.bodyEnd);
+    const disp = findNodeBlock(pBody, "display-timings");
+    if(!disp){
+      $("hPanel").innerHTML = "<span class='warn'>" + t("panelNotFound") + "</span>";
+    } else {
+      const dispBody = pBody.slice(disp.bodyStart, disp.bodyEnd);
+      timingList = listTimingNodes(dispBody).filter(x => x.phandle !== null && x.ok);
+      const native = readNativeModeInDisplayTimings(dispBody);
+      hasPanelTimings = timingList.length > 0 && (native !== null);
+      nativeModeWanted = (native !== null) ? native : null;
+
+      if(!hasPanelTimings){
+        $("hPanel").innerHTML = "<span class='warn'>" + t("panelNotFound") + "</span>";
+      } else {
+        $("hPanel").innerHTML = "<span class='ok'>" + t("panelFound") + "</span> " + panelNodeName;
+        $("nativeBadge").textContent = t("nativeMode") + "0x" + Number(nativeModeWanted>>>0).toString(16);
+
+        // Fill select
+        const sel = $("timingSel");
+        sel.innerHTML = "";
+        for(const item of timingList){
+          const hz = item.hz || 0;
+          const opt = document.createElement("option");
+          opt.value = String(item.phandle);
+          opt.textContent =
+            `${item.name}: ${hz.toFixed(2)} Hz (${item.hactive}x${item.vactive}) ph=0x${Number(item.phandle>>>0).toString(16)}`;
+          if(item.phandle === nativeModeWanted) opt.selected = true;
+          sel.appendChild(opt);
+        }
+        sel.onchange = ()=>{
+          const ph = Number(sel.value);
+          if(Number.isFinite(ph)){
+            nativeModeWanted = ph;
+            $("nativeBadge").textContent = t("nativeMode") + "0x" + Number(nativeModeWanted>>>0).toString(16);
+          }
+        };
+      }
+    }
+  }
 }
 
 /* =========================
@@ -898,8 +1152,11 @@ $("fileDtb").onchange = async (e)=>{
   dtsOrigText=""; dtsWorkText="";
   dtsOutU8=null; dtsOutHash="";
   dtsUpU8=null; dtsUpHash=""; dtsVerified=false;
+  dtbOutReady=false;
   hasJoyNode=false; hasBatNode=false; hasAmuxProp=false;
+  hasDeadzoneProp=false;
   hasSdioWifi=false; sdioStatusWanted="";
+  hasPanelTimings=false; panelNodeName=""; timingList=[]; nativeModeWanted=null;
 
   $("bDtsSrc").textContent = t("dtsNot");
   $("bDtsHash").textContent = "DTS SHA-256: -";
@@ -908,9 +1165,11 @@ $("fileDtb").onchange = async (e)=>{
 
   $("h2").textContent=""; $("h3").textContent=""; $("h4").textContent=""; $("h5").textContent="";
   $("hJoy").textContent=""; $("hBat").textContent=""; $("hAmux").textContent="";
+  $("deadzone_dec").value=""; $("deadzone_hex").textContent="hex: -";
   $("amuxBadge").textContent="amux: -";
   $("hSdio").textContent="";
   $("sdioToggle").textContent="status: -";
+  $("timingSel").innerHTML=""; $("nativeBadge").textContent=t("nativeMode")+"-"; $("hPanel").textContent="";
 
   clearDownloads();
   setStatus();
@@ -955,8 +1214,8 @@ $("btnDecompile").onclick = ()=>{
   $("bUpHash").textContent = "Upload DTS SHA-256: -";
   $("bCheck").textContent = t("verify") + "-";
   $("fileDts").value="";
+  $("fileDts").disabled = true; // 直到 Step3 重新生成后再 enable（setStatus 会打开）
   clearDownloads();
-
   setStatus();
 };
 
@@ -984,6 +1243,7 @@ $("btnMakeDts").onclick = async ()=>{
   $("bCheck").textContent = t("verify") + "-";
   $("dlDtb").textContent="";
   revokeUrl(lastUrlDtb); lastUrlDtb=null;
+  dtbOutReady=false;
 
   $("h3").innerHTML = "<span class='ok'>" + t("s3ok") + "</span>";
   setStatus();
@@ -1051,6 +1311,7 @@ $("btnCompile").onclick = ()=>{
     const outName = (dtbName.replace(/\.dtbo?$/i,"") || "patched") + ".patched.dtb";
     buildDownload("dlDtb", out, outName, "dtb");
     $("h5").innerHTML = "<span class='ok'>" + t("s5ok") + "</span>";
+    dtbOutReady=true;
     setStatus(); return;
   }
 
@@ -1061,6 +1322,7 @@ $("btnCompile").onclick = ()=>{
       const outName = (dtbName.replace(/\.dtbo?$/i,"") || "patched") + ".patched.dtb";
       buildDownload("dlDtb", hit.blob, outName, "dtb");
       $("h5").innerHTML = "<span class='ok'>" + t("s5ok") + "</span>";
+      dtbOutReady=true;
       setStatus(); return;
     }
   }
@@ -1070,6 +1332,7 @@ $("btnCompile").onclick = ()=>{
   } else if(!errText){
     $("h5").innerHTML = "<span class='warn'>" + t("s5fail") + "</span>";
   }
+  dtbOutReady=true;
   setStatus();
 };
 
@@ -1079,7 +1342,10 @@ $("btnReset").onclick = ()=>{
   dtsOutU8=null; dtsOutHash="";
   dtsUpU8=null; dtsUpHash=""; dtsVerified=false;
   hasJoyNode=false; hasBatNode=false; hasAmuxProp=false;
+  hasDeadzoneProp=false;
   hasSdioWifi=false; sdioStatusWanted="";
+  dtbOutReady=false;
+  hasPanelTimings=false; panelNodeName=""; timingList=[]; nativeModeWanted=null;
 
   $("fileDtb").value=""; $("fileDts").value="";
   $("bDtb").textContent = t("dtbDash");
@@ -1094,11 +1360,13 @@ $("btnReset").onclick = ()=>{
   $("cap_dec").value=""; $("qmax_dec").value="";
   $("cap_hex").textContent="hex: -"; $("qmax_hex").textContent="hex: -";
   $("inv_absx").checked=$("inv_absy").checked=$("inv_absrx").checked=$("inv_absry").checked=false;
+  $("deadzone_dec").value=""; $("deadzone_hex").textContent="hex: -";
 
   $("amux0").value=""; $("amux1").value=""; $("amux2").value=""; $("amux3").value="";
   $("amuxBadge").textContent="amux: -";
   $("sdioToggle").textContent="status: -";
   $("hSdio").textContent="";
+  $("timingSel").innerHTML=""; $("nativeBadge").textContent=t("nativeMode")+"-"; $("hPanel").textContent="";
 
   clearDownloads();
   setStatus();
