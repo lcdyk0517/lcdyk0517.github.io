@@ -22,9 +22,35 @@
     .topbar{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
     .btnpill{border:1px solid #666;border-radius:999px;background:#222;color:#eee;cursor:pointer}
     .spacer{flex:1}
+    /* ===== intro modal (minimal) ===== */
+    .modalMask{position:fixed;inset:0;background:rgba(0,0,0,.72);display:none;align-items:center;justify-content:center;z-index:9999}
+    .modal{width:min(860px,calc(100vw - 24px));background:#141414;border:1px solid #333;border-radius:14px;padding:14px}
+    .modal h3{margin:0 0 8px 0}
+    .modal .muted{color:#aaa;font-size:12px;line-height:1.55}
+    .modal .row{margin:10px 0}
+    .modal .actions{display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap}
+    .modal ul{margin:8px 0 0 18px;padding:0}
+    .modal li{margin:4px 0}
   </style>
 </head>
 <body>
+
+<!-- ===== intro modal (first-time) ===== -->
+<div class="modalMask" id="introMask" role="dialog" aria-modal="true" aria-labelledby="introTitle">
+  <div class="modal">
+    <div style="display:flex;align-items:center;gap:8px">
+      <h3 id="introTitle" style="flex:1;margin:0">First-time Notice</h3>
+      <button id="introLangBtn" class="btnpill">中文</button>
+    </div>
+    <div class="muted" id="introDesc"></div>
+    <div class="row">
+      <label class="k"><input type="checkbox" id="introDontShow"> <span id="introDontShowTxt">Don't show again</span></label>
+    </div>
+    <div class="actions">
+      <button id="introOk" class="btnpill">OK</button>
+    </div>
+  </div>
+</div>
 
 <div class="topbar">
   <h3 id="title" style="margin:0">DTB → DTS (Controlled Edits) → Download (Lock) → Upload Verify → Compile DTB</h3>
@@ -262,7 +288,27 @@ const I18N = {
     s5weird: "⚠️ dtc returned 0, but no out.dtb and cannot extract from stdout.",
     s5fail: "❌ Compile failed and no stderr captured.",
     dl: "⬇️ Download ",
-  },
+
+    /* ===== intro modal ===== */
+    introTitle: "First-time Notice",
+    introDontShow: "Don't show again",
+    introOk: "I understand",
+    introDesc:
+      "<div><b>What this page does</b>: runs <b>dtc</b> in your browser for <b>DTB ⇄ DTS</b> (controlled edits + compile).</div>" +
+      "<div style='margin-top:6px'><b>Safety</b>: your files are processed locally in the browser (not uploaded).</div>" +
+      "<div style='margin-top:10px'><b>A) odroidgo3-joypad axis inversion</b></div>" +
+      "<ul>" +
+      "<li><b>invert-absx</b>: left stick horizontal (L/R). If left becomes right or right becomes left, toggle this.</li>" +
+      "<li><b>invert-absy</b>: left stick vertical (U/D).</li>" +
+      "<li><b>invert-absrx</b>: right stick horizontal.</li>" +
+      "<li><b>invert-absry</b>: right stick vertical.</li>" +
+      "</ul>" +
+      "<div style='margin-top:8px'><b>B) Battery parameters</b>: if <b>design_capacity</b>/<b>design_qmax</b> differ between ArkOS4Clone DTB and the vendor DTB, you can copy the vendor values here as-is.</div>" + 
+      "<div style='margin-top:8px'><b>C) AMUX mapping</b>: used to swap axes (vertical↔horizontal) or swap left/right sticks by reordering the mapping. <b>Most clone devices do not need changes here.</b></div>" +
+      "<div style='margin-top:8px'><b>D) SDIO WiFi</b>: for some devices, you can disable SDIO WiFi to save power.</div>" +
+      "<div style='margin-top:8px'><b>E) Panel refresh / display-timings</b>: origin may not be 60Hz (possible tearing). However, some devices may glitch on adjust (e.g. RetroArch black screen or incomplete image). If issues occur, revert to <b>origin</b>.</div>" +
+      "<div style='margin-top:10px'><b>Tip</b>: if you only need to fix joystick inversion, change <b>Section A</b> only and leave everything else untouched.</div>",
+   },
   zh: {
     title: "DTB → DTS（受控修改）→ 下载（锁定）→ 上传校验 → 编译 DTB",
     lang: "语言",
@@ -340,7 +386,26 @@ const I18N = {
     s5weird: "⚠️ dtc 返回 0，但没有 out.dtb，也无法从 stdout 提取 DTB。",
     s5fail: "❌ 编译失败，且没有捕获到 stderr 输出。",
     dl: "⬇️ 点击下载 ",
-  }
+    /* ===== intro modal ===== */
+    introTitle: "首次使用提示",
+    introDontShow: "不再提示",
+    introOk: "我知道了",
+    introDesc:
+      "<div><b>本页面用途</b>：在浏览器内运行 <b>dtc</b>，用于 <b>DTB ⇄ DTS</b>（受控修改 + 编译）。</div>" +
+      "<div style='margin-top:6px'><b>安全性</b>：文件仅在本地浏览器处理（不会上传）。</div>" +
+      "<div style='margin-top:10px'><b>A 区域：odroidgo3-joypad 摇杆方向修正</b></div>" +
+      "<ul>" +
+      "<li><b>invert-absx</b>：左摇杆水平轴（左右）。若出现“左变右 / 右变左”，勾选或取消勾选它即可。</li>" +
+      "<li><b>invert-absy</b>：左摇杆垂直轴（上下）。</li>" +
+      "<li><b>invert-absrx</b>：右摇杆水平轴。</li>" +
+      "<li><b>invert-absry</b>：右摇杆垂直轴。</li>" +
+      "</ul>" +
+      "<div style='margin-top:8px'><b>B 区域：电池参数</b>：如果 ArkOS4Clone 的 DTB 中 <b>design_capacity</b>/<b>design_qmax</b> 与原始厂商 DTB 不一致，可将原始 DTB 的数值<b>原样移植</b>以改善电量显示准确性。</div>" +
+      "<div style='margin-top:8px'><b>C 区域：AMUX 通道映射</b>：用于“垂直↔水平”或“左摇杆↔右摇杆”的映射调整，需要通过调整顺序直到正确。<b>绝大多数克隆设备无需修改此项。</b></div>" +
+      "<div style='margin-top:8px'><b>D 区域：SDIO WiFi 开关</b>：部分设备可关闭 SDIO WiFi 以降低功耗、节约电量。</div>" +
+      "<div style='margin-top:8px'><b>E 区域：屏幕刷新率 / display-timings</b>：默认 <b>origin</b> 可能不是 60Hz（可能撕裂）。但部分设备使用 <b>adjust</b> 会异常（例如 RetroArch 黑屏、画面不全等）。如遇异常请切回 <b>origin</b>。</div>" +
+      "<div style='margin-top:10px'><b>建议</b>：如果你只想修复摇杆左右/上下颠倒，只修改 <b>A 区域</b>，其余全部保持不动。</div>",
+   }
 };
 
 let lang = "en";
@@ -379,12 +444,30 @@ function applyI18n(){
   $("bDtbHash").textContent = (dtbHash ? t("dtbHash")+dtbHash : "DTB SHA-256: -");
   $("bDtsHash").textContent = (dtsOutHash ? t("dtsHash")+dtsOutHash : "DTS SHA-256: -");
   $("bUpHash").textContent = (dtsUpHash ? t("upHash")+dtsUpHash : "Upload DTS SHA-256: -");
+
+  // intro modal
+  $("introTitle").textContent = t("introTitle");
+  $("introDesc").innerHTML = t("introDesc");
+  $("introDontShowTxt").textContent = t("introDontShow");
+  $("introOk").textContent = t("introOk");
+  $("introLangBtn").textContent = (lang === "en") ? "中文" : "English";
 }
 
 $("langSel").onchange = ()=>{
   lang = $("langSel").value || "en";
   applyI18n();
 };
+
+function showIntroIfNeeded(){
+  $("introMask").style.display = "flex";
+}
+function closeIntro(){
+  $("introMask").style.display = "none";
+}
+$("introOk").onclick = closeIntro;
+$("introMask").addEventListener("click", (e)=>{ if(e.target === $("introMask")) closeIntro(); });
+window.addEventListener("keydown", (e)=>{ if(e.key === "Escape") closeIntro(); });
+
 
 /* =========================
    State
@@ -1336,6 +1419,12 @@ $("btnCompile").onclick = ()=>{
   setStatus();
 };
 
+$("introLangBtn").onclick = ()=>{
+  lang = (lang === "en") ? "zh" : "en";
+  $("langSel").value = lang; // 同步右上角 Language
+  applyI18n();
+};
+
 $("btnReset").onclick = ()=>{
   dtbU8=null; dtbName="input.dtb"; dtbHash="";
   dtsOrigText=""; dtsWorkText="";
@@ -1378,6 +1467,7 @@ $("langSel").value = "en";
 applyI18n();
 setStatus();
 loadDtc();
+showIntroIfNeeded();
 
 </script>
 
