@@ -938,10 +938,15 @@ function applyControlledEdits(dtsText){
       body = removePropLine(body, o.prop);
       if(want) body = ensurePropLineAfterPoll(body, o.prop);
     }
-    // button-adc-deadzone (decimal UI -> hex in DTS)
-    const dz = Number($("deadzone_dec").value);
-    if(Number.isFinite(dz) && dz >= 0){
-      body = writeAngleValueInNode(body, "button-adc-deadzone", dz);
+    // button-adc-deadzone: only write back if it existed in original DTS
+    if (hasDeadzoneProp) {
+      const dzStr = $("deadzone_dec").value.trim();
+      if (dzStr !== "") {
+        const dz = Number(dzStr);
+        if (Number.isFinite(dz) && dz >= 0) {
+          body = writeAngleValueInNode(body, "button-adc-deadzone", dz);
+        }
+      }
     }
     out = out.slice(0, joy.bodyStart) + body + out.slice(joy.bodyEnd);
   } else {
