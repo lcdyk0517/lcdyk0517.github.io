@@ -179,7 +179,8 @@ Thanks!`);
             const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=lcdyk0517@qq.com&su=${emailSubject}&body=${emailBody}`;
 
             const t = translations[currentLanguage];
-            const noMatchTip = `<div style="margin-top:12px;padding-top:10px;border-top:1px solid rgba(86,156,214,.3);font-size:0.9em;">${t.noMatchTip}<br><br><a href="${gmailUrl}" target="_blank" rel="noopener noreferrer" style="display:inline-block;margin-top:8px;padding:8px 16px;background:var(--secondary);color:#fff;border-radius:6px;text-decoration:none;">${t.emailButton}</a></div>`;
+            const confirmMsg = `${t.emailConfirmTitle}\n\n${t.emailConfirmDiscord}\n${t.emailConfirmTime}\n${t.emailConfirmPhoto}\n${t.emailConfirmContribute}\n\n${t.emailConfirmOk}`;
+            const noMatchTip = `<div style="margin-top:12px;padding-top:10px;border-top:1px solid rgba(86,156,214,.3);font-size:0.9em;">${t.noMatchTip}<br><br><a href="${gmailUrl}" target="_blank" rel="noopener noreferrer" onclick="return confirm('${confirmMsg.replace(/'/g, "\\'").replace(/\n/g, '\\n')}')" style="display:inline-block;margin-top:8px;padding:8px 16px;background:var(--secondary);color:#fff;border-radius:6px;text-decoration:none;">${t.emailButton}</a></div>`;
 
             result.push(`<div class="match-info">❓ <span class="property">${t.noMatch}</span> ${t.noMatchDesc}${noMatchTip}</div>`);
         }
