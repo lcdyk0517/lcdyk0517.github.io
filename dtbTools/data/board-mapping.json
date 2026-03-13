@@ -62,7 +62,12 @@
     "R36S_V20_2025_05_18_970": {
         "series": "Clone R36S",
         "originalDtb": "rf3536k3ka.dtb",
-        "arkosRecommendation": "Clone R36s -> Clone R36s -> Clone Type 3"
+        "arkosRecommendation": "Clone R36s -> Clone R36s -> Clone Type 3 Panel 1"
+    },
+    "R36S_V20_2025_05_18_2": {
+        "series": "Clone R36S",
+        "originalDtb": "rf3536k3ka.dtb",
+        "arkosRecommendation": "Clone R36s -> Clone R36s -> Clone Type 3 Panel 2"
     },
     "Y3506_V03_20241210": {
         "series": "SaySouce R36S",
