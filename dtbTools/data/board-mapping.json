@@ -1,0 +1,77 @@
+{
+    "R36S_V12_2023_08_18": {
+        "series": "Original R36S",
+        "originalDtb": null,
+        "arkosRecommendation": "GameConsole -> GameConsole R36s Panel[1,2,3,4]"
+    },
+    "R36S_V21_2024_12_18": {
+        "series": "Original R36S",
+        "originalDtb": null,
+        "arkosRecommendation": "GameConsole -> GameConsole R36s Pane4"
+    },
+    "R36S_V30_2025_11_18": {
+        "series": "Original R36S",
+        "originalDtb": null,
+        "arkosRecommendation": "GameConsole -> GameConsole R36s Pane4"
+    },
+    "G80C_V1.0_2025_02_02": {
+        "series": "Clone R36S",
+        "originalDtb": "rf3536k3ka.dtb",
+        "arkosRecommendation": "Clone R36s -> Clone Type 2 Without Amplifier"
+    },
+    "G80CA_MB_V1.2_2025_04_22": {
+        "series": "Clone R36S",
+        "originalDtb": "rf3536k3ka.dtb",
+        "arkosRecommendation": "Clone R36s -> Clone Type 2 Without Amplifier"
+    },
+    "G80CA_MB_V1.2_2025_04_23": {
+        "series": "Clone R36S",
+        "originalDtb": "rk3326-evb-lp3-v12-linux.dtb",
+        "arkosRecommendation": "Clone R36s -> Clone Type 2 Without Amplifier"
+    },
+    "R36S_POWER_MB_V01_06_06_25": {
+        "series": "Clone R36S",
+        "originalDtb": "rk3326-evb-lp3-v12-linux.dtb",
+        "arkosRecommendation": "Clone R36s -> Clone Type 2 Without Amplifier"
+    },
+    "R36S_R36S_2025_05_21": {
+        "series": "Clone R36S",
+        "originalDtb": "rf3536k3ka.dtb",
+        "arkosRecommendation": "Clone R36s -> Clone Type 1 Without Amplifier"
+    },
+    "R36S_V12_2023_08_18_CLONE": {
+        "series": "Clone R36S",
+        "originalDtb": "rf3536k3ka.dtb",
+        "arkosRecommendation": "Clone R36s -> Clone Type 4"
+    },
+    "R36S_V12_2023_08_18_PANEL1": {
+        "series": "Clone R36S",
+        "originalDtb": "rf3536k3ka.dtb",
+        "arkosRecommendation": "Clone R36s -> Clone Type 1 With Amplifier"
+    },
+    "R36S_V12_2023_08_18_PANEL1_2": {
+        "series": "Clone R36S",
+        "originalDtb": "rf3536k3ka.dtb",
+        "arkosRecommendation": "Clone R36s -> Clone Type 1 With Amplifier"
+    },
+    "R36S_V12_2023_08_18_PANEL5": {
+        "series": "Clone R36S",
+        "originalDtb": "rk3326-evb-lp3-v12-linux.dtb",
+        "arkosRecommendation": "Clone R36s -> Clone Type 2 With Amplifier"
+    },
+    "R36S_V20_2025_05_18_970": {
+        "series": "Clone R36S",
+        "originalDtb": "rf3536k3ka.dtb",
+        "arkosRecommendation": "Clone R36s -> Clone R36s -> Clone Type 3"
+    },
+    "Y3506_V03_20241210": {
+        "series": "SaySouce R36S",
+        "originalDtb": "rk3326-r35s-linux.dtb",
+        "arkosRecommendation": "SaySouce R36s -> Soy Sauce Panel 1"
+    },
+    "Y3506_V04_20250529": {
+        "series": "SaySouce R36S",
+        "originalDtb": "rk3326-r35s-linux.dtb",
+        "arkosRecommendation": "SaySouce R36s -> Soy Sauce Panel 2"
+    }
+}

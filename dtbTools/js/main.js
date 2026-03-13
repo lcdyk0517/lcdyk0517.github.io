@@ -24,18 +24,20 @@ const GPIO_MAPPING = {
 // ==================== 数据加载 ====================
 async function loadData() {
     try {
-        const [zhData, enData, jaData, koData, deData, ptData, arkos4cloneData] = await Promise.all([
+        const [zhData, enData, jaData, koData, deData, ptData, arkos4cloneData, boardMappingData] = await Promise.all([
             fetch('dtbTools/i18n/zh.json').then(r => r.json()),
             fetch('dtbTools/i18n/en.json').then(r => r.json()),
             fetch('dtbTools/i18n/ja.json').then(r => r.json()),
             fetch('dtbTools/i18n/ko.json').then(r => r.json()),
             fetch('dtbTools/i18n/de.json').then(r => r.json()),
             fetch('dtbTools/i18n/pt.json').then(r => r.json()),
-            fetch('dtbTools/data/arkos4clone.json').then(r => r.json())
+            fetch('dtbTools/data/arkos4clone.json').then(r => r.json()),
+            fetch('dtbTools/data/board-mapping.json').then(r => r.json())
         ]);
         
         translations = { zh: zhData, en: enData, ja: jaData, ko: koData, de: deData, pt: ptData };
         ARKOS4CLONE_DB = normalizeDatabase(arkos4cloneData);
+        window.BOARD_MAPPING = boardMappingData;
         
         return true;
     } catch (error) {
@@ -165,22 +167,9 @@ class DTBIdentifier {
 
             result.push(`<div class="match-warning">⚠️ <span class="property">${t.screenMatch}</span><br>${capLine}${capLineMax}<br><span class="comment">${t.screenMatchDesc}</span><br><span class="comment">${t.screenMatchAdvice}</span><div style="margin-top:8px;">${screenMatches.map(n => `<div>• <span class="value">${n.replace(/\s*->\s*/g, ' → ')}</span></div>`).join('')}</div>${toolTip}</div>`);
         } else {
-            const emailSubject = encodeURIComponent('ArkOS4Clone DTB Adaptation Request');
-            const emailBody = encodeURIComponent(`Hi,
-
-I would like to request ArkOS4Clone support for my device.
-
-Device info:
-- Device name: 
-- DTB file: (please attach the DTB file)
-- Discord contact: 
-
-Thanks!`);
-            const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=lcdyk0517@qq.com&su=${emailSubject}&body=${emailBody}`;
-
             const t = translations[currentLanguage];
-            const confirmMsg = `${t.emailConfirmTitle}\n\n${t.emailConfirmDiscord}\n${t.emailConfirmTime}\n${t.emailConfirmPhoto}\n${t.emailConfirmContribute}\n\n${t.emailConfirmOk}`;
-            const noMatchTip = `<div style="margin-top:12px;padding-top:10px;border-top:1px solid rgba(86,156,214,.3);font-size:0.9em;">${t.noMatchTip}<br><br><a href="${gmailUrl}" target="_blank" rel="noopener noreferrer" onclick="return confirm('${confirmMsg.replace(/'/g, "\\'").replace(/\n/g, '\\n')}')" style="display:inline-block;margin-top:8px;padding:8px 16px;background:var(--secondary);color:#fff;border-radius:6px;text-decoration:none;">${t.emailButton}</a></div>`;
+
+            const noMatchTip = `<div style="margin-top:12px;padding-top:10px;border-top:1px solid rgba(86,156,214,.3);font-size:0.9em;">${t.noMatchTip}<br><br><button onclick="sendEmailRequest()" style="display:inline-block;margin-top:8px;padding:8px 16px;background:var(--secondary);color:#fff;border-radius:6px;text-decoration:none;border:none;cursor:pointer;font-weight:600;">${t.emailButton}</button></div>`;
 
             result.push(`<div class="match-info">❓ <span class="property">${t.noMatch}</span> ${t.noMatchDesc}${noMatchTip}</div>`);
         }
@@ -573,6 +562,10 @@ function switchLanguage(lang) {
         const key = el.getAttribute('data-i18n');
         if (translations[lang] && translations[lang][key]) el.textContent = translations[lang][key];
     });
+    document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+        const key = el.getAttribute('data-i18n-placeholder');
+        if (translations[lang] && translations[lang][key]) el.placeholder = translations[lang][key];
+    });
     const langSelect = document.getElementById('langSelect');
     if (langSelect) langSelect.value = lang;
     renderDonors();
@@ -595,6 +588,93 @@ async function initApp() {
     const errorMessage = document.getElementById('errorMessage');
     const langSelect = document.getElementById('langSelect');
     const debugToggle = document.getElementById('debugToggle');
+    const identificationResultsBtn = document.getElementById('identificationResultsBtn');
+    const closeBoardModalBtn = document.getElementById('closeBoardModal');
+    const boardNotFoundBtn = document.getElementById('boardNotFoundBtn');
+
+    // 模态框按钮事件
+    if (identificationResultsBtn) {
+        identificationResultsBtn.addEventListener('click', openBoardModal);
+    }
+
+    if (closeBoardModalBtn) {
+        closeBoardModalBtn.addEventListener('click', closeBoardModal);
+    }
+
+    // "没有找到你的主板？"按钮事件
+    if (boardNotFoundBtn) {
+        boardNotFoundBtn.addEventListener('click', function() {
+            closeBoardModal();
+            setTimeout(() => {
+                sendEmailRequest();
+            }, 300);
+        });
+    }
+
+    // 搜索功能
+    const searchInput = document.getElementById('boardSearchInput');
+    const clearSearchBtn = document.getElementById('clearSearch');
+    let searchTimeout;
+
+    if (searchInput) {
+        searchInput.addEventListener('input', function() {
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(() => {
+                const filterText = searchInput.value.trim();
+                renderBoardList(filterText);
+                
+                // 显示/隐藏清除按钮
+                if (clearSearchBtn) {
+                    clearSearchBtn.style.display = filterText ? 'flex' : 'none';
+                }
+            }, 300);
+        });
+    }
+
+    if (clearSearchBtn) {
+        clearSearchBtn.addEventListener('click', function() {
+            if (searchInput) {
+                searchInput.value = '';
+                renderBoardList('');
+                clearSearchBtn.style.display = 'none';
+                searchInput.focus();
+            }
+        });
+    }
+
+    // 点击模态框外部关闭
+    const boardModal = document.getElementById('boardModal');
+    if (boardModal) {
+        boardModal.addEventListener('click', (e) => {
+            if (e.target === boardModal) {
+                closeBoardModal();
+            }
+        });
+    }
+
+    // ESC 键关闭模态框
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+            closeBoardModal();
+            closeImageModal();
+        }
+    });
+
+    // 图片模态框关闭按钮
+    const closeImageModalBtn = document.getElementById('closeImageModal');
+    if (closeImageModalBtn) {
+        closeImageModalBtn.addEventListener('click', closeImageModal);
+    }
+
+    // 点击图片模态框外部关闭
+    const imageModal = document.getElementById('imageModal');
+    if (imageModal) {
+        imageModal.addEventListener('click', (e) => {
+            if (e.target === imageModal) {
+                closeImageModal();
+            }
+        });
+    }
 
     // Umami 统计
     const umamiScript = document.createElement('script');
@@ -677,6 +757,278 @@ async function initApp() {
     switchLanguage(currentLanguage);
     loadDonors();
 }
+
+// ==================== 主板列表模态框 ====================
+let boardFolders = [];
+
+async function loadBoardFolders() {
+    try {
+        // 获取映射文件
+        const mapping = window.BOARD_MAPPING || {};
+        
+        // 使用 JSON 文件中的键名作为顺序
+        const order = Object.keys(mapping);
+        
+        // 只返回在映射文件中定义的文件夹（不管是否有DTB）
+        boardFolders = order.filter(folder => mapping[folder]);
+        
+        console.log('=== Board Folders Debug ===');
+        console.log('Order array:', order);
+        console.log('Filtered folders:', boardFolders);
+        console.log('==========================');
+        
+        return boardFolders;
+    } catch (error) {
+        console.error('Failed to load board folders:', error);
+        return [];
+    }
+}
+
+async function loadBoardImages(folderName) {
+    const images = { mainboard: null };
+    const baseUrl = `images/${folderName}/`;
+
+    try {
+        // 只加载主板图片
+        const mainboardUrl = `${baseUrl}mainboard.jpg`;
+        const response = await fetch(mainboardUrl);
+        if (response.ok) {
+            images.mainboard = mainboardUrl;
+        }
+    } catch (error) {
+        console.error(`Failed to load images for ${folderName}:`, error);
+    }
+
+    return images;
+}
+
+async function createBoardCard(folder) {
+    const images = await loadBoardImages(folder);
+
+    const card = document.createElement('div');
+    card.className = 'board-card';
+
+    // 创建图片区域
+    const imagesDiv = document.createElement('div');
+    imagesDiv.className = 'board-card-images';
+
+    if (images.mainboard) {
+        const img = document.createElement('img');
+        img.src = images.mainboard;
+        img.alt = `${folder} Mainboard`;
+        img.className = 'board-card-img';
+        img.style.cursor = 'pointer';
+        img.addEventListener('click', function() {
+            openImageModal(images.mainboard, folder);
+        });
+        imagesDiv.appendChild(img);
+    }
+
+    // 创建标题
+    const title = document.createElement('div');
+    title.className = 'board-card-title';
+    title.textContent = folder;
+
+    // 创建操作按钮区域
+    const actionsDiv = document.createElement('div');
+    actionsDiv.className = 'board-card-actions';
+
+    // 获取映射信息
+    const mapping = window.BOARD_MAPPING && window.BOARD_MAPPING[folder];
+    const originalDtb = mapping ? mapping.originalDtb : null;
+    const arkosRecommendation = mapping ? mapping.arkosRecommendation : null;
+
+    // 原始 DTB 按钮 - 下载DTB文件
+            const dtbBtn = document.createElement('button');
+            dtbBtn.className = 'board-card-btn board-card-btn-original';
+            
+            if (originalDtb) {
+                dtbBtn.textContent = translations[currentLanguage].viewOriginalDTB || 'Download Original DTB';
+                dtbBtn.addEventListener('click', function() {
+                    const link = document.createElement('a');
+                    link.href = `images/${folder}/${originalDtb}`;
+                    link.download = originalDtb;
+                    link.click();
+                });
+            } else {
+                dtbBtn.textContent = translations[currentLanguage].noDtbAvailable || 'No DTB Available';
+                dtbBtn.disabled = true;
+                dtbBtn.style.opacity = '0.5';
+                dtbBtn.style.cursor = 'not-allowed';
+            }
+            actionsDiv.appendChild(dtbBtn);
+    // ArkOS4Clone 按钮 - 显示推荐的DTB信息
+    const arkosBtn = document.createElement('button');
+    arkosBtn.className = 'board-card-btn board-card-btn-arkos4clone';
+    arkosBtn.textContent = translations[currentLanguage].viewArkOS4Clone || 'View Recommended DTB';
+    
+    if (arkosRecommendation) {
+        arkosBtn.addEventListener('click', function() {
+            const t = translations[currentLanguage];
+            alert(`${t.arkosRecommendationTitle}\n\n${arkosRecommendation}`);
+        });
+    } else {
+        arkosBtn.disabled = true;
+        arkosBtn.style.opacity = '0.5';
+        arkosBtn.style.cursor = 'not-allowed';
+    }
+    actionsDiv.appendChild(arkosBtn);
+
+    card.appendChild(imagesDiv);
+    card.appendChild(title);
+    card.appendChild(actionsDiv);
+
+    return card;
+}
+
+async function renderBoardList(filterText = '') {
+    const boardList = document.getElementById('boardList');
+    const noResults = document.getElementById('noResults');
+    if (!boardList) return;
+
+    boardList.innerHTML = '<div class="loading" style="position:static;background:transparent;"><div class="spinner"></div></div>';
+
+    const folders = await loadBoardFolders();
+    boardFolders = folders;
+
+    boardList.innerHTML = '';
+
+    // 过滤主板列表
+    const filteredFolders = folders.filter(folder => 
+        folder.toLowerCase().includes(filterText.toLowerCase())
+    );
+
+    // 显示或隐藏"无结果"提示
+    if (noResults) {
+        noResults.style.display = filteredFolders.length === 0 ? 'block' : 'none';
+        const noResultsText = noResults.querySelector('span');
+        if (noResultsText) {
+            const key = noResultsText.getAttribute('data-i18n');
+            if (key && translations[currentLanguage] && translations[currentLanguage][key]) {
+                noResultsText.textContent = translations[currentLanguage][key];
+            }
+        }
+    }
+
+    // 渲染过滤后的卡片 - 按系列分组
+    const seriesGroups = {};
+    filteredFolders.forEach(folder => {
+        const mapping = window.BOARD_MAPPING && window.BOARD_MAPPING[folder];
+        const series = mapping ? mapping.series : 'Other';
+        console.log(`Folder: ${folder}, Series: ${series}`);
+        if (!seriesGroups[series]) {
+            seriesGroups[series] = [];
+        }
+        seriesGroups[series].push(folder);
+    });
+
+    console.log('=== Series Groups ===');
+    console.log(seriesGroups);
+    console.log('===================');
+
+    // 动态获取所有series并按顺序渲染
+    const seriesOrder = Object.keys(seriesGroups).sort();
+    console.log('=== Series Order ===');
+    console.log(seriesOrder);
+    console.log('===================');
+
+    for (const series of seriesOrder) {
+        // 创建系列标题
+        const seriesHeader = document.createElement('div');
+        seriesHeader.className = 'board-series-header';
+        seriesHeader.textContent = series;
+        boardList.appendChild(seriesHeader);
+
+        // 渲染该系列的所有主板（等待每个卡片创建完成）
+        for (const folder of seriesGroups[series]) {
+            const card = await createBoardCard(folder);
+            boardList.appendChild(card);
+        }
+    }
+}
+
+function openBoardModal() {
+    const modal = document.getElementById('boardModal');
+    if (!modal) return;
+
+    modal.classList.add('active');
+    document.body.style.overflow = 'hidden';
+    renderBoardList();
+}
+
+function closeBoardModal() {
+    const modal = document.getElementById('boardModal');
+    if (!modal) return;
+
+    modal.classList.remove('active');
+    document.body.style.overflow = '';
+}
+
+// ==================== 图片放大模态框 ====================
+function openImageModal(imageUrl, title) {
+    const modal = document.getElementById('imageModal');
+    const img = document.getElementById('imageModalImg');
+    const titleEl = document.getElementById('imageModalTitle');
+
+    if (!modal || !img || !titleEl) return;
+
+    img.src = imageUrl;
+    img.alt = title;
+    titleEl.textContent = title;
+
+    modal.classList.add('active');
+    document.body.style.overflow = 'hidden';
+}
+
+function closeImageModal() {
+    const modal = document.getElementById('imageModal');
+    if (!modal) return;
+
+    modal.classList.remove('active');
+    document.body.style.overflow = '';
+}
+
+// ==================== 发送邮件功能 ====================
+window.sendEmailRequest = function() {
+    const t = translations[currentLanguage];
+    if (!t) {
+        console.error('Translations not loaded');
+        return;
+    }
+
+    // 第一步确认：是否保存主板照片并了解必需文件
+    const savePhotoConfirmed = confirm(t.saveBoardPhotoTitle + '\n\n' + t.saveBoardPhoto);
+    if (!savePhotoConfirmed) {
+        return; // 用户选择否，结束流程
+    }
+
+    // 第二步确认：是否可以运行arkos4clone
+    const canRunArkos = confirm(t.canRunArkosTitle + '\n\n' + t.canRunArkos);
+
+    // 准备邮件内容
+    const emailSubject = encodeURIComponent('ArkOS4Clone DTB Adaptation Request');
+    const emailBody = encodeURIComponent(`Hi,
+
+I would like to request ArkOS4Clone support for my device.
+
+${t.emailDeviceInfo}
+${t.emailDeviceName}___________
+${t.emailDtbFile}(please attach the DTB file)
+${t.emailDiscord}___________
+${t.emailCanRunArkos}${canRunArkos ? t.emailYes : t.emailNo}
+${t.emailBoardPhotos}${t.emailYes}
+
+${t.emailRequiredFiles}
+
+${t.emailNote}
+${t.emailNoteContent}
+
+Thanks!`);
+
+    // 打开Gmail发送邮件
+    const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=lcdyk0517@qq.com&su=${emailSubject}&body=${emailBody}`;
+    window.open(gmailUrl, '_blank', 'noopener');
+};
 
 // 导出全局函数
 window.initDtbTools = initApp;
