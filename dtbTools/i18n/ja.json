@@ -81,7 +81,7 @@
   "boardListTitle": "基板一覧",
   "viewOriginalDTB": "元のDTBをダウンロード",
   "noDtbAvailable": "ダウンロード可能なDTBはありません",
-  "viewArkOS4Clone": "推奨DTBを表示",
+  "viewArkOS4Clone": "推奨ArkOS4Clone DTBを表示",
   "arkosRecommendationTitle": "推奨ArkOS4Clone DTB設定：",
   "searchPlaceholder": "基板を検索...",
   "noResults": "一致する基板が見つかりません",

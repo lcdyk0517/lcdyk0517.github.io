@@ -81,7 +81,7 @@
   "boardListTitle": "主板列表",
   "viewOriginalDTB": "下载原始 DTB",
   "noDtbAvailable": "暂时没有dtb可下载",
-  "viewArkOS4Clone": "查看推荐 DTB",
+  "viewArkOS4Clone": "查看 ArkOS4Clone 推荐使用的 DTB",
   "arkosRecommendationTitle": "推荐的 ArkOS4Clone DTB 配置：",
   "noResults": "未找到匹配的主板",
   "seriesG80C": "G80C 系列",
@@ -89,5 +89,15 @@
   "seriesY3506": "Y3506 系列",
   "seriesOther": "其他",
   "searchPlaceholder": "搜索主板名称...",
-  "boardNotFoundBtn": "没有找到你的主板？"
+  "boardNotFoundBtn": "没有找到你的主板？",
+  "viewDeviceInfo": "设备信息",
+  "deviceInfoTitle": "设备信息",
+  "deviceInfoEmpty": "暂无设备信息",
+  "deviceInfoRam": "内存",
+  "deviceInfoExtAmplifier": "外部功放",
+  "deviceInfoTips": "提示",
+  "deviceInfoNotSet": "未设置",
+  "deviceInfoYes": "是",
+  "deviceInfoNo": "否",
+  "deviceInfoUnknown": "未知"
 }

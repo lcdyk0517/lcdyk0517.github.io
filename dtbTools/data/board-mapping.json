@@ -2,96 +2,236 @@
     "R36S_V12_2023_08_18": {
         "series": "Original R36S",
         "originalDtb": null,
-        "arkosRecommendation": "GameConsole -> GameConsole R36s Panel[1,2,3,4]"
+        "arkosRecommendation": "GameConsole -> GameConsole R36s Panel[1,2,3,4]",
+        "deviceInfo": {
+            "ram": "BGA96 DDR3 512M*2",
+            "useExtAmplifier": true,
+            "tips": {}
+        }
     },
     "R36S_V21_2024_12_18": {
         "series": "Original R36S",
         "originalDtb": null,
-        "arkosRecommendation": "GameConsole -> GameConsole R36s Pane4"
+        "arkosRecommendation": "GameConsole -> GameConsole R36s Pane4",
+        "deviceInfo": {
+            "ram": "BGA96 DDR3 512M*2",
+            "useExtAmplifier": true,
+            "tips": {}
+        }
     },
     "R36S_V30_2025_11_18": {
         "series": "Original R36S",
         "originalDtb": null,
-        "arkosRecommendation": "GameConsole -> GameConsole R36s Pane4"
+        "arkosRecommendation": "GameConsole -> GameConsole R36s Pane4",
+        "deviceInfo": {
+            "ram": "BGA96 DDR3 512M*2",
+            "useExtAmplifier": true,
+            "tips": {
+                "zh": "预留了hub和wifi焊盘，diy潜力巨大。",
+                "en": "Reserved hub and WiFi pads, great DIY potential."
+            }
+        }
     },
     "R36S_V12_2023_08_18_PANEL1": {
         "series": "Clone R36S",
         "originalDtb": "rf3536k3ka.dtb",
-        "arkosRecommendation": "Clone R36s -> Clone Type 1 With Amplifier"
+        "arkosRecommendation": "Clone R36s -> Clone Type 1 With Amplifier",
+        "deviceInfo": {
+            "ram": "BGA221 eMCP 1G + 8G",
+            "useExtAmplifier": true,
+            "tips": {
+                "zh": "稀范早期设备，配置都是最高规格，带内置存储，带功放。",
+                "en": "XiFan early model with top-tier specs, includes built-in storage and amplifier."
+            }
+        }
     },
     "R36S_V12_2023_08_18_PANEL1_2": {
         "series": "Clone R36S",
         "originalDtb": "rf3536k3ka.dtb",
-        "arkosRecommendation": "Clone R36s -> Clone Type 1 With Amplifier"
+        "arkosRecommendation": "Clone R36s -> Clone Type 1 With Amplifier",
+        "deviceInfo": {
+            "ram": "BGA221 eMCP 1G + 8G",
+            "useExtAmplifier": true,
+            "tips": {
+                "zh": "稀范早期设备，配置都是最高规格，带内置存储，带功放。",
+                "en": "XiFan early model with top-tier specs, includes built-in storage and amplifier."
+            }
+        }
     },
     "R36S_R36S_2025_05_21": {
         "series": "Clone R36S",
         "originalDtb": "rf3536k3ka.dtb",
-        "arkosRecommendation": "Clone R36s -> Clone Type 1 Without Amplifier"
+        "arkosRecommendation": "Clone R36s -> Clone Type 1 Without Amplifier",
+        "deviceInfo": {
+            "ram": "BGA221 eMCP 1G + 8G",
+            "useExtAmplifier": false,
+            "tips": {
+                "zh": "了解不多，仅适配arkos4clone。",
+                "en": "Limited information, only adapted for ArkOS4Clone."
+            }
+        }
     },
     "G80C_V1.0_2025_02_02": {
         "series": "Clone R36S",
         "originalDtb": "rf3536k3ka.dtb",
-        "arkosRecommendation": "Clone R36s -> Clone Type 2 Without Amplifier"
+        "arkosRecommendation": "Clone R36s -> Clone Type 2 Without Amplifier",
+        "deviceInfo": {
+            "ram": "BGA178 LPDDR3 1G",
+            "useExtAmplifier": false,
+            "tips": {
+                "zh": "gamepad方案产品，此产品为内部测试版本，几乎未对外发售。",
+                "en": "Gamepad-based product, internal test version, rarely released to public."
+            }
+        }
     },
     "G80CA_MB_V1.2_2025_04_22": {
         "series": "Clone R36S",
         "originalDtb": "rf3536k3ka.dtb",
-        "arkosRecommendation": "Clone R36s -> Clone Type 2 Without Amplifier"
+        "arkosRecommendation": "Clone R36s -> Clone Type 2 Without Amplifier",
+        "deviceInfo": {
+            "ram": "BGA178 LPDDR3 1G",
+            "useExtAmplifier": false,
+            "tips": {
+                "zh": "gamepad方案产品。此时仍然使用play_joystick驱动。",
+                "en": "Gamepad-based product. Still using play_joystick driver."
+            }
+        }
     },
     "G80CA_MB_V1.2_2025_04_23": {
         "series": "Clone R36S",
         "originalDtb": "rk3326-evb-lp3-v12-linux.dtb",
-        "arkosRecommendation": "Clone R36s -> Clone Type 2 Without Amplifier"
+        "arkosRecommendation": "Clone R36s -> Clone Type 2 Without Amplifier",
+        "deviceInfo": {
+            "ram": "BGA178 LPDDR3 1G",
+            "useExtAmplifier": false,
+            "tips": {
+                "zh": "gamepad方案产品。为了于play_joystick做出区别第一次使用gamepad驱动名。",
+                "en": "Gamepad-based product. First to use gamepad driver name to differentiate from play_joystick."
+            }
+        }
     },
     "R36S_POWER_MB_V01_06_06_25": {
         "series": "Clone R36S",
         "originalDtb": "rk3326-evb-lp3-v12-linux.dtb",
-        "arkosRecommendation": "Clone R36s -> Clone Type 2 Without Amplifier"
+        "arkosRecommendation": "Clone R36s -> Clone Type 2 Without Amplifier",
+        "deviceInfo": {
+            "ram": "BGA178 LPDDR3 1G",
+            "useExtAmplifier": false,
+            "tips": {
+                "zh": "了解不多，仅适配arkos4clone。gamepad方案产品。",
+                "en": "Limited information, only adapted for ArkOS4Clone. Gamepad-based product."
+            }
+        }
     },
     "R36S_V12_2023_08_18_PANEL5": {
         "series": "Clone R36S",
         "originalDtb": "rk3326-evb-lp3-v12-linux.dtb",
-        "arkosRecommendation": "Clone R36s -> Clone Type 2 With Amplifier"
+        "arkosRecommendation": "Clone R36s -> Clone Type 2 With Amplifier",
+        "deviceInfo": {
+            "ram": "BGA221 eMCP 1G + 8G",
+            "useExtAmplifier": true,
+            "tips": {
+                "zh": "稀范早期设备，配置都是最高规格，带内置存储，带功放。",
+                "en": "XiFan early model with top-tier specs, includes built-in storage and amplifier."
+            }
+        }
     },
     "R36S_V12_2023_08_18_PANEL5_2": {
         "series": "Clone R36S",
         "originalDtb": "rk3326-evb-lp3-v12-linux.dtb",
-        "arkosRecommendation": "Clone R36s -> Clone Type 2 With Amplifier"
+        "arkosRecommendation": "Clone R36s -> Clone Type 2 With Amplifier",
+        "deviceInfo": {
+            "ram": "BGA221 eMCP 1G + 8G",
+            "useExtAmplifier": true,
+            "tips": {
+                "zh": "稀范早期设备，配置都是最高规格，带内置存储，带功放。",
+                "en": "XiFan early model with top-tier specs, includes built-in storage and amplifier."
+            }
+        }
     },
     "R36S_V20_2025_05_18_970": {
         "series": "Clone R36S",
         "originalDtb": "rf3536k3ka.dtb",
-        "arkosRecommendation": "Clone R36s -> Clone R36s -> Clone Type 3 Panel 1"
+        "arkosRecommendation": "Clone R36s -> Clone R36s -> Clone Type 3 Panel 1",
+        "deviceInfo": {
+            "ram": "BGA178 LPDDR3 1G",
+            "useExtAmplifier": false,
+            "tips": {
+                "zh": "V20克隆最好的版本，使用了1G的lpddr3。",
+                "en": "Best V20 clone version, uses 1GB LPDDR3."
+            }
+        }
     },
     "R36S_V20_2025_05_18_3": {
         "series": "Clone R36S",
         "originalDtb": "rf3536k3ka.dtb",
-        "arkosRecommendation": "Clone R36s -> Clone R36s -> Clone Type 3 Panel 1"
+        "arkosRecommendation": "Clone R36s -> Clone R36s -> Clone Type 3 Panel 1",
+        "deviceInfo": {
+            "ram": "BGA178 LPDDR3 1G",
+            "useExtAmplifier": false,
+            "tips": {
+                "zh": "克隆系列中最不推荐的版本，使用的是屏蔽坏道的1G，原始系统硬编码965M，重置后可显示1200M，实际上只有750M。",
+                "en": "Least recommended clone version. Uses 1GB with masked bad sectors. Shows 965M originally, 1200M after reset, but actually only 750M."
+            }
+        }
     },
     "R36S_V20_2025_05_18_2": {
         "series": "Clone R36S",
         "originalDtb": "rf3536k3ka.dtb",
-        "arkosRecommendation": "Clone R36s -> Clone R36s -> Clone Type 3 Panel 2"
+        "arkosRecommendation": "Clone R36s -> Clone R36s -> Clone Type 3 Panel 2",
+        "deviceInfo": {
+            "ram": "BGA178 LPDDR3 1G",
+            "useExtAmplifier": false,
+            "tips": {}
+        }
     },
     "R36S_V12_2023_08_18_CLONE": {
         "series": "Clone R36S",
         "originalDtb": "rf3536k3ka.dtb",
-        "arkosRecommendation": "Clone R36s -> Clone Type 4"
+        "arkosRecommendation": "Clone R36s -> Clone Type 4",
+        "deviceInfo": {
+            "ram": "BGA221 eMCP 1G + 8G",
+            "useExtAmplifier": false,
+            "tips": {}
+        }
     },
     "Y3506_V03_20241210": {
         "series": "SaySouce R36S",
         "originalDtb": "rk3326-r35s-linux.dtb",
-        "arkosRecommendation": "SaySouce R36s -> Soy Sauce Panel 1"
+        "arkosRecommendation": "SaySouce R36s -> Soy Sauce Panel 1",
+        "deviceInfo": {
+            "ram": "BGA96 DDR3 512M*2",
+            "useExtAmplifier": true,
+            "tips": {
+                "zh": "自带dtb性能羸弱，酱油的每一次版本迭代都是在降低成本。",
+                "en": "Stock DTB has weak performance. Each Soy Sauce iteration reduces costs."
+            }
+        }
     },
     "Y3506_V04_20250529": {
         "series": "SaySouce R36S",
         "originalDtb": "rk3326-r35s-linux.dtb",
-        "arkosRecommendation": "SaySouce R36s -> Soy Sauce Panel 2"
+        "arkosRecommendation": "SaySouce R36s -> Soy Sauce Panel 2",
+        "deviceInfo": {
+            "ram": "BGA96 DDR3 512M*2",
+            "useExtAmplifier": true,
+            "tips": {
+                "zh": "自带dtb性能羸弱，酱油的每一次版本迭代都是在降低成本。",
+                "en": "Stock DTB has weak performance. Each Soy Sauce iteration reduces costs."
+            }
+        }
     },
     "Y3506_V05_20251215": {
         "series": "SaySouce R36S",
         "originalDtb": "rk3326-r35s-linux.dtb",
-        "arkosRecommendation": "SaySouce R36s -> Soy Sauce Panel 3"
+        "arkosRecommendation": "SaySouce R36s -> Soy Sauce Panel 3",
+        "deviceInfo": {
+            "ram": "BGA96 DDR3 512M*2",
+            "useExtAmplifier": true,
+            "tips": {
+                "zh": "自带dtb性能羸弱，酱油的每一次版本迭代都是在降低成本。",
+                "en": "Stock DTB has weak performance. Each Soy Sauce iteration reduces costs."
+            }
+        }
     }
 }

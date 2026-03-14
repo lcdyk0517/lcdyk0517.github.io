@@ -874,6 +874,19 @@ async function createBoardCard(folder) {
     }
     actionsDiv.appendChild(arkosBtn);
 
+    // 设备信息按钮
+    const deviceInfo = mapping ? mapping.deviceInfo : null;
+    const infoBtn = document.createElement('button');
+    infoBtn.className = 'board-card-btn board-card-btn-info';
+    infoBtn.textContent = translations[currentLanguage].viewDeviceInfo || 'Device Info';
+    infoBtn.style.background = 'linear-gradient(135deg, #9b59b6 0%, #8e44ad 100%)';
+    infoBtn.style.boxShadow = '0 4px 6px -1px rgba(155, 89, 182, 0.3)';
+    
+    infoBtn.addEventListener('click', function() {
+        showDeviceInfoModal(folder, deviceInfo);
+    });
+    actionsDiv.appendChild(infoBtn);
+
     card.appendChild(imagesDiv);
     card.appendChild(title);
     card.appendChild(actionsDiv);
@@ -982,6 +995,108 @@ function openImageModal(imageUrl, title) {
 
 function closeImageModal() {
     const modal = document.getElementById('imageModal');
+    if (!modal) return;
+
+    modal.classList.remove('active');
+    document.body.style.overflow = '';
+}
+
+// ==================== 设备信息弹窗 ====================
+function showDeviceInfoModal(folderName, deviceInfo) {
+    const t = translations[currentLanguage];
+    
+    // 创建或获取设备信息弹窗
+    let modal = document.getElementById('deviceInfoModal');
+    if (!modal) {
+        modal = document.createElement('div');
+        modal.id = 'deviceInfoModal';
+        modal.className = 'device-info-modal';
+        modal.innerHTML = `
+            <div class="device-info-modal-content">
+                <div class="device-info-modal-header">
+                    <h2 id="deviceInfoModalTitle">${t.deviceInfoTitle || '设备信息'}</h2>
+                    <button class="device-info-modal-close" id="closeDeviceInfoModal">&times;</button>
+                </div>
+                <div class="device-info-modal-body" id="deviceInfoModalBody">
+                </div>
+            </div>
+        `;
+        document.body.appendChild(modal);
+        
+        // 关闭按钮事件
+        modal.querySelector('#closeDeviceInfoModal').addEventListener('click', closeDeviceInfoModal);
+        
+        // 点击背景关闭
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                closeDeviceInfoModal();
+            }
+        });
+    }
+    
+    // 更新标题
+    modal.querySelector('#deviceInfoModalTitle').textContent = folderName;
+    
+    // 构建设备信息内容
+    const body = modal.querySelector('#deviceInfoModalBody');
+    
+    if (!deviceInfo) {
+        body.innerHTML = `<div class="device-info-empty">${t.deviceInfoEmpty || '暂无设备信息'}</div>`;
+    } else {
+        const ram = deviceInfo.ram || '';
+        const useExtAmplifier = deviceInfo.useExtAmplifier;
+        
+        // 获取多语言 tips，优先当前语言，fallback 到英文
+        let tips = '';
+        if (deviceInfo.tips && typeof deviceInfo.tips === 'object') {
+            tips = deviceInfo.tips[currentLanguage] || deviceInfo.tips['en'] || '';
+        } else if (typeof deviceInfo.tips === 'string') {
+            tips = deviceInfo.tips; // 兼容旧格式
+        }
+        
+        let html = '<div class="device-info-grid">';
+        
+        // 内存信息
+        html += `
+            <div class="device-info-item">
+                <div class="device-info-label">${t.deviceInfoRam || '内存'}</div>
+                <div class="device-info-value">${ram || (t.deviceInfoNotSet || '未设置')}</div>
+            </div>
+        `;
+        
+        // 外部功放
+        html += `
+            <div class="device-info-item">
+                <div class="device-info-label">${t.deviceInfoExtAmplifier || '外部功放'}</div>
+                <div class="device-info-value">
+                    ${useExtAmplifier === true ? 
+                        `<span class="device-info-badge device-info-badge-yes">${t.deviceInfoYes || '是'}</span>` : 
+                        useExtAmplifier === false ? 
+                        `<span class="device-info-badge device-info-badge-no">${t.deviceInfoNo || '否'}</span>` : 
+                        `<span class="device-info-badge device-info-badge-unknown">${t.deviceInfoUnknown || '未知'}</span>`}
+                </div>
+            </div>
+        `;
+        
+        // Tips
+        html += `
+            <div class="device-info-item device-info-item-full">
+                <div class="device-info-label">${t.deviceInfoTips || '提示'}</div>
+                <div class="device-info-value device-info-tips">${tips || (t.deviceInfoNotSet || '未设置')}</div>
+            </div>
+        `;
+        
+        html += '</div>';
+        body.innerHTML = html;
+    }
+    
+    // 显示弹窗
+    modal.classList.add('active');
+    document.body.style.overflow = 'hidden';
+}
+
+function closeDeviceInfoModal() {
+    const modal = document.getElementById('deviceInfoModal');
     if (!modal) return;
 
     modal.classList.remove('active');

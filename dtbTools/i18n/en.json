@@ -81,7 +81,7 @@
   "boardListTitle": "Board List",
   "viewOriginalDTB": "Download Original DTB",
   "noDtbAvailable": "No DTB Available",
-  "viewArkOS4Clone": "View Recommended DTB",
+  "viewArkOS4Clone": "View Recommended ArkOS4Clone DTB",
   "arkosRecommendationTitle": "Recommended ArkOS4Clone DTB Configuration:",
   "noResults": "No matching boards found",
   "seriesG80C": "G80C Series",
@@ -89,5 +89,15 @@
   "seriesY3506": "Y3506 Series",
   "seriesOther": "Other",
   "searchPlaceholder": "Search board names...",
-  "boardNotFoundBtn": "Can't find your board?"
+  "boardNotFoundBtn": "Can't find your board?",
+  "viewDeviceInfo": "Device Info",
+  "deviceInfoTitle": "Device Information",
+  "deviceInfoEmpty": "No device information available",
+  "deviceInfoRam": "RAM",
+  "deviceInfoExtAmplifier": "External Amplifier",
+  "deviceInfoTips": "Tips",
+  "deviceInfoNotSet": "Not Set",
+  "deviceInfoYes": "Yes",
+  "deviceInfoNo": "No",
+  "deviceInfoUnknown": "Unknown"
 }
