@@ -1,6 +1,6 @@
 {
   "title": "🔍 ArkOS4Clone DTB 식별 도구",
-  "subtitle": "MD5 및 패널 매개변수를 이용한 DTB 파일 식별 - ArkOS4Clone 전용",
+  "subtitle": "MD5 및 패널 매개변수를 이용한 DTB 파일 식별 - ArkOS4Clone / Aurknix",
   "instructions.title": "📋 사용 방법（지원: 中文, English, 日本語, 한국어, Deutsch, Português）",
   "instructions.step1": "• DTB 파일 업로드",
   "instructions.step2": "• MD5 자동 계산 후 알려진 설정과 비교",
@@ -19,6 +19,7 @@
   "fileSizeUnit": "바이트",
   "qqGroup": "💬 QQ 그룹: 324222122",
   "projectUrl": "프로젝트 URL",
+  "releaseUrl": "릴리스 URL",
   "targetSystem": "대상 시스템",
   "panelInfo": "=== 추출된 패널 정보 ===",
   "noPanelSequence": "// panel-init-sequence를 찾을 수 없음",
@@ -89,5 +90,8 @@
   "seriesY3506": "Y3506 시리즈",
   "seriesOther": "기타",
   "searchPlaceholder": "기판 이름 검색...",
-  "boardNotFoundBtn": "기판을 찾을 수 없나요？"
+  "boardNotFoundBtn": "기판을 찾을 수 없나요？",
+  "canRunAurknixTitle": "Aurknix 실행 가능",
+  "canRunAurknix": "당신의 기기는 Aurknix 시스템을 실행할 수 있나요?",
+  "emailCanRunAurknix": "Aurknix 실행 가능："
 }

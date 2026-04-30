@@ -1,6 +1,6 @@
 {
   "title": "🔍 ArkOS4Clone DTB識別ツール",
-  "subtitle": "MD5とパネルパラメータによるDTBファイル識別 - ArkOS4Clone専用",
+  "subtitle": "MD5とパネルパラメータによるDTBファイル識別 - ArkOS4Clone / Aurknix",
   "instructions.title": "📋 使用方法（対応言語：中文、English、日本語、한국어、Deutsch、Português）",
   "instructions.step1": "• DTBファイルをアップロード",
   "instructions.step2": "• MD5が自動計算され、既知の設定と照合されます",
@@ -19,6 +19,7 @@
   "fileSizeUnit": "バイト",
   "qqGroup": "💬 QQグループ: 324222122",
   "projectUrl": "プロジェクトURL",
+  "releaseUrl": "リリースURL",
   "targetSystem": "ターゲットシステム",
   "panelInfo": "=== 抽出されたパネル情報 ===",
   "noPanelSequence": "// panel-init-sequenceが見つかりません",
@@ -89,5 +90,8 @@
   "seriesR36S": "R36S シリーズ",
   "seriesY3506": "Y3506 シリーズ",
   "seriesOther": "その他",
-  "boardNotFoundBtn": "基板が見つかりませんか？"
+  "boardNotFoundBtn": "基板が見つかりませんか？",
+  "canRunAurknixTitle": "Aurknix実行可能",
+  "canRunAurknix": "あなたのデバイスはAurknixシステムを実行できますか？",
+  "emailCanRunAurknix": "Aurknix実行可能："
 }

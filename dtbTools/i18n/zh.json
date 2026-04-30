@@ -1,6 +1,6 @@
 {
   "title": "🔍 ArkOS4Clone DTB 分析工具",
-  "subtitle": "基于MD5和Panel参数的DTB文件识别 - 仅支持ArkOS4Clone",
+  "subtitle": "基于MD5和Panel参数的DTB文件识别 - 支持 ArkOS4Clone / Aurknix",
   "instructions.title": "📋 使用说明（支持：中文、English、日本語、한국어、Deutsch、Português）",
   "instructions.step1": "• 上传DTB文件",
   "instructions.step2": "• 自动计算MD5并与已知配置比对",
@@ -19,6 +19,7 @@
   "fileSizeUnit": "字节",
   "qqGroup": "💬 寨中寨QQ群聊请加: 324222122",
   "projectUrl": "项目地址",
+  "releaseUrl": "发布地址",
   "targetSystem": "目标系统",
   "panelInfo": "=== 提取的Panel信息 ===",
   "noPanelSequence": "// 未找到 panel-init-sequence",
@@ -99,5 +100,8 @@
   "deviceInfoNotSet": "未设置",
   "deviceInfoYes": "是",
   "deviceInfoNo": "否",
-  "deviceInfoUnknown": "未知"
+  "deviceInfoUnknown": "未知",
+  "canRunAurknixTitle": "是否可以运行 Aurknix",
+  "canRunAurknix": "你的设备是否可以运行 Aurknix 系统？",
+  "emailCanRunAurknix": "是否可以运行 Aurknix："
 }

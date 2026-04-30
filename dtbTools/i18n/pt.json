@@ -1,6 +1,6 @@
 {
   "title": "🔍 Ferramenta de Identificação DTB ArkOS4Clone",
-  "subtitle": "Identificação de arquivo DTB usando MD5 e parâmetros de painel - Apenas ArkOS4Clone",
+  "subtitle": "Identificação de arquivo DTB usando MD5 e parâmetros de painel - ArkOS4Clone / Aurknix",
   "instructions.title": "📋 Instruções (Suportado: 中文, English, 日本語, 한국어, Deutsch, Português)",
   "instructions.step1": "• Faça upload de um arquivo DTB",
   "instructions.step2": "• O MD5 é calculado e comparado com configurações conhecidas",
@@ -19,6 +19,7 @@
   "fileSizeUnit": "bytes",
   "qqGroup": "💬 Grupo QQ: 324222122",
   "projectUrl": "URL do Projeto",
+  "releaseUrl": "URL de Release",
   "targetSystem": "Sistema de Destino",
   "panelInfo": "=== Informações do Painel Extraídas ===",
   "noPanelSequence": "// panel-init-sequence não encontrado",
@@ -89,5 +90,8 @@
   "seriesY3506": "Série Y3506",
   "seriesOther": "Outros",
   "searchPlaceholder": "Pesquisar nomes de placas...",
-  "boardNotFoundBtn": "Não consegue encontrar sua placa?"
+  "boardNotFoundBtn": "Não consegue encontrar sua placa?",
+  "canRunAurknixTitle": "Pode Executar Aurknix",
+  "canRunAurknix": "Seu dispositivo pode executar o sistema Aurknix?",
+  "emailCanRunAurknix": "Pode executar Aurknix: "
 }

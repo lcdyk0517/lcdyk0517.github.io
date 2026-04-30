@@ -353,6 +353,23 @@ h1 {
     background: var(--arkos4clone)
 }
 
+.system-result {
+    margin-bottom: 8px;
+    padding-bottom: 8px;
+}
+
+.system-result:not(:last-child) {
+    border-bottom: 2px solid rgba(255, 255, 255, .15);
+}
+
+.tag-arkos4clone {
+    background: var(--arkos4clone);
+}
+
+.tag-aurknix {
+    background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+}
+
 .language-switcher {
     position: absolute;
     top: 20px;

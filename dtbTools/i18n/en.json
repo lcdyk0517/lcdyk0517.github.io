@@ -1,6 +1,6 @@
 {
   "title": "🔍 ArkOS4Clone DTB Identification Tool",
-  "subtitle": "DTB File Identification Using MD5 and Panel Parameters - ArkOS4Clone Only",
+  "subtitle": "DTB File Identification Using MD5 and Panel Parameters - ArkOS4Clone / Aurknix",
   "instructions.title": "📋 Instructions (Supported: 中文, English, 日本語, 한국어, Deutsch, Português)",
   "instructions.step1": "• Upload a DTB file",
   "instructions.step2": "• MD5 is calculated and matched against known configurations",
@@ -19,6 +19,7 @@
   "fileSizeUnit": "bytes",
   "qqGroup": "💬 QQ Group: 324222122",
   "projectUrl": "Project URL",
+  "releaseUrl": "Release URL",
   "targetSystem": "Target System",
   "panelInfo": "=== Extracted Panel Information ===",
   "noPanelSequence": "// No panel-init-sequence found",
@@ -99,5 +100,8 @@
   "deviceInfoNotSet": "Not Set",
   "deviceInfoYes": "Yes",
   "deviceInfoNo": "No",
-  "deviceInfoUnknown": "Unknown"
+  "deviceInfoUnknown": "Unknown",
+  "canRunAurknixTitle": "Can Run Aurknix",
+  "canRunAurknix": "Can your device run the Aurknix system?",
+  "emailCanRunAurknix": "Can run Aurknix: "
 }

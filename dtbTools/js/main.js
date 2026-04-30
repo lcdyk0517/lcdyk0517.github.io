@@ -8,6 +8,7 @@ const IS_DEBUG_DEFAULT = false;
 let currentLanguage = 'en';
 let translations = {};
 let ARKOS4CLONE_DB = [];
+let AURKNIX_DB = [];
 
 // ==================== GPIO 映射 ====================
 const GPIO_MAPPING = {
@@ -24,7 +25,7 @@ const GPIO_MAPPING = {
 // ==================== 数据加载 ====================
 async function loadData() {
     try {
-        const [zhData, enData, jaData, koData, deData, ptData, arkos4cloneData, boardMappingData] = await Promise.all([
+        const [zhData, enData, jaData, koData, deData, ptData, arkos4cloneData, aurknixData, boardMappingData] = await Promise.all([
             fetch('dtbTools/i18n/zh.json').then(r => r.json()),
             fetch('dtbTools/i18n/en.json').then(r => r.json()),
             fetch('dtbTools/i18n/ja.json').then(r => r.json()),
@@ -32,11 +33,13 @@ async function loadData() {
             fetch('dtbTools/i18n/de.json').then(r => r.json()),
             fetch('dtbTools/i18n/pt.json').then(r => r.json()),
             fetch('dtbTools/data/arkos4clone.json').then(r => r.json()),
+            fetch('dtbTools/data/aurknix.json').then(r => r.json()),
             fetch('dtbTools/data/board-mapping.json').then(r => r.json())
         ]);
         
         translations = { zh: zhData, en: enData, ja: jaData, ko: koData, de: deData, pt: ptData };
         ARKOS4CLONE_DB = normalizeDatabase(arkos4cloneData);
+        AURKNIX_DB = normalizeDatabase(aurknixData);
         window.BOARD_MAPPING = boardMappingData;
         
         return true;
@@ -71,31 +74,35 @@ function readNullTerminatedStrings(bytes) {
 
 // ==================== 主识别类 ====================
 class DTBIdentifier {
-    constructor() {
+    constructor(config) {
+        this.systemName = config.systemName;
+        this.systemTag = config.systemTag;
+        this.systemUrl = config.systemUrl;
+        this.releaseUrl = config.releaseUrl || null;
+        this.database = config.database;
+        this.showQqGroup = config.showQqGroup || false;
         this.phandleMap = new Map();
         this.nodeBeginToPath = new Map();
         this.pathToBegin = new Map();
         this.isDebug = IS_DEBUG_DEFAULT;
     }
-    
-    getSystemName() { return 'ArkOS4Clone'; }
-    getSystemTag() { return 'tag-arkos4clone'; }
-    getSystemUrl() { return 'https://github.com/lcdyk0517/arkos4clone'; }
 
     async identifyDtb(arrayBuffer, precomputedMd5) {
         const result = [];
-        const systemName = this.getSystemName();
-        const systemTag = this.getSystemTag();
-        const systemUrl = this.getSystemUrl();
+        const systemName = this.systemName;
+        const systemTag = this.systemTag;
+        const systemUrl = this.systemUrl;
 
         const md5 = precomputedMd5 || MD5.md5(arrayBuffer);
 
-        // 头部信息
         result.push(`<span class="comment">${translations[currentLanguage].fileInfo}</span>`);
         result.push(`<span class="property">${translations[currentLanguage].fileMD5}</span>: <span class="value">${md5}</span>`);
         result.push(`<span class="property">${translations[currentLanguage].fileSize}</span>: <span class="value">${arrayBuffer.byteLength}</span> ${translations[currentLanguage].fileSizeUnit}`);
         result.push(`<span class="property">${translations[currentLanguage].projectUrl}</span>: <a href="${systemUrl}" target="_blank" rel="noopener noreferrer">${systemUrl}</a>`);
-        if (currentLanguage === 'zh') {
+        if (this.releaseUrl) {
+            result.push(`<span class="property">${translations[currentLanguage].releaseUrl}</span>: <a href="${this.releaseUrl}" target="_blank" rel="noopener noreferrer">${this.releaseUrl}</a>`);
+        }
+        if (this.showQqGroup && currentLanguage === 'zh') {
             result.push(`<span class="property">${translations[currentLanguage].qqGroup}</span>`);
         }
         result.push(`<span class="property">${translations[currentLanguage].targetSystem}</span>: <span class="system-tag ${systemTag}">${systemName}</span>\n`);
@@ -139,7 +146,7 @@ class DTBIdentifier {
 
         // MD5 精确匹配
         let exactMatch = null;
-        for (const dbItem of ARKOS4CLONE_DB) {
+        for (const dbItem of this.database) {
             if (dbItem.md5 && dbItem.md5.includes(md5)) {
                 exactMatch = { matchedName: dbItem.name, exactMatch: true };
                 break;
@@ -153,7 +160,7 @@ class DTBIdentifier {
 
         // 屏幕参数匹配
         const screenMatches = [];
-        for (const dbItem of ARKOS4CLONE_DB) {
+        for (const dbItem of this.database) {
             if (this.compareScreenParams(dbItem, panelInfo, codecInfo, adcKeysEnabled)) {
                 screenMatches.push(dbItem.name);
             }
@@ -169,7 +176,7 @@ class DTBIdentifier {
         } else {
             const t = translations[currentLanguage];
 
-            const noMatchTip = `<div style="margin-top:12px;padding-top:10px;border-top:1px solid rgba(86,156,214,.3);font-size:0.9em;">${t.noMatchTip}<br><br><button onclick="sendEmailRequest()" style="display:inline-block;margin-top:8px;padding:8px 16px;background:var(--secondary);color:#fff;border-radius:6px;text-decoration:none;border:none;cursor:pointer;font-weight:600;">${t.emailButton}</button></div>`;
+            const noMatchTip = `<div style="margin-top:12px;padding-top:10px;border-top:1px solid rgba(86,156,214,.3);font-size:0.9em;">${t.noMatchTip.replace(/ArkOS4Clone/g, systemName)}<br><br><button onclick="sendEmailRequest('${systemName}')" style="display:inline-block;margin-top:8px;padding:8px 16px;background:var(--secondary);color:#fff;border-radius:6px;text-decoration:none;border:none;cursor:pointer;font-weight:600;">${t.emailButton}</button></div>`;
 
             result.push(`<div class="match-info">❓ <span class="property">${t.noMatch}</span> ${t.noMatchDesc}${noMatchTip}</div>`);
         }
@@ -683,7 +690,21 @@ async function initApp() {
     umamiScript.setAttribute('data-website-id', 'f2b0e739-03a9-4953-813b-a3324f452ace');
     document.head.appendChild(umamiScript);
 
-    const identifier = new DTBIdentifier();
+    const arkosIdentifier = new DTBIdentifier({
+        systemName: 'ArkOS4Clone',
+        systemTag: 'tag-arkos4clone',
+        systemUrl: 'https://github.com/lcdyk0517/arkos4clone',
+        database: ARKOS4CLONE_DB,
+        showQqGroup: true
+    });
+    const aurknixIdentifier = new DTBIdentifier({
+        systemName: 'Aurknix',
+        systemTag: 'tag-aurknix',
+        systemUrl: 'https://github.com/AveyondFly/distribution_rocknix',
+        releaseUrl: 'https://github.com/AveyondFly/distribution-nightly/releases',
+        database: AURKNIX_DB,
+        showQqGroup: false
+    });
     let currentFile = null;
 
     // 语言切换
@@ -694,7 +715,8 @@ async function initApp() {
     // Debug 开关 (暂时禁用)
     if (debugToggle) {
         debugToggle.addEventListener('change', function() {
-            identifier.isDebug = this.checked;
+            arkosIdentifier.isDebug = this.checked;
+            aurknixIdentifier.isDebug = this.checked;
             if (currentFile) processBtn.click();
         });
     }
@@ -738,8 +760,9 @@ async function initApp() {
         try {
             const buf = await currentFile.arrayBuffer();
             const md5 = MD5.md5(buf);
-            const result = await identifier.identifyDtb(buf, md5);
-            resultArea.innerHTML = result;
+            const arkosResult = await arkosIdentifier.identifyDtb(buf, md5);
+            const aurknixResult = await aurknixIdentifier.identifyDtb(buf, md5);
+            resultArea.innerHTML = `<div class="system-result">${arkosResult}</div><div class="system-result">${aurknixResult}</div>`;
         } catch (err) {
             const msg = `${translations[currentLanguage].identificationError}: ${err.message}`;
             errorMessage.textContent = msg;
@@ -1104,33 +1127,34 @@ function closeDeviceInfoModal() {
 }
 
 // ==================== 发送邮件功能 ====================
-window.sendEmailRequest = function() {
+window.sendEmailRequest = function(systemName = 'ArkOS4Clone') {
     const t = translations[currentLanguage];
     if (!t) {
         console.error('Translations not loaded');
         return;
     }
 
-    // 第一步确认：是否保存主板照片并了解必需文件
+    const canRunKey = systemName === 'Aurknix' ? 'canRunAurknixTitle' : 'canRunArkosTitle';
+    const canRunDescKey = systemName === 'Aurknix' ? 'canRunAurknix' : 'canRunArkos';
+    const emailCanRunKey = systemName === 'Aurknix' ? 'emailCanRunAurknix' : 'emailCanRunArkos';
+
     const savePhotoConfirmed = confirm(t.saveBoardPhotoTitle + '\n\n' + t.saveBoardPhoto);
     if (!savePhotoConfirmed) {
-        return; // 用户选择否，结束流程
+        return;
     }
 
-    // 第二步确认：是否可以运行arkos4clone
-    const canRunArkos = confirm(t.canRunArkosTitle + '\n\n' + t.canRunArkos);
+    const canRunArkos = confirm(t[canRunKey] + '\n\n' + t[canRunDescKey]);
 
-    // 准备邮件内容
-    const emailSubject = encodeURIComponent('ArkOS4Clone DTB Adaptation Request');
+    const emailSubject = encodeURIComponent(systemName + ' DTB Adaptation Request');
     const emailBody = encodeURIComponent(`Hi,
 
-I would like to request ArkOS4Clone support for my device.
+I would like to request ${systemName} support for my device.
 
 ${t.emailDeviceInfo}
 ${t.emailDeviceName}___________
 ${t.emailDtbFile}(please attach the DTB file)
 ${t.emailDiscord}___________
-${t.emailCanRunArkos}${canRunArkos ? t.emailYes : t.emailNo}
+${t[emailCanRunKey]}${canRunArkos ? t.emailYes : t.emailNo}
 ${t.emailBoardPhotos}${t.emailYes}
 
 ${t.emailRequiredFiles}
