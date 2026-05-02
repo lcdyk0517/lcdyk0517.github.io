@@ -103,5 +103,14 @@
   "deviceInfoUnknown": "未知",
   "canRunAurknixTitle": "是否可以运行 Aurknix",
   "canRunAurknix": "你的设备是否可以运行 Aurknix 系统？",
-  "emailCanRunAurknix": "是否可以运行 Aurknix："
+  "emailCanRunAurknix": "是否可以运行 Aurknix：",
+  "recommendBtn": "⭐ 推荐理由",
+  "recommendTitle": "⭐ 推荐理由",
+  "recommendSubtitle": "选择你推荐的理由：",
+  "recommendReason1": "KK积极开发",
+  "recommendReason2": "KK积极开发",
+  "recommendReason3": "支持更多的模拟器",
+  "recommendReason4": "对ports的支持度更好",
+  "recommendReason5": "开箱即用集成了各种模拟器的遮罩",
+  "recommendReason6": "对克隆设备兼容的更好"
 }

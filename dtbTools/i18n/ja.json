@@ -93,5 +93,14 @@
   "boardNotFoundBtn": "基板が見つかりませんか？",
   "canRunAurknixTitle": "Aurknix実行可能",
   "canRunAurknix": "あなたのデバイスはAurknixシステムを実行できますか？",
-  "emailCanRunAurknix": "Aurknix実行可能："
+  "emailCanRunAurknix": "Aurknix実行可能：",
+  "recommendBtn": "⭐おすすめの理由",
+  "recommendTitle": "⭐おすすめの理由",
+  "recommendSubtitle": "おすすめする理由を選択してください：",
+  "recommendReason1": "KKが積極的に開発している",
+  "recommendReason2": "KKが積極的に開発している",
+  "recommendReason3": "より多くのエミュレータに対応",
+  "recommendReason4": "ポートのサポートが優れている",
+  "recommendReason5": "各エミュレータのオーバーレイがすぐに使える",
+  "recommendReason6": "クローンデバイスとの互換性が高い"
 }

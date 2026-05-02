@@ -103,5 +103,14 @@
   "deviceInfoUnknown": "Unknown",
   "canRunAurknixTitle": "Can Run Aurknix",
   "canRunAurknix": "Can your device run the Aurknix system?",
-  "emailCanRunAurknix": "Can run Aurknix: "
+  "emailCanRunAurknix": "Can run Aurknix: ",
+  "recommendBtn": "⭐ Why Recommend",
+  "recommendTitle": "⭐ Reasons to Recommend",
+  "recommendSubtitle": "Select your reasons for recommending:",
+  "recommendReason1": "KK actively develops",
+  "recommendReason2": "KK actively develops",
+  "recommendReason3": "Supports more emulators",
+  "recommendReason4": "Better support for ports",
+  "recommendReason5": "Out-of-the-box integrated emulator overlays",
+  "recommendReason6": "Better compatibility with clone devices"
 }

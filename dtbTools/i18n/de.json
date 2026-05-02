@@ -93,5 +93,14 @@
   "boardNotFoundBtn": "Können Sie Ihre Platine nicht finden?",
   "canRunAurknixTitle": "Aurknix ausführbar",
   "canRunAurknix": "Kann Ihr Gerät das Aurknix-System ausführen?",
-  "emailCanRunAurknix": "Kann Aurknix ausführen: "
+  "emailCanRunAurknix": "Kann Aurknix ausführen: ",
+  "recommendBtn": "⭐ Empfehlungsgründe",
+  "recommendTitle": "⭐ Empfehlungsgründe",
+  "recommendSubtitle": "Wählen Sie Ihre Empfehlungsgründe:",
+  "recommendReason1": "KK entwickelt aktiv",
+  "recommendReason2": "KK entwickelt aktiv",
+  "recommendReason3": "Unterstützt mehr Emulatoren",
+  "recommendReason4": "Bessere Unterstützung für Ports",
+  "recommendReason5": "Out-of-the-Box integrierte Emulator-Overlays",
+  "recommendReason6": "Bessere Kompatibilität mit Klongeräten"
 }

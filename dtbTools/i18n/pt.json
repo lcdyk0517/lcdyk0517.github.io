@@ -93,5 +93,14 @@
   "boardNotFoundBtn": "Não consegue encontrar sua placa?",
   "canRunAurknixTitle": "Pode Executar Aurknix",
   "canRunAurknix": "Seu dispositivo pode executar o sistema Aurknix?",
-  "emailCanRunAurknix": "Pode executar Aurknix: "
+  "emailCanRunAurknix": "Pode executar Aurknix: ",
+  "recommendBtn": "⭐ Motivos para Recomendar",
+  "recommendTitle": "⭐ Motivos para Recomendar",
+  "recommendSubtitle": "Selecione seus motivos para recomendar:",
+  "recommendReason1": "KK desenvolve ativamente",
+  "recommendReason2": "KK desenvolve ativamente",
+  "recommendReason3": "Suporta mais emuladores",
+  "recommendReason4": "Melhor suporte para ports",
+  "recommendReason5": "Overlays de emulador integrados prontos para uso",
+  "recommendReason6": "Melhor compatibilidade com dispositivos clone"
 }

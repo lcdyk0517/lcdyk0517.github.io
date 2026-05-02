@@ -608,6 +608,12 @@ async function initApp() {
         closeBoardModalBtn.addEventListener('click', closeBoardModal);
     }
 
+    const closeRecommendModalBtn = document.getElementById('closeRecommendModal');
+
+    if (closeRecommendModalBtn) {
+        closeRecommendModalBtn.addEventListener('click', closeRecommendModal);
+    }
+
     // "没有找到你的主板？"按钮事件
     if (boardNotFoundBtn) {
         boardNotFoundBtn.addEventListener('click', function() {
@@ -660,12 +666,13 @@ async function initApp() {
     }
 
     // ESC 键关闭模态框
-    document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape') {
-            closeBoardModal();
-            closeImageModal();
-        }
-    });
+document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                closeBoardModal();
+                closeImageModal();
+                closeRecommendModal();
+            }
+        });
 
     // 图片模态框关闭按钮
     const closeImageModalBtn = document.getElementById('closeImageModal');
@@ -679,6 +686,15 @@ async function initApp() {
         imageModal.addEventListener('click', (e) => {
             if (e.target === imageModal) {
                 closeImageModal();
+            }
+        });
+    }
+
+    const recommendModal = document.getElementById('recommendModal');
+    if (recommendModal) {
+        recommendModal.addEventListener('click', (e) => {
+            if (e.target === recommendModal) {
+                closeRecommendModal();
             }
         });
     }
@@ -762,7 +778,9 @@ async function initApp() {
             const md5 = MD5.md5(buf);
             const arkosResult = await arkosIdentifier.identifyDtb(buf, md5);
             const aurknixResult = await aurknixIdentifier.identifyDtb(buf, md5);
-            resultArea.innerHTML = `<div class="system-result">${arkosResult}</div><div class="system-result">${aurknixResult}</div>`;
+            const recomTag = currentLanguage === 'zh' ? '⭐ 推荐使用' : currentLanguage === 'ja' ? '⭐ 推奨' : currentLanguage === 'ko' ? '⭐ 추천' : currentLanguage === 'de' ? '⭐ Empfohlen' : currentLanguage === 'pt' ? '⭐ Recomendado' : '⭐ Recommended';
+            const recomReason = currentLanguage === 'zh' ? '推荐理由' : currentLanguage === 'ja' ? '推奨理由' : currentLanguage === 'ko' ? '추천 이유' : currentLanguage === 'de' ? 'Empfehlungsgründe' : currentLanguage === 'pt' ? 'Motivos' : 'Why?';
+            resultArea.innerHTML = `<div class="system-result" style="position:relative;"><div style="position:absolute;top:8px;right:8px;display:flex;gap:6px;align-items:center;z-index:1;"><span style="background:linear-gradient(135deg,#f39c12,#e67e22);color:#fff;padding:2px 10px;border-radius:12px;font-size:0.8em;font-weight:600;box-shadow:0 2px 6px rgba(0,0,0,.3);">${recomTag}</span><button onclick="openRecommendModal()" style="background:rgba(255,255,255,.15);color:#fff;border:1px solid rgba(255,255,255,.4);padding:2px 8px;border-radius:10px;font-size:0.7em;font-weight:600;cursor:pointer;backdrop-filter:blur(4px);transition:.2s;white-space:nowrap;" onmouseover="this.style.background='rgba(255,255,255,.3)'" onmouseout="this.style.background='rgba(255,255,255,.15)'">${recomReason}</button></div>${aurknixResult}</div><div class="system-result">${arkosResult}</div>`;
         } catch (err) {
             const msg = `${translations[currentLanguage].identificationError}: ${err.message}`;
             errorMessage.textContent = msg;
@@ -779,6 +797,58 @@ async function initApp() {
     // 初始化
     switchLanguage(currentLanguage);
     loadDonors();
+}
+
+// ==================== 推荐理由弹窗 ====================
+const RECOMMEND_REASONS = [
+    { key: 'recommendReason1', icon: '💪' },
+    { key: 'recommendReason2', icon: '🔧' },
+    { key: 'recommendReason3', icon: '🎮' },
+    { key: 'recommendReason4', icon: '📦' },
+    { key: 'recommendReason5', icon: '🎭' },
+    { key: 'recommendReason6', icon: '🔄' }
+];
+
+function openRecommendModal() {
+    const modal = document.getElementById('recommendModal');
+    if (!modal) return;
+
+    const t = translations[currentLanguage];
+    const optionsContainer = document.getElementById('recommendOptions');
+    optionsContainer.innerHTML = '';
+
+    RECOMMEND_REASONS.forEach((reason, idx) => {
+        const option = document.createElement('div');
+        option.className = 'recommend-option';
+        option.dataset.index = idx;
+
+        const checkbox = document.createElement('div');
+        checkbox.className = 'recommend-option-checkbox';
+
+        const text = document.createElement('div');
+        text.className = 'recommend-option-text';
+        text.innerHTML = `<span class="recommend-option-icon">${reason.icon}</span> ${t[reason.key] || reason.key}`;
+
+        option.appendChild(checkbox);
+        option.appendChild(text);
+
+        option.addEventListener('click', function() {
+            this.classList.toggle('selected');
+        });
+
+        optionsContainer.appendChild(option);
+    });
+
+    modal.classList.add('active');
+    document.body.style.overflow = 'hidden';
+}
+
+function closeRecommendModal() {
+    const modal = document.getElementById('recommendModal');
+    if (!modal) return;
+
+    modal.classList.remove('active');
+    document.body.style.overflow = '';
 }
 
 // ==================== 主板列表模态框 ====================
