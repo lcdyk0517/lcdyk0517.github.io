@@ -519,5 +519,17 @@
     "sdio": "false",
     "useExtAmplifier": true,
     "adcKey": "true"
+  },
+  {
+    "name": "其他 -> GameConsole R40S",
+    "md5": [
+      ""
+    ],
+    "panelInitSequence": "05 00 01 20 05 00 01 29 15 00 02 36 00 15 00 02 3a 70 39 00 04 b1 06 05 0a 39 00 03 b2 20 c8 15 00 02 b3 02 15 00 02 b5 40 39 00 07 b6 07 0f 02 40 10 e8 39 00 06 c3 07 04 03 03 02 39 00 07 c4 12 24 18 18 02 49 15 00 02 c5 69 39 00 04 c6 41 63 03 39 00 0a d0 00 24 67 02 00 00 20 00 02 39 00 0a d1 00 24 67 02 00 00 20 00 02 39 00 0a d2 00 24 67 02 00 00 20 00 02 39 00 0a d3 00 24 67 02 00 00 20 00 02 39 00 0a d4 00 24 67 02 00 00 20 00 02 39 00 0a d5 00 24 67 02 00 00 20 00 02 05 c8 01 11",
+    "resetGpios": "&gpio3 RK_PC0 GPIO_ACTIVE_LOW",
+    "enableGpios": null,
+    "sdio": "false",
+    "useExtAmplifier": false,
+    "adcKey": "false"
   }
 ]
