@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>DTB 对比</title>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .upload-section{padding:16px;background:#f5f7fa;border-bottom:2px solid #e2e8f0}
+        .upload-row{display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+        .upload-area{flex:1;border:2px dashed #cbd5e0;border-radius:8px;padding:12px 16px;text-align:center;cursor:pointer;background:#fff;min-width:200px}
+        .upload-area:hover,.upload-area.dragover{border-color:#3498db;background:#e3f2fd}
+        .upload-area input{display:none}
+        .upload-area label{cursor:pointer;color:#3498db;font-weight:600}
+        select{padding:8px 12px;border-radius:6px;border:1px solid #ccc;font-size:0.9rem}
+        .result-section{padding:16px;background:#1a1a2e;min-height:80vh}
+        .diff-table{width:100%;border-collapse:collapse;font-size:0.8rem}
+        .diff-table th{background:#2c3e50;color:#ecf0f1;padding:8px 10px;text-align:left;position:sticky;top:0;font-size:0.75rem}
+        .diff-table td{padding:6px 10px;border-bottom:1px solid rgba(255,255,255,0.05)}
+        .diff-table tr:hover{background:rgba(52,152,219,0.08)}
+        .match td{color:#2ecc71}.diff td{color:#f39c12;background:rgba(243,156,18,0.05)}.missing td{color:#95a5a6}
+        .section-row td{background:#1e3a5f!important;color:#fff!important;font-weight:600}
+        .prop-name{color:#9b59b6}.val{font-family:monospace;font-size:0.75rem}.ref-val{color:#2ecc71}.user-val{color:#3498db}
+        .stats{padding:10px 14px;margin-bottom:12px;background:#2c3e50;border-radius:6px;color:#ecf0f1;font-size:0.85rem;display:flex;gap:16px;flex-wrap:wrap}
+        .stats .m{color:#2ecc71}.stats .d{color:#f39c12}.stats .x{color:#95a5a6}
+        .loading{display:none;text-align:center;padding:20px}
+        .spinner{width:30px;height:30px;border:3px solid #333;border-top-color:#3498db;border-radius:50%;animation:spin 1s linear infinite;margin:0 auto 10px}
+        @keyframes spin{to{transform:rotate(360deg)}}
+    </style>
+</head>
+<body>
+<div class="container">
+    <header>
+        <h1>🔍 DTB 对比</h1>
+        <p class="subtitle">选择参考DTB，上传你的DTB，对比关键节点</p>
+    </header>
+    <div class="upload-section">
+        <div class="upload-row">
+            <select id="refSelect">
+                <option value="">选择参考DTB...</option>
+            </select>
+            <div class="upload-area" id="uploadArea">
+                <input type="file" id="fileInput" accept=".dtb,.dtbo">
+                <label>📁 上传你的DTB</label>
+                <span id="selectedFile" style="margin-left:10px;color:#666"></span>
+            </div>
+            <button class="process-btn" id="processBtn" disabled style="padding:10px 20px">开始对比</button>
+        </div>
+    </div>
+    <div class="result-section">
+        <div class="stats" id="stats" style="display:none"></div>
+        <div class="loading" id="loading"><div class="spinner"></div><p style="color:#aaa">正在解析...</p></div>
+        <div id="resultArea"></div>
+    </div>
+</div>
+<script>
+const GPIO_PINS=['RK_PA0','RK_PA1','RK_PA2','RK_PA3','RK_PA4','RK_PA5','RK_PA6','RK_PA7','RK_PB0','RK_PB1','RK_PB2','RK_PB3','RK_PB4','RK_PB5','RK_PB6','RK_PB7','RK_PC0','RK_PC1','RK_PC2','RK_PC3','RK_PC4','RK_PC5','RK_PC6','RK_PC7','RK_PD0','RK_PD1','RK_PD2','RK_PD3'];
+class DTBParser {
+    constructor(){this.phandleMap=new Map();this.pathToBegin=new Map()}
+    parse(buf){
+        const v=new DataView(buf);if(v.getUint32(0,false)!==0xd00dfeed)return;
+        this.phandleMap.clear();this.pathToBegin.clear();
+        this._build(v,v.getUint32(8,false),v.getUint32(12,false),'/');
+    }
+    _build(v,cur,strOff,path){
+        while(cur+4<=v.byteLength){
+            const tok=v.getUint32(cur,false);cur+=4;
+            if(tok===0x1){const name=this._str(v,cur);cur+=name.length+1;cur=(cur+3)&~3;const p=path==='/'?'/'+name:path+'/'+name;this.pathToBegin.set(p,cur);const ph=this._findPh(v,cur,strOff);if(ph!==null)this.phandleMap.set(ph,p);cur=this._build(v,cur,strOff,p)}
+            else if(tok===0x2)return cur;
+            else if(tok===0x3){const l=v.getUint32(cur,false);cur+=8+l;cur=(cur+3)&~3}
+            else if(tok===0x9)return cur;else return cur;
+        }return cur;
+    }
+    _findPh(v,off,strOff){
+        let o=off;while(o+4<=v.byteLength){const t=v.getUint32(o,false);o+=4;if(t===0x2||t===0x9)break;if(t===0x3){const l=v.getUint32(o,false);o+=4;const no=v.getUint32(o,false);o+=4;if(this._str(v,strOff+no)==='phandle')return(v.getUint8(o)<<24)|(v.getUint8(o+1)<<16)|(v.getUint8(o+2)<<8)|v.getUint8(o+3);o+=l;o=(o+3)&~3}}return null;
+    }
+    getProps(buf,path){
+        const v=new DataView(buf);const strOff=v.getUint32(12,false);const begin=this.pathToBegin.get(path);if(begin===undefined)return null;
+        const props={};let o=begin;
+        while(o+4<=v.byteLength){const t=v.getUint32(o,false);if(t!==0x3)break;const l=v.getUint32(o+4,false);const no=v.getUint32(o+8,false);const name=this._str(v,strOff+no);
+            if(l===0)props[name]=true;
+            else if(l<=4)props[name]=v.getUint32(o+12,false);
+            else{let isStr=true;const bytes=new Uint8Array(v.buffer,v.byteOffset+o+12,l);for(let i=0;i<l-1;i++){if(bytes[i]<0x20||bytes[i]>0x7e){isStr=false;break}}
+                if(isStr&&bytes[l-1]===0)props[name]=new TextDecoder().decode(bytes.slice(0,-1));
+                else if(isStr&&l>4)props[name]=new TextDecoder().decode(bytes);
+                else{const arr=[];for(let i=0;i<l;i+=4){if(i+4<=l)arr.push(v.getUint32(o+12+i,false))}props[name]=arr.length===1?arr[0]:arr}}
+            o+=12+l;o=(o+3)&~3;
+        }return props;
+    }
+    findPath(kw){for(const p of this.pathToBegin.keys())if(p.includes(kw))return p;return null}
+    _str(v,off){let s='';for(let i=off;i<v.byteLength;i++){const c=v.getUint8(i);if(c===0)break;s+=String.fromCharCode(c)}return s}
+    phToName(ph){
+        const p=this.phandleMap.get(ph);
+        if(!p)return'0x'+ph.toString(16);
+        const name=p.split('/').pop();
+        const base=name.split('@')[0];
+        const unit=name.split('@')[1];
+        if(/\d$/.test(base))return base;
+        if(unit){
+            const addr=parseInt(unit,16);
+            if(base==='pwm'){
+                if(addr===0xff200000||addr===0xff1b0000)return'pwm0';
+                if(addr===0xff200010||addr===0xff1b0010)return'pwm1';
+                if(addr===0xff200020)return'pwm2';
+                if(addr===0xff200030)return'pwm3';
+                if(addr===0xff208000)return'pwm4';
+                if(addr===0xff208010)return'pwm5';
+                if(addr===0xff208020)return'pwm6';
+                if(addr===0xff208030)return'pwm7';
+            }
+            if(base==='i2c'){
+                if(addr===0xff180000)return'i2c0';
+                if(addr===0xff190000)return'i2c1';
+                if(addr===0xff1a0000)return'i2c2';
+                if(addr===0xff1b0000)return'i2c3';
+            }
+            if(base==='spi'){
+                if(addr===0xff1d0000)return'spi0';
+                if(addr===0xff1d8000)return'spi1';
+                if(addr===0xff3a0000)return'spi2';
+            }
+            if(base==='serial'){
+                if(addr===0xff030000)return'uart0';
+                if(addr===0xff158000)return'uart1';
+                if(addr===0xff160000)return'uart2';
+                if(addr===0xff168000)return'uart3';
+                if(addr===0xff170000)return'uart4';
+                if(addr===0xff178000)return'uart5';
+            }
+            if(base==='dwmmc'){
+                if(addr===0xff370000)return'sdmmc';
+                if(addr===0xff380000)return'sdio';
+                if(addr===0xff390000)return'sd';
+            }
+            return base;
+        }
+        return base;
+    }
+    formatGpio(arr){if(!Array.isArray(arr)||arr.length<3)return String(arr);return`<&${this.phToName(arr[0])} ${GPIO_PINS[arr[1]]||'0x'+arr[1].toString(16)} ${arr[2]===1?'GPIO_ACTIVE_LOW':'GPIO_ACTIVE_HIGH'}>`}
+    formatSupply(ph){return this.phToName(ph)}
+    // 根据phandle查找节点路径
+    findNodeByPhandle(buf,phandle){
+        for(const[path]of this.pathToBegin){
+            const props=this.getProps(buf,path);
+            if(props&&props['phandle']===phandle)return path;
+        }
+        return null;
+    }
+    fmtVal(v,pn){
+        if(v===true)return'(bool)';
+        if(typeof v==='number'){if(pn&&(pn.includes('supply')||pn.includes('parent')))return this.phToName(v);return v.toLocaleString()}
+        if(typeof v==='string')return`"${v}"`;
+        if(Array.isArray(v)){if(pn&&(pn.endsWith('-gpios')||pn.endsWith('-gpio'))&&v.length===3)return this.formatGpio(v);return v.map(x=>'0x'+x.toString(16)).join(', ')}
+        return String(v);
+    }
+}
+const parser=new DTBParser();
+let refBuf=null;
+let DTB_ALIASES={};
+async function loadDtbList(){
+    const s=document.getElementById('refSelect');
+    try{
+        const ar=await fetch('data/dtb-aliases.json');
+        if(ar.ok)DTB_ALIASES=await ar.json();
+        const r=await fetch('data/dtbs/rk3326-a10mini-linux.dtb');if(!r.ok)return;const files=['rk3326-a10mini-linux.dtb','rk3326-a10mini-v4-linux.dtb','rk3326-d007-linux.dtb','rk3326-dc35v-linux.dtb','rk3326-dc40v-linux.dtb','rk3326-dc45v-linux.dtb','rk3326-dr28s-linux.dtb','rk3326-g350-linux.dtb','rk3326-hg36-linux.dtb','rk3326-k36-linux.dtb','rk3326-k36s-linux.dtb','rk3326-mini40-linux.dtb','rk3326-mymini-linux.dtb','rk3326-r33s-linux.dtb','rk3326-r36h-linux.dtb','rk3326-r36max-linux.dtb','rk3326-r36max-without-amp-linux.dtb','rk3326-r36max2-linux.dtb','rk3326-r36pro-linux.dtb','rk3326-r36s-panel1-linux.dtb','rk3326-r36s-panel2-linux.dtb','rk3326-r36s-panel3-linux.dtb','rk3326-r36s-panel4-linux.dtb','rk3326-r36s-sauce-panel1-linux.dtb','rk3326-r36s-sauce-panel2-linux.dtb','rk3326-r36s-sauce-panel3-linux.dtb','rk3326-r36s-sauce-panel4-linux.dtb','rk3326-r36s-type2-linux.dtb','rk3326-r36s-type2-with-amp-linux.dtb','rk3326-r36s-type3-panel1-linux.dtb','rk3326-r36s-type3-panel2-linux.dtb','rk3326-r36s-type4-linux.dtb','rk3326-r36s-type5-linux.dtb','rk3326-r36s-v22-linux.dtb','rk3326-r36s-v30-linux.dtb','rk3326-r36splus-linux.dtb','rk3326-r36tmax-linux.dtb','rk3326-r36ultra-linux.dtb','rk3326-r36ultrax-linux.dtb','rk3326-r40s-linux.dtb','rk3326-r40xx-linux.dtb','rk3326-r45h-linux.dtb','rk3326-r46h-linux.dtb','rk3326-r50s-linux.dtb','rk3326-rf35h-linux.dtb','rk3326-rf40h-linux.dtb','rk3326-rf45v-linux.dtb','rk3326-rg36-linux.dtb','rk3326-rgb10max1-linux.dtb','rk3326-rgb20s-linux.dtb','rk3326-rp1-linux.dtb','rk3326-rx6h-linux.dtb','rk3326-t16max-linux.dtb','rk3326-u8-linux.dtb','rk3326-u8-v2-linux.dtb','rk3326-xf28-linux.dtb','rk3326-xf35h-linux.dtb','rk3326-xf40h-linux.dtb','rk3326-xf45v-linux.dtb','rk3326-xgb36-linux.dtb','rk3326-xu10-linux.dtb'];files.sort().forEach(x=>{const o=document.createElement('option');o.value=x;o.textContent=DTB_ALIASES[x]||x.replace('.dtb','').replace('rk3326-','').replace('-linux','');s.appendChild(o)})}catch(e){console.error(e)}
+}
+loadDtbList();
+document.getElementById('refSelect').addEventListener('change',async(e)=>{if(!e.target.value)return;try{const r=await fetch('data/dtbs/'+e.target.value);refBuf=await r.arrayBuffer();document.getElementById('processBtn').disabled=!refBuf||!document.getElementById('fileInput').files.length}catch(e){}});
+const uploadArea=document.getElementById('uploadArea'),fileInput=document.getElementById('fileInput'),selectedFile=document.getElementById('selectedFile'),processBtn=document.getElementById('processBtn'),loading=document.getElementById('loading'),resultArea=document.getElementById('resultArea'),statsDiv=document.getElementById('stats');
+['dragenter','dragover','dragleave','drop'].forEach(e=>uploadArea.addEventListener(e,ev=>{ev.preventDefault();ev.stopPropagation()}));
+['dragenter','dragover'].forEach(e=>uploadArea.addEventListener(e,()=>uploadArea.classList.add('dragover')));
+['dragleave','drop'].forEach(e=>uploadArea.addEventListener(e,()=>uploadArea.classList.remove('dragover')));
+uploadArea.addEventListener('click',()=>fileInput.click());
+uploadArea.addEventListener('drop',e=>{const f=e.dataTransfer.files;if(f.length&&(f[0].name.endsWith('.dtb')||f[0].name.endsWith('.dtbo'))){fileInput.files=f;selectedFile.textContent='✅ '+f[0].name;processBtn.disabled=!refBuf}});
+fileInput.addEventListener('change',e=>{if(e.target.files.length){selectedFile.textContent='✅ '+e.target.files[0].name;processBtn.disabled=!refBuf}});
+processBtn.addEventListener('click',async()=>{
+    if(!refBuf||!fileInput.files.length)return;
+    loading.style.display='block';resultArea.innerHTML='';statsDiv.style.display='none';processBtn.disabled=true;
+    try{
+        const userBuf=await fileInput.files[0].arrayBuffer();
+        const ref=new DTBParser();ref.parse(refBuf);
+        const user=new DTBParser();user.parse(userBuf);
+        let html='<table class="diff-table"><thead><tr><th>分类</th><th>属性</th><th>参考值</th><th>你的DTB</th><th>状态</th></tr></thead><tbody>';
+        let M=0,D=0,X=0;
+        function addRow(cat,prop,rStr,uStr,ok){
+            const cls=ok?'match':(uStr==='-'?'missing':'diff');
+            html+=`<tr class="${cls}"><td>${cat}</td><td class="prop-name">${prop}</td><td class="val ref-val">${rStr}</td><td class="val user-val">${uStr}</td><td>${ok?'✅':(uStr==='-'?'⚠️':'❌')}</td></tr>`;
+            if(ok)M++;else if(uStr==='-')X++;else D++;
+        }
+        function cmpGpio(rStr,uArr,parser){return uArr&&Array.isArray(uArr)&&uArr.length>=3?parser.formatGpio(uArr)===rStr:false}
+        function getSupplyName(ph,parser){return parser.phToName(ph)}
+        // === 1. vol_keys -> adc-keys io-channels / gpio_keys button GPIO ===
+        // 获取play_joystick节点（提前，用于gpio_keys和joypad对比）
+        const uJoy=user.getProps(userBuf,user.findPath('play_joystick'));
+        const rVol=ref.getProps(refBuf,ref.findPath('vol_keys')||ref.findPath('rg351-keys'));
+        const uAdc=user.getProps(userBuf,user.findPath('adc-keys'));
+        if(rVol&&uAdc){
+            const rCh=rVol['io-channels'];
+            const uCh=uAdc['io-channels'];
+            let rStr='-',uStr='-';
+            if(Array.isArray(rCh)&&rCh.length>=2)rStr=`<&${ref.phToName(rCh[0])} ${rCh[1]}>`;
+            else if(rCh!==undefined)rStr=String(rCh);
+            if(Array.isArray(uCh)&&uCh.length>=2)uStr=`<&${user.phToName(uCh[0])} ${uCh[1]}>`;
+            else if(uCh!==undefined)uStr=String(uCh);
+            addRow('vol_keys','io-channels',rStr,uStr,rStr===uStr);
+        }
+        // gpio_keys: 参考DTB有gpio_keys/odroidgo3-keys时对比button-vol-up/down的GPIO
+        const rGpioKeys=ref.getProps(refBuf,ref.findPath('gpio_keys')||ref.findPath('odroidgo3-keys'));
+        const gpioKeysMatched=new Set();
+        if(rGpioKeys){
+            // 收集用户play_joystick/gamepad的key-gpios格式化字符串
+            const uVolStrs=[];
+            const uJoyGp=uJoy?.['key-gpios'];
+            if(!uJoyGp){
+                for(const kw of['gamepad','joypad','odroidgo3-joypad','rg351-joypad']){
+                    const p=user.findPath(kw);if(!p)continue;
+                    const props=user.getProps(userBuf,p);
+                    if(props?.['key-gpios']&&Array.isArray(props['key-gpios'])){
+                        for(let i=0;i+2<props['key-gpios'].length;i+=3){
+                            const sl=[props['key-gpios'][i],props['key-gpios'][i+1],props['key-gpios'][i+2]];
+                            uVolStrs.push(user.formatGpio(sl));
+                        }
+                        break;
+                    }
+                }
+            }else if(Array.isArray(uJoyGp)){
+                for(let i=0;i+2<uJoyGp.length;i+=3){
+                    const sl=[uJoyGp[i],uJoyGp[i+1],uJoyGp[i+2]];
+                    uVolStrs.push(user.formatGpio(sl));
+                }
+            }
+            // 遍历参考gpio_keys的button子节点
+            for(const[path]of ref.pathToBegin){
+                if(path.match(/\/(gpio_keys|odroidgo3-keys)\/button/)){
+                    const p=ref.getProps(refBuf,path);
+                    if(p?.['gpios']&&Array.isArray(p['gpios'])&&p['gpios'].length>=3){
+                        const rStr=ref.formatGpio(p['gpios']);
+                        const label=p['label']||path.split('/').pop();
+                        let uStr='-';
+                        // 优先在用户的key-gpios中按格式化字符串匹配
+                        const uIdx=uVolStrs.indexOf(rStr);
+                        if(uIdx>=0){uStr=rStr;gpioKeysMatched.add(uIdx);}
+                        // 再在用户的gpio_keys中查找同label的button
+                        if(uStr==='-'){
+                            for(const[upath]of user.pathToBegin){
+                                if(upath.match(/\/(gpio_keys|odroidgo3-keys)\/button/)){
+                                    const up=user.getProps(userBuf,upath);
+                                    if(up?.['gpios']&&Array.isArray(up['gpios'])&&up['gpios'].length>=3){
+                                        const uLabel=up['label']||upath.split('/').pop();
+                                        if(uLabel===label){uStr=user.formatGpio(up['gpios']);break;}
+                                    }
+                                }
+                            }
+                        }
+                        addRow('gpio_keys',label,rStr,uStr,rStr===uStr);
+                    }
+                }
+            }
+        }
+        // === 2. joypad 对比 ===
+        // 优先级：play_joystick的rocker* > 其他节点的rocker* > 任意节点的amux-*
+        const rJoy=ref.getProps(refBuf,ref.findPath('joypad')||ref.findPath('odroidgo3-joypad'));
+        if(rJoy){
+            // 预先查找用户DTB中所有可能的GPIO属性
+            const userGpioCache={};
+            for(const[path]of user.pathToBegin){
+                const p=user.getProps(userBuf,path);
+                if(p){
+                    for(const k of['rocker0-gpios','rocker-gpios','rocker1-gpios','amux-a-gpios','amux-b-gpios','amux-en-gpios']){
+                        if(p[k]&&Array.isArray(p[k])&&!userGpioCache[k])userGpioCache[k]=p[k];
+                    }
+                }
+            }
+            const joyMap=[
+                ['amux-a-gpios','amux-a-gpios','rocker1-gpios'],
+                ['amux-b-gpios','amux-b-gpios','rocker-gpios'],
+                ['amux-en-gpios','amux-en-gpios','rocker0-gpios']
+            ];
+            for(const[dispName,refProp,userProp]of joyMap){
+                if(rJoy[refProp]&&Array.isArray(rJoy[refProp])){
+                    const rStr=ref.formatGpio(rJoy[refProp]);
+                    let uStr='-';
+                    // 优先级1: play_joystick的rocker*
+                    if(uJoy?.[userProp]&&Array.isArray(uJoy[userProp]))uStr=user.formatGpio(uJoy[userProp]);
+                    // 优先级2: 其他节点的rocker*
+                    else if(userGpioCache[userProp])uStr=user.formatGpio(userGpioCache[userProp]);
+                    // 优先级3: amux-*
+                    else if(userGpioCache[refProp])uStr=user.formatGpio(userGpioCache[refProp]);
+                    addRow('joypad',dispName,rStr,uStr,rStr===uStr);
+                }
+            }
+            // key-gpios对比：按格式化后的GPIO字符串匹配
+            let uKeyGpios=uJoy?.['key-gpios'];
+            if(!uKeyGpios){
+                for(const kw of['gamepad','joypad','odroidgo3-joypad','rg351-joypad']){
+                    const p=user.findPath(kw);if(!p)continue;
+                    const props=user.getProps(userBuf,p);
+                    if(props?.['key-gpios']&&Array.isArray(props['key-gpios'])){uKeyGpios=props['key-gpios'];break}
+                }
+            }
+            // 收集参考joypad的所有sw*子节点的gpios
+            const rSwGpios=[];
+            for(const[path]of ref.pathToBegin){
+                if(path.match(/\/joypad\/sw\d+$/)||path.match(/\/odroidgo3-joypad\/sw\d+$/)){
+                    const p=ref.getProps(refBuf,path);
+                    if(p?.['gpios']&&Array.isArray(p['gpios'])){
+                        rSwGpios.push({name:path.split('/').pop(),gpios:p['gpios'],str:ref.formatGpio(p['gpios'])});
+                    }
+                }
+            }
+            rSwGpios.sort((a,b)=>a.name.localeCompare(b.name));
+            // 收集用户的sw*子节点（用户也有odroidgo3-joypad/joypad的情况）
+            const uSwGpios=[];
+            for(const[path]of user.pathToBegin){
+                if(path.match(/\/joypad\/sw\d+$/)||path.match(/\/odroidgo3-joypad\/sw\d+$/)){
+                    const p=user.getProps(userBuf,path);
+                    if(p?.['gpios']&&Array.isArray(p['gpios'])){
+                        uSwGpios.push({name:path.split('/').pop(),gpios:p['gpios'],str:user.formatGpio(p['gpios'])});
+                    }
+                }
+            }
+            uSwGpios.sort((a,b)=>a.name.localeCompare(b.name));
+            // 构建用户GPIO列表：优先用key-gpios，否则用sw*子节点
+            let uGpioList=[];
+            if(uKeyGpios&&Array.isArray(uKeyGpios)){
+                for(let i=0;i+2<uKeyGpios.length;i+=3){
+                    const slice=[uKeyGpios[i],uKeyGpios[i+1],uKeyGpios[i+2]];
+                    uGpioList.push({gpios:slice,str:user.formatGpio(slice)});
+                }
+            }else if(uSwGpios.length>0){
+                uGpioList=uSwGpios.map(sw=>({gpios:sw.gpios,str:sw.str}));
+            }
+            // 按格式化字符串匹配
+            const uMatched=new Set();
+            if(rSwGpios.length>0){
+                for(const rSw of rSwGpios){
+                    const idx=uGpioList.findIndex((ug,i)=>!uMatched.has(i)&&ug.str===rSw.str);
+                    if(idx>=0){
+                        uMatched.add(idx);
+                        addRow('joypad',rSw.name,rSw.str,uGpioList[idx].str,true);
+                    }else{
+                        addRow('joypad',rSw.name,rSw.str,'-',false);
+                    }
+                }
+            }
+            // 用户sw*/key-gpios中未匹配的（跳过gpio_keys已匹配的）
+            uGpioList.forEach((ug,i)=>{
+                if(!uMatched.has(i)&&!gpioKeysMatched.has(i)){
+                    const label=uSwGpios.length>0?uSwGpios[i]?.name:`key[${i}]`;
+                    addRow('joypad',label,'-',ug.str,false);
+                }
+            });
+        }
+        // === 3. fiq-debugger -> play_joystick rocker* ===
+        const rFiq=ref.getProps(refBuf,ref.findPath('fiq-debugger'));
+        if(rFiq){
+            const fiqMap=[['rocker0-gpios','rocker0-gpios'],['rocker-gpios','rocker-gpios'],['rocker1-gpios','rocker1-gpios']];
+            for(const[dispName,userProp]of fiqMap){
+                if(rFiq[dispName]&&Array.isArray(rFiq[dispName])){
+                    const rStr=ref.formatGpio(rFiq[dispName]);
+                    const uStr=uJoy&&uJoy[userProp]&&Array.isArray(uJoy[userProp])?user.formatGpio(uJoy[userProp]):'-';
+                    addRow('fiq-debugger',dispName,rStr,uStr,rStr===uStr);
+                }
+            }
+        }
+        // === 4. backlight ===
+        const rBl=ref.getProps(refBuf,ref.findPath('backlight'));
+        const uBl=user.getProps(userBuf,user.findPath('backlight'));
+        if(rBl){
+            addRow('backlight','default-brightness-level',rBl['default-brightness-level']??'-',uBl?.['default-brightness-level']??'-',rBl['default-brightness-level']===uBl?.['default-brightness-level']);
+            // pwms对比
+            if(rBl['pwms']&&Array.isArray(rBl['pwms'])){
+                const formatPwm=(pwms,parser)=>{
+                    if(pwms.length<2)return pwms.map(x=>'0x'+x.toString(16)).join(', ');
+                    const phName=parser.phToName(pwms[0]);
+                    return`<&${phName} ${pwms.slice(1).join(' ')}>`;
+                };
+                const rPwmStr=formatPwm(rBl['pwms'],ref);
+                const uPwmArr=uBl?.['pwms']&&Array.isArray(uBl['pwms'])?uBl['pwms']:null;
+                const uPwmStr=uPwmArr?formatPwm(uPwmArr,user):'-';
+                // 直接比较格式化后的字符串
+                const uPwmOk=rPwmStr===uPwmStr;
+                addRow('backlight','pwms',rPwmStr,uPwmStr,uPwmOk);
+            }
+        }
+        // === 5. rk817-sound hp-det-gpio ===
+        const rSound=ref.getProps(refBuf,ref.findPath('rk817-sound'));
+        const uSound=user.getProps(userBuf,user.findPath('rk817-sound'));
+        if(rSound){
+            if(rSound['hp-det-gpio']&&Array.isArray(rSound['hp-det-gpio'])){
+                const rStr=ref.formatGpio(rSound['hp-det-gpio']);
+                const uStr=uSound?.['hp-det-gpio']&&Array.isArray(uSound['hp-det-gpio'])?user.formatGpio(uSound['hp-det-gpio']):'-';
+                addRow('rk817-sound','hp-det-gpio',rStr,uStr,rStr===uStr);
+            }
+        }
+        // === 6. vccsys ===
+        const rVcc=ref.getProps(refBuf,ref.findPath('vccsys'));
+        const uVcc=user.getProps(userBuf,user.findPath('vccsys'));
+        if(rVcc){
+            addRow('vccsys','regulator-min-microvolt',rVcc['regulator-min-microvolt']??'-',uVcc?.['regulator-min-microvolt']??'-',rVcc['regulator-min-microvolt']===uVcc?.['regulator-min-microvolt']);
+            addRow('vccsys','regulator-max-microvolt',rVcc['regulator-max-microvolt']??'-',uVcc?.['regulator-max-microvolt']??'-',rVcc['regulator-max-microvolt']===uVcc?.['regulator-max-microvolt']);
+        }
+        // === 7. panel@0 ===
+        const rPanel=ref.getProps(refBuf,ref.findPath('panel@0'));
+        const uPanel=user.getProps(userBuf,user.findPath('panel@0'));
+        if(rPanel){
+            // reset-gpios
+            if(rPanel['reset-gpios']&&Array.isArray(rPanel['reset-gpios'])){
+                const rStr=ref.formatGpio(rPanel['reset-gpios']);
+                const uStr=uPanel?.['reset-gpios']&&Array.isArray(uPanel['reset-gpios'])?user.formatGpio(uPanel['reset-gpios']):'-';
+                addRow('panel@0','reset-gpios',rStr,uStr,rStr===uStr);
+            }
+            // enable-gpios (via power-supply)
+            let rEnable=null,uEnable=null;
+            if(rPanel['power-supply']!==undefined){const p=ref.phandleMap.get(rPanel['power-supply']);if(p){const pp=ref.getProps(refBuf,p);if(pp&&pp['gpio']&&Array.isArray(pp['gpio']))rEnable=ref.formatGpio(pp['gpio'])}}
+            if(uPanel?.['power-supply']!==undefined){const p=user.phandleMap.get(uPanel['power-supply']);if(p){const pp=user.getProps(userBuf,p);if(pp&&pp['gpio']&&Array.isArray(pp['gpio']))uEnable=user.formatGpio(pp['gpio'])}}
+            if(rEnable)addRow('panel@0','enable-gpios',rEnable,uEnable||'-',rEnable===uEnable);
+            // panel-init-sequence（只显示是否匹配，不显示具体参数）
+            const rSeq=rPanel['panel-init-sequence'];
+            const uSeq=uPanel?.['panel-init-sequence'];
+            if(rSeq){
+                let ok=false;
+                if(uSeq&&Array.isArray(rSeq)&&Array.isArray(uSeq)){
+                    ok=rSeq.length===uSeq.length&&rSeq.every((v,i)=>v===uSeq[i]);
+                }
+                addRow('panel@0','panel-init-sequence','(已配置)',ok?'(已配置)':(uSeq?'(不同)':'-'),ok);
+            }
+            // delay/ms
+            for(const k of['prepare-delay-ms','reset-delay-ms','init-delay-ms','enable-delay-ms','disable-delay-ms','unprepare-delay-ms','width-mm','height-mm'])
+                addRow('panel@0',k,rPanel[k]??'-',uPanel?.[k]??'-',rPanel[k]===uPanel?.[k]);
+        }
+        // === 8. timing: 从panel@0/display-timings读取native-mode对应节点 ===
+        // 参考：panel@0/display-timings/native-mode -> phandle -> timing节点
+        const rDisplayTimings=ref.getProps(refBuf,ref.findPath('panel@0/display-timings'));
+        let rTiming=null;
+        if(rDisplayTimings&&rDisplayTimings['native-mode']){
+            const rNativePath=ref.findNodeByPhandle(refBuf,rDisplayTimings['native-mode']);
+            if(rNativePath)rTiming=ref.getProps(refBuf,rNativePath);
+        }
+        // 用户：panel@0/display-timings/native-mode -> phandle -> timing节点
+        const uDisplayTimings=user.getProps(userBuf,user.findPath('panel@0/display-timings'));
+        let uTiming=null;
+        if(uDisplayTimings&&uDisplayTimings['native-mode']){
+            const uNativePath=user.findNodeByPhandle(userBuf,uDisplayTimings['native-mode']);
+            if(uNativePath)uTiming=user.getProps(userBuf,uNativePath);
+        }
+        if(rTiming){
+            for(const k of['clock-frequency','hactive','vactive','hfront-porch','hsync-len','hback-porch','vfront-porch','vsync-len','vback-porch'])
+                addRow('timing',k,rTiming[k]??'-',uTiming?.[k]??'-',rTiming[k]===uTiming?.[k]);
+        }
+        // === 9. pmic@20 supplies ===
+        const rPmic=ref.getProps(refBuf,ref.findPath('pmic@20'));
+        const uPmic=user.getProps(userBuf,user.findPath('pmic@20'));
+        if(rPmic){
+            for(let i=1;i<=9;i++){
+                const k=`vcc${i}-supply`;
+                if(rPmic[k]!==undefined){
+                    const rName=getSupplyName(rPmic[k],ref);
+                    const uName=uPmic?.[k]!==undefined?getSupplyName(uPmic[k],user):'-';
+                    addRow('pmic',k,rName,uName,rName===uName);
+                }
+            }
+        }
+        // === 10. regulators ===
+        const REGS=['DCDC_REG1','DCDC_REG2','DCDC_REG3','DCDC_REG4','LDO_REG1','LDO_REG2','LDO_REG3','LDO_REG4','LDO_REG5','LDO_REG6','LDO_REG7','LDO_REG8','LDO_REG9','BOOST'];
+        const rRegBase=ref.findPath('regulators');
+        const uRegBase=user.findPath('regulators');
+        for(const rn of REGS){
+            const rReg=rRegBase?ref.getProps(refBuf,rRegBase+'/'+rn):null;
+            const uReg=uRegBase?user.getProps(userBuf,uRegBase+'/'+rn):null;
+            if(rReg){
+                const rv=rReg['regulator-min-microvolt'],uv=uReg?.['regulator-min-microvolt'];
+                addRow(rn,'min',rv??'-',uv??'-',rv===uv);
+                const rv2=rReg['regulator-max-microvolt'],uv2=uReg?.['regulator-max-microvolt'];
+                addRow(rn,'max',rv2??'-',uv2??'-',rv2===uv2);
+                // suspend
+                const rState=rRegBase?ref.getProps(refBuf,rRegBase+'/'+rn+'/regulator-state-mem'):null;
+                const uState=uRegBase?user.getProps(userBuf,uRegBase+'/'+rn+'/regulator-state-mem'):null;
+                const rsv=rState?.['regulator-suspend-microvolt'];
+                const usv=uState?.['regulator-suspend-microvolt'];
+                addRow(rn,'suspend',rsv??'-',usv??'-',rsv===usv);
+            }
+        }
+        // === 11. battery ===
+        const rBat=ref.getProps(refBuf,ref.findPath('battery'));
+        const uBat=user.getProps(userBuf,user.findPath('battery'));
+        if(rBat){
+            addRow('battery','design_capacity',rBat['design_capacity']??'-',uBat?.['design_capacity']??'-',rBat['design_capacity']===uBat?.['design_capacity']);
+            addRow('battery','design_qmax',rBat['design_qmax']??'-',uBat?.['design_qmax']??'-',rBat['design_qmax']===uBat?.['design_qmax']);
+        }
+        // === 12. charger dc_det_gpio ===
+        const rChg=ref.getProps(refBuf,ref.findPath('charger'));
+        const uChg=user.getProps(userBuf,user.findPath('charger'));
+        if(rChg&&rChg['dc_det_gpio']&&Array.isArray(rChg['dc_det_gpio'])){
+            const rStr=ref.formatGpio(rChg['dc_det_gpio']);
+            const uStr=uChg?.['dc_det_gpio']&&Array.isArray(uChg['dc_det_gpio'])?user.formatGpio(uChg['dc_det_gpio']):'-';
+            addRow('charger','dc_det_gpio',rStr,uStr,rStr===uStr);
+        }
+        // === 13. codec: use-ext-amplifier + spk-ctl-gpios ===
+        const rCodec=ref.getProps(refBuf,ref.findPath('codec'));
+        if(rCodec){
+            // use-ext-amplifier
+            const rExt=rCodec['use-ext-amplifier']===true;
+            const uCodec=user.getProps(userBuf,user.findPath('codec'));
+            const uExt=uCodec?.['use-ext-amplifier']===true;
+            addRow('codec','use-ext-amplifier',rExt?'是':'否',uExt?'是':'否',rExt===uExt);
+
+            // spk-ctl-gpios
+            if(rCodec['spk-ctl-gpios']&&Array.isArray(rCodec['spk-ctl-gpios'])){
+                const rStr=ref.formatGpio(rCodec['spk-ctl-gpios']);
+                let uStr='-';
+                // 优先级1: codec节点的spk-ctl-gpios
+                if(uCodec?.['spk-ctl-gpios']&&Array.isArray(uCodec['spk-ctl-gpios'])){
+                    uStr=user.formatGpio(uCodec['spk-ctl-gpios']);
+                }
+                // 优先级2: rk817-sound下的spk-con-gpio
+                else if(uSound?.['spk-con-gpio']&&Array.isArray(uSound['spk-con-gpio'])){
+                    uStr=user.formatGpio(uSound['spk-con-gpio']);
+                }
+                addRow('codec','spk-ctl-gpios',rStr,uStr,rStr===uStr);
+            }
+        }
+        // === 14. io_domains (syscon@ff140000) ===
+        const rIo=ref.getProps(refBuf,ref.findPath('syscon@ff140000/io-domains'));
+        const uIo=user.getProps(userBuf,user.findPath('syscon@ff140000/io-domains')||user.findPath('io-domains'));
+        if(rIo){
+            for(const k of['vccio1-supply','vccio2-supply','vccio3-supply','vccio4-supply','vccio5-supply','vccio6-supply']){
+                if(rIo[k]!==undefined){
+                    const rName=getSupplyName(rIo[k],ref);
+                    const uName=uIo?.[k]!==undefined?getSupplyName(uIo[k],user):'-';
+                    addRow('io_domains',k,rName,uName,rName===uName);
+                }
+            }
+        }
+        // === 15. pmu_io_domains (syscon@ff010000) ===
+        const rPmuIo=ref.getProps(refBuf,ref.findPath('syscon@ff010000/io-domains'));
+        const uPmuIo=user.getProps(userBuf,user.findPath('syscon@ff010000/io-domains')||user.findPath('pmu_io_domains'));
+        if(rPmuIo){
+            for(const k of['pmuio1-supply','pmuio2-supply']){
+                if(rPmuIo[k]!==undefined){
+                    const rName=getSupplyName(rPmuIo[k],ref);
+                    const uName=uPmuIo?.[k]!==undefined?getSupplyName(uPmuIo[k],user):'-';
+                    addRow('pmu_io',k,rName,uName,rName===uName);
+                }
+            }
+        }
+        // === 16. sdmmc ===
+        const rSdmmc=ref.getProps(refBuf,ref.findPath('dwmmc@ff370000'));
+        const uSdmmc=user.getProps(userBuf,user.findPath('dwmmc@ff370000'));
+        if(rSdmmc){
+            for(const k of['vqmmc-supply','vmmc-supply']){
+                if(rSdmmc[k]!==undefined){
+                    const rName=getSupplyName(rSdmmc[k],ref);
+                    const uName=uSdmmc?.[k]!==undefined?getSupplyName(uSdmmc[k],user):'-';
+                    addRow('sdmmc',k,rName,uName,rName===uName);
+                }
+            }
+        }
+        // === 17. sdio ===
+        const rSdio=ref.getProps(refBuf,ref.findPath('dwmmc@ff380000'));
+        const uSdio=user.getProps(userBuf,user.findPath('dwmmc@ff380000'));
+        if(rSdio){
+            // 检测是否是WiFi设备（supports-rk915）
+            if(rSdio['supports-rk915']){
+                // WiFi设备：对比supports-rk912
+                addRow('sdio','supports-rk912',rSdio['supports-rk915']?'是':'否',uSdio?.['supports-rk912']?'是':'否',!!uSdio?.['supports-rk912']);
+                // 对比wireless-wlan的GPIO（确保用户不是disabled）
+                let uWifiNode=user.getProps(userBuf,user.findPath('wireless-wlan'));
+                if(uWifiNode&&uWifiNode['status']==='disabled')uWifiNode=null;
+                const rWifiNode=ref.getProps(refBuf,ref.findPath('wireless-wlan'));
+                if(rWifiNode){
+                    for(const k of['WIFI,host_wake_irq','WIFI,poweren_gpio']){
+                        if(rWifiNode[k]&&Array.isArray(rWifiNode[k])){
+                            const rStr=ref.formatGpio(rWifiNode[k]);
+                            const uStr=uWifiNode?.[k]&&Array.isArray(uWifiNode[k])?user.formatGpio(uWifiNode[k]):'-';
+                            addRow('wireless-wlan',k,rStr,uStr,rStr===uStr);
+                        }
+                    }
+                }
+            } else {
+                // 普通设备：对比vqmmc-supply和vmmc-supply
+                for(const k of['vqmmc-supply','vmmc-supply']){
+                    if(rSdio[k]!==undefined){
+                        const rName=getSupplyName(rSdio[k],ref);
+                        const uName=uSdio?.[k]!==undefined?getSupplyName(uSdio[k],user):'-';
+                        addRow('sdio',k,rName,uName,rName===uName);
+                    }
+                }
+            }
+        }
+        // === 19. vbus_host gpio ===
+        const rVbus=ref.getProps(refBuf,ref.findPath('vbus_host')||ref.findPath('vbus-host-regulator'));
+        if(rVbus&&rVbus['gpio']&&Array.isArray(rVbus['gpio'])){
+            const rStr=ref.formatGpio(rVbus['gpio']);
+            let uStr='-';
+            // 优先级1: play_joystick的otg-gpio
+            if(uJoy?.['otg-gpio']&&Array.isArray(uJoy['otg-gpio'])){
+                uStr=user.formatGpio(uJoy['otg-gpio']);
+            }
+            // 优先级2: vbus-host-regulator的gpio
+            else{
+                const uVbus=user.getProps(userBuf,user.findPath('vbus_host')||user.findPath('vbus-host-regulator'));
+                if(uVbus?.['gpio']&&Array.isArray(uVbus['gpio'])){
+                    uStr=user.formatGpio(uVbus['gpio']);
+                }
+            }
+            addRow('vbus_host','gpio',rStr,uStr,rStr===uStr);
+        }
+        // === 19. vibration ===
+        if(rJoy){
+            const rRumble=rJoy['rumble-gpio'];
+            const rPwms=rJoy['pwms'];
+            const rPinctrl1=rJoy['pinctrl-1'];
+
+            // 用户的odroidgo3-joypad节点（用于PWM检测）
+            const uOg3Joy=user.getProps(userBuf,user.findPath('odroidgo3-joypad'));
+            const uGamepad=user.getProps(userBuf,user.findPath('gamepad'));
+
+            if(rRumble&&Array.isArray(rRumble)){
+                // 参考是GPIO震动
+                const rStr=ref.formatGpio(rRumble);
+                let uStr='-';
+                const uMotor=uGamepad?.['motor-gpio']&&Array.isArray(uGamepad['motor-gpio'])?user.formatGpio(uGamepad['motor-gpio']):null;
+                const uMoto=uJoy?.['moto-gpio']&&Array.isArray(uJoy['moto-gpio'])?user.formatGpio(uJoy['moto-gpio']):null;
+                if(uMotor)uStr=uMotor;
+                else if(uMoto)uStr=uMoto;
+                addRow('vibration','rumble-gpio',rStr,uStr,rStr===uStr);
+            } else if(rPwms&&rPinctrl1){
+                // 参考是PWM震动，直接显示PWM
+                // 优先检查用户odroidgo3-joypad是否有pwms+pinctrl-1
+                const uPwms=uOg3Joy?.['pwms'];
+                const uPinctrl1=uOg3Joy?.['pinctrl-1'];
+                if(uPwms&&uPinctrl1){
+                    addRow('vibration','motor-type','PWM','PWM',true);
+                } else {
+                    // 再检查用户的motor-gpio是否是PWM0引脚(gpio0 RK_PB7)
+                    const uMotorGpio=uGamepad?.['motor-gpio'];
+                    const uMotoGpio=uJoy?.['moto-gpio'];
+                    const uGpio=uMotorGpio&&Array.isArray(uMotorGpio)?uMotorGpio:(uMotoGpio&&Array.isArray(uMotoGpio)?uMotoGpio:null);
+                    if(uGpio){
+                        const phName=user.phToName(uGpio[0]);
+                        const pin=uGpio[1];
+                        const isPwmGpio=phName==='gpio0'&&pin===15;
+                        addRow('vibration','motor-type','PWM',user.formatGpio(uGpio),isPwmGpio);
+                    } else {
+                        addRow('vibration','motor-type','PWM','-',false);
+                    }
+                }
+            }
+        }
+        // === 20. 检查用户DTB有但参考DTS没有的关键节点 ===
+        // wireless-wlan：用户有且不是disabled，但参考没有
+        const uWifiCheck=user.getProps(userBuf,user.findPath('wireless-wlan'));
+        const rWifiCheck=ref.getProps(refBuf,ref.findPath('wireless-wlan'));
+        if(uWifiCheck&&uWifiCheck['status']!=='disabled'&&!rWifiCheck){
+            addRow('wireless-wlan','(节点)','不存在','存在',false);
+        }
+        html+='</tbody></table>';
+        const total=M+D+X;
+        statsDiv.innerHTML=`<span>📊 总计: <strong>${total}</strong></span><span class="m">✅ 相同: ${M}</span><span class="d">❌ 不同: ${D}</span><span class="x">⚠️ 缺失: ${X}</span>`;
+        statsDiv.style.display='flex';
+        resultArea.innerHTML=html;
+    }catch(e){resultArea.innerHTML=`<p style="color:#e74c3c">错误: ${e.message}</p>`;console.error(e)}
+    finally{loading.style.display='none';processBtn.disabled=false}
+});
+</script>
+</body>
+</html>
