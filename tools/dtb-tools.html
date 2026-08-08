@@ -22,6 +22,10 @@
     .topbar{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
     .btnpill{border:1px solid #666;border-radius:999px;background:#222;color:#eee;cursor:pointer}
     .spacer{flex:1}
+    #btnmapTable th{background:#1a1a1a;font-weight:normal;opacity:0.8}
+    #btnmapTable td{vertical-align:middle}
+    #btnmapTable tr:hover{background:#1a1a1a}
+    #btnmapTable select{background:#222;color:#eee;border:1px solid #444;border-radius:4px}
     /* ===== intro modal (minimal) ===== */
     .modalMask{position:fixed;inset:0;background:rgba(0,0,0,.72);display:none;align-items:center;justify-content:center;z-index:9999}
     .modal{width:min(860px,calc(100vw - 24px));background:#141414;border:1px solid #333;border-radius:14px;padding:14px}
@@ -155,19 +159,41 @@
       </div>
       <div class="hint" id="hSdio"></div>
     </div>
-    <div>
-      <div class="k" id="panelTitle">E) Panel display-timings (auto-detected) — switch native-mode by refresh rate</div>
-      <div class="hint" id="panelHint">
-        Target: first <span class="k">panel@X</span> node that contains <span class="k">display-timings</span>.<br>
-        We list all timing nodes under <span class="k">display-timings</span>, compute refresh rate, and let you pick one.
+      <div>
+        <div class="k" id="panelTitle">E) Panel display-timings (auto-detected) — switch native-mode by refresh rate</div>
+        <div class="hint" id="panelHint">
+          Target: first <span class="k">panel@X</span> node that contains <span class="k">display-timings</span>.<br>
+          We list all timing nodes under <span class="k">display-timings</span>, compute refresh rate, and let you pick one.
+        </div>
+        <div class="row">
+          <select id="timingSel" disabled></select>
+          <span class="badge" id="nativeBadge">native-mode: -</span>
+        </div>
+        <div class="hint" id="hPanel"></div>
       </div>
-      <div class="row">
-        <select id="timingSel" disabled></select>
-        <span class="badge" id="nativeBadge">native-mode: -</span>
+
+      <div style="grid-column:1/3">
+        <div class="k" id="btnmapTitle">F) Button Mapping (auto-detected) — remap physical buttons</div>
+        <div class="hint" id="btnmapHint">
+          Target: <span class="k">odroidgo3-joypad</span> node's <span class="k">sw*</span> sub-nodes.<br>
+          Select target button to swap GPIO. Swapping is bidirectional (A↔B).
+        </div>
+        <div class="row">
+          <table id="btnmapTable" style="width:100%;border-collapse:collapse;font-size:12px">
+            <thead>
+              <tr style="border-bottom:1px solid #333">
+                <th style="text-align:left;padding:4px" id="thSw">sw</th>
+                <th style="text-align:left;padding:4px" id="thLabel">Label</th>
+                <th style="text-align:left;padding:4px" id="thGpio">GPIO</th>
+                <th style="text-align:left;padding:4px" id="thRemap">Remap To</th>
+              </tr>
+            </thead>
+            <tbody id="btnmapBody"></tbody>
+          </table>
+        </div>
+        <div class="hint" id="hBtnmap"></div>
       </div>
-      <div class="hint" id="hPanel"></div>
     </div>
-  </div>
 
   <div class="hint" id="h2"></div>
 </div>
@@ -263,6 +289,11 @@ const I18N = {
     panelPick: "Pick timing:",
     nativeMode: "native-mode: ",
 
+    btnmapTitle: "F) Button Mapping (auto-detected) — remap physical buttons",
+    btnmapFound: "✅ Found button mapping nodes:",
+    btnmapNotFound: "⚠️ odroidgo3-joypad sw nodes not found (button mapping disabled)",
+    btnmapKeep: "(keep original)",
+
     step3: "Step 3:",
     step3t: "Generate modified DTS download and record verification token",
     makeDts: "Generate modified DTS (Download + Lock)",
@@ -307,6 +338,7 @@ const I18N = {
       "<div style='margin-top:8px'><b>C) AMUX mapping</b>: used to swap axes (vertical↔horizontal) or swap left/right sticks by reordering the mapping. <b>Most clone devices do not need changes here.</b></div>" +
       "<div style='margin-top:8px'><b>D) SDIO WiFi</b>: for some devices, you can disable SDIO WiFi to save power.</div>" +
       "<div style='margin-top:8px'><b>E) Panel refresh / display-timings</b>: origin may not be 60Hz (possible tearing). However, some devices may glitch on adjust (e.g. RetroArch black screen or incomplete image). If issues occur, revert to <b>origin</b>.</div>" +
+      "<div style='margin-top:8px'><b>F) Button Mapping</b>: remap physical buttons by selecting target button from dropdown. Changes GPIO, label and linux,code to match the target button.</div>" +
       "<div style='margin-top:10px'><b>Tip</b>: if you only need to fix joystick inversion, change <b>Section A</b> only and leave everything else untouched.</div>",
    },
   zh: {
@@ -361,6 +393,11 @@ const I18N = {
     panelPick: "选择时序：",
     nativeMode: "native-mode: ",
 
+    btnmapTitle: "F) 按键映射（自动检测）— 物理按键重映射",
+    btnmapFound: "✅ 找到按键映射节点：",
+    btnmapNotFound: "⚠️ 未找到 odroidgo3-joypad 的 sw 节点（按键映射不可用）",
+    btnmapKeep: "（保持原样）",
+
     step3: "Step 3:",
     step3t: "生成修改后的 DTS 下载，并记录校验令牌",
     makeDts: "生成修改后 DTS（下载 + 锁定）",
@@ -395,15 +432,16 @@ const I18N = {
       "<div style='margin-top:6px'><b>安全性</b>：文件仅在本地浏览器处理（不会上传）。</div>" +
       "<div style='margin-top:10px'><b>A 区域：odroidgo3-joypad 摇杆方向修正</b></div>" +
       "<ul>" +
-      "<li><b>invert-absx</b>：左摇杆水平轴（左右）。若出现“左变右 / 右变左”，勾选或取消勾选它即可。</li>" +
+      "<li><b>invert-absx</b>：左摇杆水平轴（左右）。若出现 左变右/右变左，勾选或取消勾选它即可。</li>" +
       "<li><b>invert-absy</b>：左摇杆垂直轴（上下）。</li>" +
       "<li><b>invert-absrx</b>：右摇杆水平轴。</li>" +
       "<li><b>invert-absry</b>：右摇杆垂直轴。</li>" +
       "</ul>" +
       "<div style='margin-top:8px'><b>B 区域：电池参数</b>：如果 ArkOS4Clone 的 DTB 中 <b>design_capacity</b>/<b>design_qmax</b> 与原始厂商 DTB 不一致，可将原始 DTB 的数值<b>原样移植</b>以改善电量显示准确性。</div>" +
-      "<div style='margin-top:8px'><b>C 区域：AMUX 通道映射</b>：用于“垂直↔水平”或“左摇杆↔右摇杆”的映射调整，需要通过调整顺序直到正确。<b>绝大多数克隆设备无需修改此项。</b></div>" +
+      "<div style='margin-top:8px'><b>C 区域：AMUX 通道映射</b>：用于 垂直/水平 或 左摇杆/右摇杆 的映射调整，需要通过调整顺序直到正确。<b>绝大多数克隆设备无需修改此项。</b></div>" +
       "<div style='margin-top:8px'><b>D 区域：SDIO WiFi 开关</b>：部分设备可关闭 SDIO WiFi 以降低功耗、节约电量。</div>" +
       "<div style='margin-top:8px'><b>E 区域：屏幕刷新率 / display-timings</b>：默认 <b>origin</b> 可能不是 60Hz（可能撕裂）。但部分设备使用 <b>adjust</b> 会异常（例如 RetroArch 黑屏、画面不全等）。如遇异常请切回 <b>origin</b>。</div>" +
+      "<div style='margin-top:8px'><b>F 区域：按键映射</b>：通过下拉菜单选择目标按键来重映射物理按键。会同时修改 GPIO、label 和 linux,code 以匹配目标按键。</div>" +
       "<div style='margin-top:10px'><b>建议</b>：如果你只想修复摇杆左右/上下颠倒，只修改 <b>A 区域</b>，其余全部保持不动。</div>",
    }
 };
@@ -437,6 +475,7 @@ function applyI18n(){
   $("amuxTitle").textContent = t("amuxTitle");
   $("sdioTitle").textContent = t("sdioTitle");
   $("panelTitle").textContent = t("panelTitle");
+  $("btnmapTitle").textContent = t("btnmapTitle");
 
   // Refresh status texts without changing state
   setStatus();
@@ -444,6 +483,10 @@ function applyI18n(){
   $("bDtbHash").textContent = (dtbHash ? t("dtbHash")+dtbHash : "DTB SHA-256: -");
   $("bDtsHash").textContent = (dtsOutHash ? t("dtsHash")+dtsOutHash : "DTS SHA-256: -");
   $("bUpHash").textContent = (dtsUpHash ? t("upHash")+dtsUpHash : "Upload DTS SHA-256: -");
+  // Refresh button mapping UI if data exists
+  if(hasBtnmapNode && btnmapList.length > 0){
+    updateBtnmapUI();
+  }
 
   // intro modal
   $("introTitle").textContent = t("introTitle");
@@ -498,6 +541,11 @@ let panelNodeName = "";
 let panelDisplayTimingsName = "display-timings";
 let timingList = []; // { name, phandle, hz, htotal, vtotal, clock }
 let nativeModeWanted = null; // number (phandle)
+
+// button mapping
+let hasBtnmapNode = false;
+let btnmapList = []; // { name, gpios, label, linuxCode }
+let btnmapWanted = {}; // { swName: targetSwName } for remapping
 
 // step3
 let dtsOutU8 = null;
@@ -717,6 +765,178 @@ function listTimingNodes(displayBody){
     out.push({ name, ...info });
   }
   return out;
+}
+
+/* =========================
+   Button Mapping (sw nodes)
+========================= */
+const BTN_LABEL_I18N = {
+  "GPIO DPAD-UP":    { en: "DPAD-UP",    zh: "DPAD-UP" },
+  "GPIO DPAD-DOWN":  { en: "DPAD-DOWN",  zh: "DPAD-DOWN" },
+  "GPIO DPAD-LEFT":  { en: "DPAD-LEFT",  zh: "DPAD-LEFT" },
+  "GPIO DPAD-RIGHT": { en: "DPAD-RIGHT", zh: "DPAD-RIGHT" },
+  "DPAD-UP":         { en: "DPAD-UP",    zh: "方向键上" },
+  "DPAD-DOWN":       { en: "DPAD-DOWN",  zh: "方向键下" },
+  "DPAD-LEFT":       { en: "DPAD-LEFT",  zh: "方向键左" },
+  "DPAD-RIGHT":      { en: "DPAD-RIGHT", zh: "方向键右" },
+  "GPIO BTN-A":      { en: "A",          zh: "A" },
+  "GPIO KEY BTN-A":  { en: "A",          zh: "A" },
+  "GPIO BTN-B":      { en: "B",          zh: "B" },
+  "GPIO BTN-X":      { en: "X",          zh: "X" },
+  "GPIO BTN-Y":      { en: "Y",          zh: "Y" },
+  "BTN_THUMBR":      { en: "R3",         zh: "R3" },
+  "BTN_THUMBL":      { en: "L3",         zh: "L3" },
+  "GPIO BTN_F":      { en: "Mode",       zh: "功能键" },
+  "GPIO BTN_F2":     { en: "Mode2",      zh: "功能键2" },
+  "GPIO BTN_TL":     { en: "L1",         zh: "L1" },
+  "GPIO TOP-LEFT":   { en: "L1",         zh: "L1" },
+  "GPIO BTN_TR":     { en: "R1",         zh: "R1" },
+  "GPIO TOP-RIGHT":  { en: "R1",         zh: "R1" },
+  "GPIO BTN_TL2":    { en: "L2",         zh: "L2" },
+  "GPIO TOP-LEFT2":  { en: "L2",         zh: "L2" },
+  "GPIO BTN_TR2":    { en: "R2",         zh: "R2" },
+  "GPIO TOP-RIGHT2": { en: "R2",         zh: "R2" },
+  "BTN_SELECT":      { en: "SELECT",     zh: "SELECT" },
+  "BTN_START":       { en: "START",      zh: "START" }
+};
+
+function getBtnDisplayName(label){
+  const entry = BTN_LABEL_I18N[label];
+  if(entry) return entry[lang] || entry.en;
+  return label;
+}
+
+function parseSwNodeBody(swBody){
+  const gpiosMatch = swBody.match(/\bgpios\s*=\s*<([^>]+)>\s*;/);
+  const labelMatch = swBody.match(/\blabel\s*=\s*"([^"]*)"\s*;/);
+  const codeMatch = swBody.match(/\blinux,code\s*=\s*<([^>]+)>\s*;/);
+  
+  return {
+    gpios: gpiosMatch ? gpiosMatch[1].trim() : "",
+    label: labelMatch ? labelMatch[1].trim() : "",
+    linuxCode: codeMatch ? codeMatch[1].trim() : ""
+  };
+}
+
+function listSwNodes(joyNodeBody){
+  const out = [];
+  const re = /\b(sw\d*)\s*\{/g;
+  let m;
+  while((m = re.exec(joyNodeBody))){
+    const name = m[1];
+    const blk = findNodeBlock(joyNodeBody, name);
+    if(!blk) continue;
+    const body = joyNodeBody.slice(blk.bodyStart, blk.bodyEnd);
+    const info = parseSwNodeBody(body);
+    if(info.label && info.gpios){
+      out.push({ name, ...info });
+    }
+  }
+  // sort by sw number
+  out.sort((a,b)=>{
+    const na = parseInt(a.name.replace(/\D/g,"")) || 0;
+    const nb = parseInt(b.name.replace(/\D/g,"")) || 0;
+    return na - nb;
+  });
+  return out;
+}
+
+function updateBtnmapUI(){
+  const tbody = $("btnmapBody");
+  tbody.innerHTML = "";
+  
+  if(!hasBtnmapNode || btnmapList.length === 0){
+    $("hBtnmap").innerHTML = "<span class='warn'>" + t("btnmapNotFound") + "</span>";
+    return;
+  }
+  
+  $("hBtnmap").innerHTML = "<span class='ok'>" + t("btnmapFound") + "</span> " + btnmapList.length + " buttons";
+  
+  // init default remap (each button maps to itself)
+  for(const btn of btnmapList){
+    if(!btnmapWanted[btn.name]){
+      btnmapWanted[btn.name] = btn.name;
+    }
+  }
+  
+  for(const btn of btnmapList){
+    const tr = document.createElement("tr");
+    tr.style.borderBottom = "1px solid #222";
+    
+    // sw name
+    const tdName = document.createElement("td");
+    tdName.style.padding = "4px";
+    tdName.textContent = btn.name;
+    tr.appendChild(tdName);
+    
+    // display name
+    const tdLabel = document.createElement("td");
+    tdLabel.style.padding = "4px";
+    tdLabel.textContent = getBtnDisplayName(btn.label);
+    tr.appendChild(tdLabel);
+    
+    // gpios
+    const tdGpio = document.createElement("td");
+    tdGpio.style.padding = "4px";
+    tdGpio.style.fontSize = "11px";
+    tdGpio.style.opacity = "0.7";
+    tdGpio.textContent = btn.gpios;
+    tr.appendChild(tdGpio);
+    
+    // remap select
+    const tdRemap = document.createElement("td");
+    tdRemap.style.padding = "4px";
+    const sel = document.createElement("select");
+    sel.id = "remap_" + btn.name;
+    sel.style.fontSize = "12px";
+    sel.style.padding = "2px";
+    
+    // list all buttons as remap targets
+    for(const target of btnmapList){
+      const opt = document.createElement("option");
+      opt.value = target.name;
+      opt.textContent = getBtnDisplayName(target.label);
+      sel.appendChild(opt);
+    }
+    
+    // set default value
+    sel.value = btnmapWanted[btn.name] || btn.name;
+    
+    sel.onchange = ()=>{
+      const oldTarget = btnmapWanted[btn.name];
+      const newTarget = sel.value;
+      
+      // if new target was previously mapped to something else, swap back
+      if(btnmapWanted[newTarget] === btn.name){
+        // simple swap: A->B and B->A, just update A->B
+        btnmapWanted[btn.name] = newTarget;
+      } else {
+        // find who was mapping to newTarget before
+        const prevMapper = Object.keys(btnmapWanted).find(k => k !== btn.name && btnmapWanted[k] === newTarget && k !== newTarget);
+        
+        // update current button
+        btnmapWanted[btn.name] = newTarget;
+        
+        // if someone else was mapping to newTarget, move them to oldTarget
+        if(prevMapper && oldTarget){
+          btnmapWanted[prevMapper] = oldTarget;
+          const prevSel = $("remap_" + prevMapper);
+          if(prevSel) prevSel.value = oldTarget;
+        }
+        // if newTarget had itself as default, move it to oldTarget
+        else if(newTarget !== btn.name && btnmapWanted[newTarget] === newTarget && oldTarget){
+          btnmapWanted[newTarget] = oldTarget;
+          const targetSel = $("remap_" + newTarget);
+          if(targetSel) targetSel.value = oldTarget;
+        }
+      }
+    };
+    
+    tdRemap.appendChild(sel);
+    tr.appendChild(tdRemap);
+    
+    tbody.appendChild(tr);
+  }
 }
 
 /* =========================
@@ -1006,6 +1226,57 @@ function applyControlledEdits(dtsText){
       }
     }
   }
+
+  // Button mapping (remap sw nodes - swap GPIO only)
+  if(hasBtnmapNode && Object.keys(btnmapWanted).length > 0){
+    const joy = findNodeBlock(out, "odroidgo3-joypad");
+    if(joy){
+      let joyBody = out.slice(joy.bodyStart, joy.bodyEnd);
+      // build lookup for target buttons
+      const btnLookup = {};
+      for(const btn of btnmapList){
+        btnLookup[btn.name] = btn;
+      }
+      // collect all swaps first, then apply
+      const swaps = [];
+      const processed = new Set();
+      for(const [srcName, targetName] of Object.entries(btnmapWanted)){
+        if(srcName === targetName) continue; // no change
+        if(processed.has(srcName)) continue;
+        const target = btnLookup[targetName];
+        if(!target) continue;
+        const src = btnLookup[srcName];
+        if(!src) continue;
+        swaps.push({ src: srcName, target: targetName });
+        processed.add(srcName);
+        processed.add(targetName);
+      }
+      // apply GPIO swaps
+      for(const { src, target } of swaps){
+        const srcBlk = findNodeBlock(joyBody, src);
+        const targetBlk = findNodeBlock(joyBody, target);
+        if(!srcBlk || !targetBlk) continue;
+        let srcBody = joyBody.slice(srcBlk.bodyStart, srcBlk.bodyEnd);
+        let targetBody = joyBody.slice(targetBlk.bodyStart, targetBlk.bodyEnd);
+        // extract GPIOs
+        const srcGpios = (srcBody.match(/\bgpios\s*=\s*<([^>]+)>\s*;/)||[])[1];
+        const targetGpios = (targetBody.match(/\bgpios\s*=\s*<([^>]+)>\s*;/)||[])[1];
+        if(!srcGpios || !targetGpios) continue;
+        // swap GPIOs
+        srcBody = srcBody.replace(/\bgpios\s*=\s*<[^>]+>\s*;/, "gpios = <" + targetGpios + ">;");
+        targetBody = targetBody.replace(/\bgpios\s*=\s*<[^>]+>\s*;/, "gpios = <" + srcGpios + ">;");
+        // apply changes back - need to recalculate positions after first replace
+        joyBody = joyBody.slice(0, srcBlk.bodyStart) + srcBody + joyBody.slice(srcBlk.bodyEnd);
+        // recalculate target position after src replacement
+        const newTargetBlk = findNodeBlock(joyBody, target);
+        if(newTargetBlk){
+          joyBody = joyBody.slice(0, newTargetBlk.bodyStart) + targetBody + joyBody.slice(newTargetBlk.bodyEnd);
+        }
+      }
+      out = out.slice(0, joy.bodyStart) + joyBody + out.slice(joy.bodyEnd);
+    }
+  }
+
   return out;
 }
 
@@ -1183,6 +1454,18 @@ function syncOptionUIFromDecompiled(dtsText){
       }
     }
   }
+
+  // Button mapping (sw nodes)
+  hasBtnmapNode = false;
+  btnmapList = [];
+  btnmapWanted = {};
+  const joyBtn = findNodeBlock(dtsText, "odroidgo3-joypad");
+  if(joyBtn){
+    const joyBtnBody = dtsText.slice(joyBtn.bodyStart, joyBtn.bodyEnd);
+    btnmapList = listSwNodes(joyBtnBody);
+    hasBtnmapNode = btnmapList.length > 0;
+  }
+  updateBtnmapUI();
 }
 
 /* =========================
@@ -1245,6 +1528,7 @@ $("fileDtb").onchange = async (e)=>{
   hasDeadzoneProp=false;
   hasSdioWifi=false; sdioStatusWanted="";
   hasPanelTimings=false; panelNodeName=""; timingList=[]; nativeModeWanted=null;
+  hasBtnmapNode=false; btnmapList=[]; btnmapWanted={};
 
   $("bDtsSrc").textContent = t("dtsNot");
   $("bDtsHash").textContent = "DTS SHA-256: -";
@@ -1258,6 +1542,7 @@ $("fileDtb").onchange = async (e)=>{
   $("hSdio").textContent="";
   $("sdioToggle").textContent="status: -";
   $("timingSel").innerHTML=""; $("nativeBadge").textContent=t("nativeMode")+"-"; $("hPanel").textContent="";
+  $("btnmapBody").innerHTML=""; $("hBtnmap").textContent="";
 
   clearDownloads();
   setStatus();
@@ -1440,6 +1725,7 @@ $("btnReset").onclick = ()=>{
   hasSdioWifi=false; sdioStatusWanted="";
   dtbOutReady=false;
   hasPanelTimings=false; panelNodeName=""; timingList=[]; nativeModeWanted=null;
+  hasBtnmapNode=false; btnmapList=[]; btnmapWanted={};
 
   $("fileDtb").value=""; $("fileDts").value="";
   $("bDtb").textContent = t("dtbDash");
@@ -1461,6 +1747,7 @@ $("btnReset").onclick = ()=>{
   $("sdioToggle").textContent="status: -";
   $("hSdio").textContent="";
   $("timingSel").innerHTML=""; $("nativeBadge").textContent=t("nativeMode")+"-"; $("hPanel").textContent="";
+  $("btnmapBody").innerHTML=""; $("hBtnmap").textContent="";
 
   clearDownloads();
   setStatus();
